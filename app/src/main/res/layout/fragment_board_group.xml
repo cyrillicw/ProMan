@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.BoardGroupFragment"
+    android:background="@color/backround"
+    android:orientation="vertical">
+
+    <!-- TODO: Update blank fragment layout -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_board_group"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="9"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/add_task_card"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:cardCornerRadius="4dp"
+        android:layout_gravity="center"
+        android:layout_margin="2dp">
+        <Button
+            android:id="@+id/add_task"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/add_task"
+            android:layout_weight="1"/>
+        <EditText
+            android:id="@+id/add_task_edit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:textSize="30sp"/>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

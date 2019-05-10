@@ -1,5 +1,6 @@
 package com.onudapps.proman.adapters;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,12 +38,18 @@ public class TasksRecyclerAdapter extends RecyclerView.Adapter<TasksRecyclerAdap
 
     class TaskViewHolder extends RecyclerView.ViewHolder {
         TextView title;
+        View view;
         private TaskViewHolder(View view) {
             super(view);
+            view = view;
             title = view.findViewById(R.id.task_title);
         }
 
         private void bindData(int position) {
+            view.setOnClickListener(v -> {
+                Intent intent = new Intent();
+                intent.put
+            });
             title.setText(tasks.get(position).getTitle());
         }
     }

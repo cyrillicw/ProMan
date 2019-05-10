@@ -19,6 +19,7 @@ import com.onudapps.proman.activities.BoardActivity;
 import com.onudapps.proman.pojo.BoardCard;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAdapter.BoardViewHolder> {
@@ -27,7 +28,6 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
 
     public BoardsRecyclerAdapter(List<BoardCard> boards) {
         this.boards = boards;
-        GradientColor gradientColor = new GradientColor(0x00FF00, 0x0000FF);
     }
 
     public void updateData(List<BoardCard> boards) {
@@ -72,9 +72,9 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
             final BoardCard board = boards.get(position);
             //title.setText("HELLLOOOOOOOOOOOO");
             title.setText(board.getTitle());
-            drawChart();
-            participantsCount.setText(Integer.toString(1));
-            participants.setText(itemView.getResources().getQuantityText(R.plurals.participants, 1));
+            participantsCount.setText(Integer.toString(board.getParticipants()));
+            participants.setText(itemView.getResources().getQuantityText(R.plurals.participants, board.getParticipants()));
+            drawChart(board);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -85,8 +85,8 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
             });
         }
 
-        private void drawChart() {
-            int finished = 50;
+        private void drawChart(BoardCard board) {
+            int finished = Math.max(100, (int)((double) (new Date().getTime() - board.getStartDate().getTime()) / (board.getFinishDate().getTime() - board.getStartDate().getTime()) * 100));
             List<BarEntry> barEntries = new ArrayList<>();
             barEntries.add(new BarEntry(1, finished));
             BarDataSet barDataSet = new BarDataSet(barEntries, "E");

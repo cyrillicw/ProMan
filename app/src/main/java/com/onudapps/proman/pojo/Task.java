@@ -1,8 +1,10 @@
 package com.onudapps.proman.pojo;
 
+import android.os.Parcelable;
+
 import java.util.Date;
 
-public class Task {
+public class Task implements Parcelable {
     private String title;
     private String description;
     private String[] participants;

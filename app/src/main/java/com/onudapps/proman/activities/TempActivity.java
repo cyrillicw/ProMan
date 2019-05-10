@@ -21,16 +21,22 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.gas.DefaultGasProvider;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class TempActivity extends AppCompatActivity implements Observer<List<BoardCard>> {
     private static final String LOG_TAG = "BOARDCARDS ACTIVITY";
     private static final String APP_NAME = "PROMAN";
     private static final String PRIVATE_KEY_PATTERN = "privateKey";
     private static final String PUBLIC_KEY_PATTERN = "publicKey";
-    private static final String contractAddress = "e5f442A89197A6c504f4aFA6Ed84fdCdCB1eBCB3";
+    private String contractAddress;
+    private String blockChainURL;
     private String privateKey;
     private String publicKey;
     private MutableLiveData<List<BoardCard>> boardsLive;
@@ -44,6 +50,7 @@ public class TempActivity extends AppCompatActivity implements Observer<List<Boa
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        loadProperies();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temp);
         ActionBar actionBar = getSupportActionBar();
@@ -52,7 +59,7 @@ public class TempActivity extends AppCompatActivity implements Observer<List<Boa
         actionBar.show();
         SharedPreferences sharedPreferences = getSharedPreferences(APP_NAME, MODE_PRIVATE);
         privateKey = sharedPreferences.getString(PRIVATE_KEY_PATTERN, null);
-        Web3j web3j = Web3j.build(new HttpService("http://192.168.1.102:7545"));
+        Web3j web3j = Web3j.build(new HttpService(blockChainURL));
         recyclerView = findViewById(R.id.recycle_boards);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
@@ -82,7 +89,7 @@ public class TempActivity extends AppCompatActivity implements Observer<List<Boa
         return true;
     }
 
-    private void getBoards() {
+    /*private void getBoards() {
         int boardsCount = 10;
         List<BoardCard> boards = new ArrayList<>();
         for (int j = 0; j < boardsCount; j++) {
@@ -93,6 +100,16 @@ public class TempActivity extends AppCompatActivity implements Observer<List<Boa
             boards.add(board);
         }
         ((BoardsRecyclerAdapter) recyclerView.getAdapter()).updateData(boardCards);
+    }*/
+
+    private void loadProperies() {
+        Properties properties = new Properties();
+        try {
+            properties.load(getBaseContext().getAssets().open("app.properties"));
+            contractAddress = properties.getProperty("contractAddress");
+            blockChainURL = properties.getProperty("blockChainURL");
+        }catch (IOException e) {}
+
     }
 
     private void getBoards() {

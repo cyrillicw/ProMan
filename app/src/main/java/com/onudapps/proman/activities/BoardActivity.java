@@ -2,6 +2,7 @@ package com.onudapps.proman.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 import com.onudapps.proman.R;
 import com.onudapps.proman.adapters.BoardPagerAdapter;
+import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
 import com.onudapps.proman.pojo.Board;
 import com.onudapps.proman.pojo.BoardGroup;
 import com.onudapps.proman.pojo.Task;
@@ -22,8 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BoardActivity extends AppCompatActivity {
+    private static final String LOG_TAG = "BoardActivity";
+
     public static final String BOARD_KEY = "boardId";
     private static final int OK = 200;
+    private ProManSmartContractDeclaration contract;
+    private String privateKey;
+
 
     private ViewPager viewPager;
     @Override
@@ -31,18 +38,13 @@ public class BoardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_board);
         viewPager = findViewById(R.id.board_pager);
-        try {
-            Intent intent = getIntent();
-            String boardId = intent.getStringExtra(BOARD_KEY);
-        }
-        catch (Exception e) {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-        }
+        Intent intent = getIntent();
+        String boardId = intent.getStringExtra(BOARD_KEY);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayShowHomeEnabled(false);
         //getBoard(boardTitle);
-        Board board = new Board();
+        /*Board board = new Board();
         List<BoardGroup> boardGroups = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             BoardGroup boardGroup = new BoardGroup();
@@ -59,8 +61,14 @@ public class BoardActivity extends AppCompatActivity {
             boardGroups.add(boardGroup);
         }
         board.setTitle("B");
-        board.setBoardGroups(boardGroups);
-        viewPager.setAdapter(new BoardPagerAdapter(getSupportFragmentManager(), board));
+        board.setBoardGroups(boardGroups);*/
+        viewPager.setAdapter(new BoardPagerAdapter(getSupportFragmentManager(), new Board()));
+        contract.getBoard(boardId, privateKey).sendAsync().thenAccept(board -> {
+            ((BoardPagerAdapter) viewPager.getAdapter()).updateData(board);
+        }).exceptionally(throwable -> {
+            Log.e(LOG_TAG, throwable.getMessage());
+            return null;
+        });
 //        viewPager.setAdapter(new BoardPagerAdapter(getSupportFragmentManager(), new Board()));
 //        Retrofit retrofit = new Retrofit.Builder()
 //                .baseUrl("?")
@@ -74,24 +82,5 @@ public class BoardActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
-    }
-
-    private interface BoardService {
-        @GET("")
-        Call<Board> getBoardById(@Query("boardId")String boardId);
-    }
-
-    private class BoardCallback implements Callback<Board> {
-        @Override
-        public void onResponse(Call<Board> call, Response<Board> response) {
-            if (response.isSuccessful() && response.code() == OK) {
-                Board board = response.body();
-                ((BoardPagerAdapter) viewPager.getAdapter()).updateData(board);
-            }
-        }
-
-        @Override
-        public void onFailure(Call<Board> call, Throwable t) {
-        }
     }
 }

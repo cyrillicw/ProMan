@@ -15,6 +15,13 @@
     <string name="sign_in">Sign In</string>
     <string name="sign_up">Sign Up</string>
     <string name="add_task">Add New Task</string>
+    <string name="description">Description</string>
+    <string name="change_description">Change description…</string>
+    <string name="date_start">Date start</string>
+    <string name="date_finish">Date finish</string>
+    <string name="participants">Participants</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -1,7 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/file"
-        android:title="A" >
-        <!-- "file" submenu -->
-    </item>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:yourapp="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_search"
+        android:title="@android:string/search_go"
+        yourapp:showAsAction="always|collapseActionView"
+        yourapp:actionViewClass="android.support.v7.widget.SearchView" />
+    <item
+        android:id="@+id/action_edit"
+        android:title="edit"
+        yourapp:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_micro"
+        android:title="microphone"
+        yourapp:showAsAction="always" />
+    <item
+        android:id="@+id/action_remove"
+        android:title="remove"
+        yourapp:showAsAction="always" />
+    <item
+        android:id="@+id/action_sort"
+        android:title="sort_ab"
+        yourapp:showAsAction="always" />
 </menu>

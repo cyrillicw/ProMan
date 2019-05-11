@@ -48,7 +48,6 @@ public class TasksRecyclerAdapter extends RecyclerView.Adapter<TasksRecyclerAdap
         private void bindData(int position) {
             view.setOnClickListener(v -> {
                 Intent intent = new Intent();
-                intent.put
             });
             title.setText(tasks.get(position).getTitle());
         }

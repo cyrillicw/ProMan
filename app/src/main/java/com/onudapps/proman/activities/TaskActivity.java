@@ -1,22 +1,32 @@
 package com.onudapps.proman.activities;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.TimePicker;
+import android.widget.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.onudapps.proman.R;
 
 public class TaskActivity extends AppCompatActivity {
+    private enum DialogMode{
+        MAIN, CALENDAR, TIME;
+    }
+
+    private DialogMode mode;
+    private TimePicker timePicker;
+    private RelativeLayout relativeLayout;
+    private TextView selectedDate;
+    private TextView selectedTime;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
+        mode = DialogMode.MAIN;
         final TextView description = findViewById(R.id.detailed_task_description);
         final EditText descriptionEdit = findViewById(R.id.detailed_task_description_edit);
         description.setOnClickListener(v -> {
@@ -25,28 +35,35 @@ public class TaskActivity extends AppCompatActivity {
         });
         TextView textView = findViewById(R.id.detailed_task_start_text);
         textView.setOnClickListener(v -> {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder.setView(R.layout.alert_date);
+            alertDialogBuilder.setPositiveButton(R.string.ok, null);
+            alertDialogBuilder.setNegativeButton(R.string.cancel, (d, w) -> {});
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
-            TextView date = alertDialog.findViewById(R.id.date);
-            date.setOnClickListener(view -> {
-                AlertDialog.Builder alertDialogBuilder1 = new AlertDialog.Builder(this);
-                alertDialogBuilder1.setView(R.layout.alert_date);
-                AlertDialog alertDialog1 = alertDialogBuilder.create();
-                alertDialog.show();
-                TextView date1 = alertDialog1.findViewById(R.id.date);
-                Log.e("E", "E");
+            Button positiveButton = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+            positiveButton.setOnClickListener(b -> {
+                switch (mode) {
+                    case TIME:
+                        int hour = timePicker.getHour();
+                        int minute = timePicker.getMinute();
+                        selectedTime.setText(hour + ":" + minute);
+                        timePicker.setVisibility(View.GONE);
+                        relativeLayout.setVisibility(View.VISIBLE);
+                        break;
+                }
             });
-            alertDialog.show();
-            TextView time = alertDialog.findViewById(R.id.time);
-            time.setOnClickListener(view -> {
-                AlertDialog.Builder timeDialogBuilder = new AlertDialog.Builder(view.getContext());
-                timeDialogBuilder.setView(R.layout.time_dialog);
-                AlertDialog timeDialog = timeDialogBuilder.create();
-                timeDialog.show();
-                TimePicker timePicker = timeDialog.findViewById(R.id.chooser_time);
-                timePicker.setIs24HourView(DateFormat.is24HourFormat(alertDialog.getOwnerActivity()));
+            selectedDate = alertDialog.findViewById(R.id.selected_date);
+            relativeLayout = alertDialog.findViewById(R.id.datetime_layout);
+            selectedTime = alertDialog.findViewById(R.id.selected_time);
+            CalendarView calendarView = alertDialog.findViewById(R.id.calendar);
+            timePicker = alertDialog.findViewById(R.id.time);
+            timePicker.setIs24HourView(DateFormat.is24HourFormat(v.getContext()));
+            // TextView date = alertDialog.findViewById(R.id.);
+            selectedTime.setOnClickListener(view -> {
+                mode = DialogMode.TIME;
+                relativeLayout.setVisibility(View.GONE);
+                timePicker.setVisibility(View.VISIBLE);
             });
         });
     }

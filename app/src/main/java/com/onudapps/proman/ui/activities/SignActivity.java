@@ -1,4 +1,4 @@
-package com.onudapps.proman.activities;
+package com.onudapps.proman.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;

@@ -1,117 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activities.TaskActivity">
+        tools:context=".ui.activities.TaskActivity"
+        android:fitsSystemWindows="true">
 
-    <RelativeLayout
+    <include layout="@layout/toolbar"/>
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/detailed_task_title"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar">
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Title"
-            android:textSize="30sp"
-            android:layout_centerHorizontal="true"
-            android:textColor="@color/toolbar_text"
-            android:background="@color/toolbar"
-            android:padding="4dp"/>
-        <TextView
-            android:id="@+id/detailed_task_board"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Board"
-            android:textSize="15sp"
-            android:layout_below="@id/detailed_task_title"
-            android:textColor="@color/toolbar_text"
-            android:background="@color/toolbar"
-            android:padding="4dp"
-            android:textStyle="italic"/>
-
-        <FrameLayout
-            android:layout_below="@id/detailed_task_board"
-            android:id="@+id/detailed_task_description_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp">
-
-            <EditText
-                android:id="@+id/detailed_task_description_edit"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/detailed_task_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="invisible"
-                android:textSize="20sp" />
+                android:text="Title"
+                android:textSize="30sp"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/toolbar_text"
+                android:background="@color/toolbar"
+                android:padding="4dp"/>
+            <TextView
+                android:id="@+id/detailed_task_board"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Board"
+                android:textSize="15sp"
+                android:layout_below="@id/detailed_task_title"
+                android:textColor="@color/toolbar_text"
+                android:background="@color/toolbar"
+                android:padding="4dp"
+                android:textStyle="italic"/>
+
+            <FrameLayout
+                android:layout_below="@id/detailed_task_board"
+                android:id="@+id/detailed_task_description_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <EditText
+                    android:id="@+id/detailed_task_description_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/detailed_task_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change_description"
+                    android:textSize="20sp" />
+
+            </FrameLayout>
 
             <TextView
-                android:id="@+id/detailed_task_description"
-                android:layout_width="match_parent"
+                android:id="@+id/detailed_task_start_text"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/change_description"
-                android:textSize="20sp" />
+                android:text="@string/date_start"
+                android:textSize="20sp"
+                android:layout_below="@id/detailed_task_description_layout"
+                android:padding="2dp"
+                android:drawableStart ="@drawable/date"/>
 
-        </FrameLayout>
+            <TextView
+                android:id="@+id/detailed_task_finish_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/date_finish"
+                android:textSize="20sp"
+                android:layout_below="@id/detailed_task_start_text"
+                android:padding="2dp"
+                android:drawableStart ="@drawable/date"
+                android:drawablePadding="2dp"/>
 
-        <ImageView
-            android:id="@+id/detailed_task_start_image"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_below="@id/detailed_task_description_layout"
-            android:src="@drawable/date"
-            android:padding="2dp"/>
+            <TextView
+                android:id="@+id/detailed_task_participants_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/participants"
+                android:textSize="20sp"
+                android:layout_below="@id/detailed_task_finish_text"
+                android:padding="2dp"
+                android:drawableStart="@drawable/person"
+                android:drawablePadding="2dp"/>
 
-        <TextView
-            android:id="@+id/detailed_task_start_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/date_start"
-            android:textSize="20sp"
-            android:layout_below="@id/detailed_task_description_layout"
-            android:layout_toEndOf="@id/detailed_task_start_image"
-            android:padding="2dp"/>
+        </RelativeLayout>
+    </ScrollView>
 
-        <ImageView
-            android:id="@+id/detailed_task_finish_image"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_below="@id/detailed_task_start_image"
-            android:src="@drawable/date"
-            android:padding="2dp"/>
-
-        <TextView
-            android:id="@+id/detailed_task_finish_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/date_finish"
-            android:textSize="20sp"
-            android:layout_below="@id/detailed_task_start_text"
-            android:layout_toEndOf="@id/detailed_task_finish_image"
-            android:padding="2dp"/>
-
-        <ImageView
-            android:id="@+id/detailed_task_participants_image"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_below="@id/detailed_task_finish_image"
-            android:src="@drawable/person"
-            android:padding="2dp"/>
-
-        <TextView
-            android:id="@+id/detailed_task_participants_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/participants"
-            android:textSize="20sp"
-            android:layout_below="@id/detailed_task_finish_text"
-            android:layout_toEndOf="@id/detailed_task_participants_image"
-            android:padding="2dp"/>
-
-    </RelativeLayout>
-
-</ScrollView>
+</RelativeLayout>

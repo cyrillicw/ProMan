@@ -1,4 +1,4 @@
-package com.onudapps.proman.adapters;
+package com.onudapps.proman.ui.adapters;
 
 import android.content.Intent;
 import android.graphics.LinearGradient;
@@ -13,10 +13,9 @@ import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.model.GradientColor;
 import com.onudapps.proman.R;
-import com.onudapps.proman.activities.BoardActivity;
-import com.onudapps.proman.pojo.BoardCard;
+import com.onudapps.proman.ui.activities.BoardActivity;
+import com.onudapps.proman.data.entities.BoardCard;
 
 import java.util.ArrayList;
 import java.util.Date;

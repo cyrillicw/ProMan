@@ -1,27 +1,16 @@
-package com.onudapps.proman.activities;
+package com.onudapps.proman.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 import com.onudapps.proman.R;
-import com.onudapps.proman.adapters.BoardPagerAdapter;
+import com.onudapps.proman.ui.adapters.BoardPagerAdapter;
 import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
-import com.onudapps.proman.pojo.Board;
-import com.onudapps.proman.pojo.BoardGroup;
-import com.onudapps.proman.pojo.Task;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.onudapps.proman.data.entities.Board;
 
 public class BoardActivity extends AppCompatActivity {
     private static final String LOG_TAG = "BoardActivity";

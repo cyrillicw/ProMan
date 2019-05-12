@@ -1,13 +1,15 @@
-package com.onudapps.proman.pojo;
+package com.onudapps.proman.data.entities;
 
 import java.util.Date;
+import java.util.List;
 
-public class BoardCard {
+public class Board {
     private String id;
     private String title;
     private Date startDate;
     private Date finishDate;
-    private int participants;
+    private String[] participants;
+    private List<BoardGroup> boardGroups;
 
     public String getTitle() {
         return title;
@@ -33,11 +35,11 @@ public class BoardCard {
         this.finishDate = finishDate;
     }
 
-    public int getParticipants() {
+    public String[] getParticipants() {
         return participants;
     }
 
-    public void setParticipants(int participants) {
+    public void setParticipants(String[] participants) {
         this.participants = participants;
     }
 
@@ -47,5 +49,13 @@ public class BoardCard {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public List<BoardGroup> getBoardGroups() {
+        return boardGroups;
+    }
+
+    public void setBoardGroups(List<BoardGroup> boardGroups) {
+        this.boardGroups = boardGroups;
     }
 }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.SignActivity"
+    tools:context=".ui.activities.SignActivity"
     android:background="@color/backround"
     android:orientation="vertical">
 

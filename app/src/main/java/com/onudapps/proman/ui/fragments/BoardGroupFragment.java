@@ -1,4 +1,4 @@
-package com.onudapps.proman.fragments;
+package com.onudapps.proman.ui.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,8 +14,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.onudapps.proman.R;
-import com.onudapps.proman.adapters.TasksRecyclerAdapter;
-import com.onudapps.proman.pojo.BoardGroup;
+import com.onudapps.proman.ui.adapters.TasksRecyclerAdapter;
+import com.onudapps.proman.data.entities.BoardGroup;
 
 /**
  * A simple {@link Fragment} subclass.

@@ -1,4 +1,4 @@
-package com.onudapps.proman.activities;
+package com.onudapps.proman.ui.activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,20 +11,17 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.onudapps.proman.R;
-import com.onudapps.proman.adapters.BoardsRecyclerAdapter;
+import com.onudapps.proman.ui.adapters.BoardsRecyclerAdapter;
 import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
 import com.onudapps.proman.contracts.Smart;
-import com.onudapps.proman.pojo.BoardCard;
+import com.onudapps.proman.data.entities.BoardCard;
 import java8.util.concurrent.CompletableFuture;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.gas.DefaultGasProvider;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;

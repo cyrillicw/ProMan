@@ -1,11 +1,11 @@
-package com.onudapps.proman.adapters;
+package com.onudapps.proman.ui.adapters;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import com.onudapps.proman.fragments.BoardGroupFragment;
-import com.onudapps.proman.pojo.Board;
-import com.onudapps.proman.pojo.BoardGroup;
+import com.onudapps.proman.ui.fragments.BoardGroupFragment;
+import com.onudapps.proman.data.entities.Board;
+import com.onudapps.proman.data.entities.BoardGroup;
 
 import java.util.List;
 

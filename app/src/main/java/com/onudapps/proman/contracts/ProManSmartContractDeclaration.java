@@ -1,7 +1,7 @@
 package com.onudapps.proman.contracts;
 
-import com.onudapps.proman.pojo.Board;
-import com.onudapps.proman.pojo.BoardCard;
+import com.onudapps.proman.data.entities.Board;
+import com.onudapps.proman.data.entities.BoardCard;
 import org.web3j.protocol.core.RemoteCall;
 
 import java.util.List;

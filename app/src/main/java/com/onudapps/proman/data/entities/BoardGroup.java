@@ -1,4 +1,4 @@
-package com.onudapps.proman.pojo;
+package com.onudapps.proman.data.entities;
 
 import java.util.List;
 

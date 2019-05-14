@@ -24,7 +24,7 @@ public class ParticipantsAdapter extends RecyclerView.Adapter<ParticipantsAdapte
     @NonNull
     @Override
     public ParticipantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.board_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.participant_item, parent, false);
         return new ParticipantViewHolder(view);
     }
 
@@ -37,6 +37,7 @@ public class ParticipantsAdapter extends RecyclerView.Adapter<ParticipantsAdapte
         private TextView name;
         private ParticipantViewHolder (View view){
             super(view);
+            name = view.findViewById(R.id.participant);
         }
 
         void bindData(String participant) {

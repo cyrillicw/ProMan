@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Board {
-    private String id;
+    private String boardId;
     private String title;
     private Date startDate;
     private Date finishDate;
@@ -43,12 +43,12 @@ public class Board {
         this.participants = participants;
     }
 
-    public String getId() {
-        return id;
+    public String getBoardId() {
+        return boardId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setBoardId(String boardId) {
+        this.boardId = boardId;
     }
 
     public List<BoardGroup> getBoardGroups() {

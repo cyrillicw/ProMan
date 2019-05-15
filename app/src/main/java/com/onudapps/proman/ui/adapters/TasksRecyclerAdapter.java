@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.onudapps.proman.R;
-import com.onudapps.proman.data.entities.Task;
+import com.onudapps.proman.data.pojo.Task;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.onudapps;
 
-import com.onudapps.proman.data.entities.Task;
+import com.onudapps.proman.data.pojo.Task;
 
 import java.util.Calendar;
 import java.util.HashSet;

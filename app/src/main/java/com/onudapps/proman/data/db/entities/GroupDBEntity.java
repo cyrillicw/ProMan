@@ -16,7 +16,7 @@ public class GroupDBEntity {
     @NonNull
     private UUID groupId;
     private String title;
-    private String boardId;
+    private UUID boardId;
 
     public UUID getGroupId() {
         return groupId;
@@ -34,11 +34,11 @@ public class GroupDBEntity {
         this.title = title;
     }
 
-    public String getBoardId() {
+    public UUID getBoardId() {
         return boardId;
     }
 
-    public void setBoardId(String boardId) {
+    public void setBoardId(UUID boardId) {
         this.boardId = boardId;
     }
 }

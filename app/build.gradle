@@ -14,6 +14,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField("String", "hostAPI", '"https://192.168.1.102:7545"')
+            buildConfigField("String", "contractAddress", 'e5f442A89197A6c504f4aFA6Ed84fdCdCB1eBCB3')
+        }
+        debug {
+            buildConfigField("String", "hostAPI", '"https://192.168.1.102:7545"')
+            buildConfigField("String", "contractAddress", 'e5f442A89197A6c504f4aFA6Ed84fdCdCB1eBCB3')
         }
     }
     compileOptions {
@@ -28,6 +34,7 @@ repositories {
 
 dependencies {
     def room_version = "2.1.0-alpha07"
+    def lifecycle_version = "2.0.0"
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha05'
     implementation 'androidx.core:core:1.0.2'
@@ -38,6 +45,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'org.web3j:core:4.2.0-android'
     implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     // https://mvnrepository.com/artifact/org.web3j/codegen
     // https://mvnrepository.com/artifact/org.web3j/core

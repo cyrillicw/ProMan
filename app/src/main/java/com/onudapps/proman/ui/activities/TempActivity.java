@@ -14,7 +14,7 @@ import com.onudapps.proman.R;
 import com.onudapps.proman.ui.adapters.BoardsRecyclerAdapter;
 import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
 import com.onudapps.proman.contracts.Smart;
-import com.onudapps.proman.data.entities.BoardCard;
+import com.onudapps.proman.data.pojo.BoardCard;
 import java8.util.concurrent.CompletableFuture;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;

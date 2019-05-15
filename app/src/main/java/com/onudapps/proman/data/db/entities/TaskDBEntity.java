@@ -5,6 +5,7 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
+import com.onudapps.proman.data.pojo.Task;
 
 import java.util.Calendar;
 import java.util.UUID;
@@ -21,8 +22,22 @@ public class TaskDBEntity {
     private String description;
     private Calendar start;
     private Calendar finish;
-    private String boardId;
-    private String groupId;
+    private UUID boardId;
+    private UUID groupId;
+
+    public TaskDBEntity(){}
+
+    public TaskDBEntity(Task task) {
+        taskId = task.getTaskId();
+        title = task.getTitle();
+        description = task.getDescription();
+        start = Calendar.getInstance();
+        start.setTimeInMillis(task.getStart().getTimeInMillis());
+        finish = Calendar.getInstance();
+        finish.setTimeInMillis(task.getFinish().getTimeInMillis());
+        boardId = task.getBoardId();
+        groupId = task.getGroupId();
+    }
 
     public UUID getTaskId() {
         return taskId;
@@ -64,19 +79,19 @@ public class TaskDBEntity {
         this.finish = finish;
     }
 
-    public String getBoardId() {
+    public UUID getBoardId() {
         return boardId;
     }
 
-    public void setBoardId(String boardId) {
+    public void setBoardId(UUID boardId) {
         this.boardId = boardId;
     }
 
-    public String getGroupId() {
+    public UUID getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(String groupId) {
+    public void setGroupId(UUID groupId) {
         this.groupId = groupId;
     }
 }

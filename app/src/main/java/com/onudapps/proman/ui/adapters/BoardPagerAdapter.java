@@ -4,8 +4,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import com.onudapps.proman.ui.fragments.BoardGroupFragment;
-import com.onudapps.proman.data.entities.Board;
-import com.onudapps.proman.data.entities.BoardGroup;
+import com.onudapps.proman.data.pojo.Board;
+import com.onudapps.proman.data.pojo.BoardGroup;
 
 import java.util.List;
 

@@ -1,7 +1,8 @@
-package com.onudapps.proman.data.entities;
+package com.onudapps.proman.data.pojo;
 
 import androidx.room.Ignore;
 import com.onudapps.TaskChange;
+import com.onudapps.proman.data.db.entities.ParticipantDBEntity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -13,11 +14,13 @@ public class Task {
     private String title;
     private String description;
     @Ignore
-    private List<String> participants;
+    private List<ParticipantDBEntity> participants;
     private Calendar start;
     private Calendar finish;
     private String boardTitle;
     private String groupTitle;
+    private UUID boardId;
+    private UUID groupId;
     @Ignore
     private TaskChange taskChange;
 
@@ -64,11 +67,11 @@ public class Task {
         }
     }
 
-    public List<String> getParticipants() {
+    public List<ParticipantDBEntity> getParticipants() {
         return participants;
     }
 
-    public void setParticipants(List<String> participants) {
+    public void setParticipants(List<ParticipantDBEntity> participants) {
         this.participants = participants;
     }
 
@@ -132,5 +135,21 @@ public class Task {
 
     public void setGroupTitle(String groupTitle) {
         this.groupTitle = groupTitle;
+    }
+
+    public UUID getBoardId() {
+        return boardId;
+    }
+
+    public void setBoardId(UUID boardId) {
+        this.boardId = boardId;
+    }
+
+    public UUID getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(UUID groupId) {
+        this.groupId = groupId;
     }
 }

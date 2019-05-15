@@ -13,20 +13,31 @@ import android.widget.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 import com.onudapps.TaskChange;
+import com.onudapps.proman.BuildConfig;
 import com.onudapps.proman.R;
-import com.onudapps.proman.data.entities.Task;
+import com.onudapps.proman.data.ProManDao;
+import com.onudapps.proman.data.ProManDatabase;
+import com.onudapps.proman.data.db.entities.BoardDBEntity;
+import com.onudapps.proman.data.db.entities.GroupDBEntity;
+import com.onudapps.proman.data.db.entities.ParticipantDBEntity;
+import com.onudapps.proman.data.pojo.Task;
 import com.onudapps.proman.ui.adapters.ParticipantsAdapter;
+import com.onudapps.proman.viewmodels.TaskViewModel;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class TaskActivity extends AppCompatActivity {
+
+    private static final String LOG_TAG = "TaskActivity";
     private static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
     private enum DialogMode {
@@ -44,43 +55,46 @@ public class TaskActivity extends AppCompatActivity {
     private TextView description;
     private EditText descriptionEdit;
     private TaskChange taskChange;
+    private UUID taskId;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        String s = BuildConfig.hostAPI;
         setContentView(R.layout.activity_task);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        task = getTask();
-        editedTask = new Task(task);
-        taskChange = new TaskChange(task);
-        editedTask.setTaskChange(taskChange);
+        // insert();
+        taskId = UUID.fromString("8537dee2-2b9f-4658-b500-71d582628f6e");
+        TaskViewModel taskViewModel = ViewModelProviders
+                .of(this, new TaskViewModel.TaskModelFactory(getApplication(), taskId))
+                .get(TaskViewModel.class);
+        LiveData<Task> data = taskViewModel.getData();
         tick = findViewById(R.id.tick);
         upload = findViewById(R.id.upload);
         description = findViewById(R.id.detailed_task_description);
-        refreshDescription();
         descriptionEdit = findViewById(R.id.detailed_task_description_edit);
         description.setOnClickListener(this::descriptionClickListener);
         tick.setOnClickListener(this::tickClickListener);
         upload.setOnClickListener(this::uploadClickListener);
         title = findViewById(R.id.detailed_task_title);
-        title.setText(task.getTitle());
         TextView dateStartText = findViewById(R.id.detailed_task_start_text);
-        dateStartText.setOnClickListener(new DateDialog(editedTask, CalendarMode.START));
         TextView dateFinishText = findViewById(R.id.detailed_task_finish_text);
-        dateFinishText.setOnClickListener(new DateDialog(editedTask, CalendarMode.FINISH));
         TextView participantsText = findViewById(R.id.detailed_task_participants_text);
-        participantsText.setOnClickListener(v -> {
-            AlertDialog alertDialog = new AlertDialog.Builder(this).setView(R.layout.participants).create();
-            alertDialog.show();
-            RecyclerView recyclerView = alertDialog.findViewById(R.id.recycler_participants);
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(v.getContext(), RecyclerView.VERTICAL, false);
-            recyclerView.setLayoutManager(layoutManager);
-            recyclerView.setAdapter(new ParticipantsAdapter(editedTask.getParticipants()));
+        participantsText.setOnClickListener(this::participantsOnClickListener);
+        data.observe(this, t -> {
+             task = t;
+             editedTask = new Task(task);
+             taskChange = new TaskChange(task);
+             editedTask.setTaskChange(taskChange);
+             title.setText(task.getTitle());
+             refreshDescription();
+             dateStartText.setOnClickListener(new DateDialog(editedTask, CalendarMode.START));
+             dateFinishText.setOnClickListener(new DateDialog(editedTask, CalendarMode.FINISH));
         });
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     private void tickClickListener(View v) {
@@ -96,8 +110,58 @@ public class TaskActivity extends AppCompatActivity {
         inputMethodManager.hideSoftInputFromWindow(descriptionEdit.getWindowToken(), 0);
     }
 
+    private void participantsOnClickListener(View v) {
+        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(R.layout.participants).create();
+        alertDialog.show();
+        RecyclerView recyclerView = alertDialog.findViewById(R.id.recycler_participants);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(v.getContext(), RecyclerView.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(new ParticipantsAdapter(editedTask.getParticipants()));
+    }
+
     private void uploadClickListener(View v) {
 
+    }
+
+    private void  insert() {
+        ProManDatabase database = Room.databaseBuilder(this, ProManDatabase.class, "ProManDatabase").build();
+        ProManDao proManDao = database.getProManDao();
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            BoardDBEntity boardDBEntity = new BoardDBEntity();
+            boardDBEntity.setBoardId(UUID.randomUUID());
+            boardDBEntity.setTitle("BOARD TEST 1");
+            Calendar start = Calendar.getInstance();
+            start.add(Calendar.DAY_OF_MONTH, -5);
+            Calendar finish = Calendar.getInstance();
+            finish.add(Calendar.DAY_OF_MONTH, 5);
+            boardDBEntity.setStart(start);
+            boardDBEntity.setFinish(finish);
+            GroupDBEntity groupDBEntity = new GroupDBEntity();
+            groupDBEntity.setGroupId(UUID.randomUUID());
+            groupDBEntity.setBoardId(boardDBEntity.getBoardId());
+            groupDBEntity.setTitle("GROUP TEST 1");
+            Task task = new Task();
+            List<ParticipantDBEntity> participantDBEntities = new ArrayList<>();
+            for (int i = 0; i < 3; i++) {
+                ParticipantDBEntity participantDBEntity = new ParticipantDBEntity();
+                participantDBEntity.setNickName("cyrillicw " + i);
+                participantDBEntity.setPublicKey("cyrillicw " + i);
+                participantDBEntities.add(participantDBEntity);
+            }
+            task.setTaskId(UUID.randomUUID());
+            task.setParticipants(participantDBEntities);
+            task.setTitle("HELLO");
+            task.setDescription("");
+            task.setStart(start);
+            task.setFinish(finish);
+            task.setBoardId(boardDBEntity.getBoardId());
+            task.setGroupId(groupDBEntity.getGroupId());
+            proManDao.insertBoard(boardDBEntity);
+            proManDao.insertGroup(groupDBEntity);
+            proManDao.insertTask(task);
+            Log.e("INSERTED", "YES");
+        });
     }
 
     private void descriptionClickListener(View v) {
@@ -127,19 +191,6 @@ public class TaskActivity extends AppCompatActivity {
             description.setText(editedTask.getDescription());
             description.setTypeface(null, Typeface.NORMAL);
         }
-    }
-
-    private Task getTask() {
-        Task task = new Task();
-        String[] participantsArray = {"cyrillicw", "kneshta", "alyonaboo"};
-        List<String> participants = Arrays.asList(participantsArray);
-        task.setParticipants(participants);
-        task.setTitle("HELLO");
-        task.setDescription("");
-        task.setStart(Calendar.getInstance());
-        task.setFinish(Calendar.getInstance());
-        // task.setDescription("To build a new cool mobile app");
-        return task;
     }
 
     private class DateDialog implements View.OnClickListener {

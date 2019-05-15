@@ -10,7 +10,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.onudapps.proman.R;
 import com.onudapps.proman.ui.adapters.BoardPagerAdapter;
 import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
-import com.onudapps.proman.data.entities.Board;
+import com.onudapps.proman.data.pojo.Board;
 
 public class BoardActivity extends AppCompatActivity {
     private static final String LOG_TAG = "BoardActivity";

@@ -15,7 +15,7 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.onudapps.proman.R;
 import com.onudapps.proman.ui.activities.BoardActivity;
-import com.onudapps.proman.data.entities.BoardCard;
+import com.onudapps.proman.data.pojo.BoardCard;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -16,7 +16,7 @@ public class TaskParticipantJoin {
     @NonNull
     private UUID taskId;
     @NonNull
-    private UUID participantPublicKey;
+    private String participantPublicKey;
 
     public UUID getTaskId() {
         return taskId;
@@ -26,11 +26,11 @@ public class TaskParticipantJoin {
         this.taskId = taskId;
     }
 
-    public UUID getParticipantPublicKey() {
+    public String getParticipantPublicKey() {
         return participantPublicKey;
     }
 
-    public void setParticipantPublicKey(UUID participantPublicKey) {
+    public void setParticipantPublicKey(String participantPublicKey) {
         this.participantPublicKey = participantPublicKey;
     }
 }

@@ -7,18 +7,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.onudapps.proman.R;
+import com.onudapps.proman.data.db.entities.ParticipantDBEntity;
 
 import java.util.List;
 
 public class ParticipantsAdapter extends RecyclerView.Adapter<ParticipantsAdapter.ParticipantViewHolder> {
-    private List<String> participants;
-    public ParticipantsAdapter(List<String> participants) {
+    private List<ParticipantDBEntity> participants;
+    public ParticipantsAdapter(List<ParticipantDBEntity> participants) {
         this.participants = participants;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ParticipantViewHolder holder, int position) {
-        holder.bindData(participants.get(position));
+        holder.bindData(participants.get(position).getNickName());
     }
 
     @NonNull

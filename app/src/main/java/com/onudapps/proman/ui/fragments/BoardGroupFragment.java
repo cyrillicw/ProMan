@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.onudapps.proman.R;
 import com.onudapps.proman.ui.adapters.TasksRecyclerAdapter;
-import com.onudapps.proman.data.entities.BoardGroup;
+import com.onudapps.proman.data.pojo.BoardGroup;
 
 /**
  * A simple {@link Fragment} subclass.

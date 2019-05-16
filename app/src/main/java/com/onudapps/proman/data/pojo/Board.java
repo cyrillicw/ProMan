@@ -1,5 +1,7 @@
 package com.onudapps.proman.data.pojo;
 
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
+
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +14,7 @@ public class Board {
     private List<BoardGroup> boardGroups;
 
     public String getTitle() {
+        TransactionReceipt transactionReceipt;
         return title;
     }
 

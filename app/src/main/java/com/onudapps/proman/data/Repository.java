@@ -1,7 +1,10 @@
 package com.onudapps.proman.data;
 
 import android.content.Context;
+import com.onudapps.proman.data.pojo.BoardCard;
 import com.onudapps.proman.data.pojo.Task;
+import io.reactivex.Flowable;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.util.UUID;
 
@@ -19,13 +22,17 @@ public enum  Repository {
         return localDataSource.getTask(id);
     }
 
-    public Task getTaskFromServer(UUID id) {
-        Task task = remoteDataSource.getTask(id);
-        if (task != null) {
-            localDataSource.insertTask(task);
-        }
-        return task;
+    public Flowable<TransactionReceipt> addBoard(BoardCard boardCard) {
+        return remoteDataSource.addBoard(boardCard);
     }
+
+//    public Task getTaskFromServer(UUID id) {
+//        Task task = remoteDataSource.getTask(id);
+//        if (task != null) {
+//            localDataSource.insertTask(task);
+//        }
+//        return task;
+//    }
 
 //    public void updateTask(Task task) {
 //        localDataSource.update

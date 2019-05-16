@@ -3,7 +3,6 @@ package com.onudapps.proman.viewmodels;
 import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.*;
-import com.onudapps.proman.data.Repository;
 import com.onudapps.proman.data.pojo.Task;
 
 import java.util.UUID;
@@ -31,8 +30,9 @@ public class TaskViewModel extends AndroidViewModel {
 
     public void loadData() {
         executorService.execute(() -> {
-            Task task = Repository.REPOSITORY.getTask(id);
-            data.postValue(task);
+//            Task task = Repository.REPOSITORY.getTask(id);
+//            data.postValue(task);
+            //Repository.REPOSITORY.check();
         });
     }
 

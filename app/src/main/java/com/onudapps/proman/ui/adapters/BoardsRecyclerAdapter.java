@@ -2,6 +2,7 @@ package com.onudapps.proman.ui.adapters;
 
 import android.content.Intent;
 import android.graphics.LinearGradient;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import java.util.Date;
 import java.util.List;
 
 public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAdapter.BoardViewHolder> {
+    private static final String LOG_TAG = "BoardsRecyclerAdapter";
+
     private List<BoardCard> boards;
     private LinearGradient linearGradient;
 
@@ -32,6 +35,11 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
     public void updateData(List<BoardCard> boards) {
         this.boards = boards;
         notifyDataSetChanged();
+    }
+
+    public void addBoardCard(BoardCard boardCard) {
+        boards.add(boardCard);
+        notifyItemInserted(boards.size() - 1);
     }
 
     @NonNull
@@ -85,7 +93,8 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
         }
 
         private void drawChart(BoardCard board) {
-            int finished = Math.max(100, (int)((double) (new Date().getTime() - board.getStartDate().getTime()) / (board.getFinishDate().getTime() - board.getStartDate().getTime()) * 100));
+            int finished = Math.min(100, (int)((double) (new Date().getTime() - board.getStartDate().getTime()) / (board.getFinishDate().getTime() - board.getStartDate().getTime()) * 100));
+            Log.e(LOG_TAG, "finished " + finished);
             List<BarEntry> barEntries = new ArrayList<>();
             barEntries.add(new BarEntry(1, finished));
             BarDataSet barDataSet = new BarDataSet(barEntries, "E");

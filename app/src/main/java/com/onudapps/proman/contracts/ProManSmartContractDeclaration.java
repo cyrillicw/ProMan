@@ -11,4 +11,5 @@ public interface ProManSmartContractDeclaration {
     RemoteCall<List<BoardCard>> getBoards(String privateKey);
     RemoteCall<Board> getBoard(String boardId, String privateKey);
     RemoteCall<Task> getTask(String id);
+    // RemoteCall<Boolean> addBoard()
 }

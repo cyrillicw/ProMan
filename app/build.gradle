@@ -19,7 +19,7 @@ android {
         }
         debug {
             buildConfigField("String", "hostAPI", '"https://192.168.1.102:7545"')
-            buildConfigField("String", "contractAddress", 'e5f442A89197A6c504f4aFA6Ed84fdCdCB1eBCB3')
+            buildConfigField("String", "contractAddress", '"5AcA536856993a5b1b270326d3172c92249933E3"')
         }
     }
     compileOptions {

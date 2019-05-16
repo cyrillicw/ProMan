@@ -4,28 +4,23 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.onudapps.proman.R;
-import com.onudapps.proman.ui.adapters.BoardsRecyclerAdapter;
 import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
-import com.onudapps.proman.contracts.Smart;
+import com.onudapps.proman.data.Repository;
 import com.onudapps.proman.data.pojo.BoardCard;
+import com.onudapps.proman.ui.adapters.BoardsRecyclerAdapter;
+import io.reactivex.Flowable;
 import java8.util.concurrent.CompletableFuture;
-import org.web3j.crypto.Credentials;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.gas.DefaultGasProvider;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+import java.util.concurrent.Executors;
 
 public class TempActivity extends AppCompatActivity implements Observer<List<BoardCard>> {
     private static final String LOG_TAG = "BOARDCARDS ACTIVITY";
@@ -50,34 +45,44 @@ public class TempActivity extends AppCompatActivity implements Observer<List<Boa
         loadProperies();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temp);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.show();
         SharedPreferences sharedPreferences = getSharedPreferences(APP_NAME, MODE_PRIVATE);
         privateKey = sharedPreferences.getString(PRIVATE_KEY_PATTERN, null);
-        Web3j web3j = Web3j.build(new HttpService(blockChainURL));
         recyclerView = findViewById(R.id.recycle_boards);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(new BoardsRecyclerAdapter(new ArrayList<>()));
         boardsLive = new MutableLiveData<>();
+        refresh();
         //contract = Smart.load(contractAddress, web3j, credentials, new DefaultGasProvider());
-        try {Log.e("MAIN", Thread.currentThread().toString());
-            Credentials credentials = Credentials.create("28f3d307e639526a072b94cfa7f484ac84991118fbe7ac59cceb3abf53a58b67");
-            Smart smart = Smart.load(contractAddress, web3j, credentials, new DefaultGasProvider());
-            CompletableFuture<BigInteger> completableFuture = smart.taskCount().sendAsync();//.get();
-            completableFuture.thenAccept(count -> Log.e("THREAD", count.toString())).exceptionally(throwable -> {
-                Log.e("EXCEPTION", Thread.currentThread().toString());
-                return null;
-            });
-            //smart.createTask("HELLLLLOO").sendAsync().get();
-            //Log.e("TaskCOUNT", bigInteger.toString());
-        }
-        catch (Exception e) {
-            Log.e("M", "EEEERRRR");
-            Log.e("M", e.getMessage());
-        }
+    }
+
+    private void refresh() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            Random random = new Random();
+            for (int i = 0; i < 100; i++) {
+                BoardCard boardCard = new BoardCard();
+                boardCard.setTitle("TITLE" + i);
+                Calendar start = Calendar.getInstance();
+                start.add(Calendar.DAY_OF_MONTH, -(random.nextInt() % 30));
+                Calendar finish = Calendar.getInstance();
+                finish.add(Calendar.DAY_OF_MONTH, random.nextInt() % 30);
+                boardCard.setStartDate(start.getTime());
+                boardCard.setFinishDate(finish.getTime());
+                Flowable<TransactionReceipt> flowable = Repository.REPOSITORY.addBoard(boardCard);
+                flowable.subscribe(tx -> {
+                    String id = Integer.toString(Integer.parseInt(tx.getLogs().get(0).getData().substring(2), 16));
+                    boardCard.setId(id);
+                    Log.e("ADDED", id);
+                    runOnUiThread(() -> {
+                        ((BoardsRecyclerAdapter)recyclerView.getAdapter()).addBoardCard(boardCard);
+                    });
+                });
+                try {
+                    Thread.sleep(10000);
+                }
+                catch (Exception e) {}
+            }
+        });
     }
 
     @Override

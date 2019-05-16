@@ -41,7 +41,7 @@ public class TasksRecyclerAdapter extends RecyclerView.Adapter<TasksRecyclerAdap
         View view;
         private TaskViewHolder(View view) {
             super(view);
-            view = view;
+            this.view = view;
             title = view.findViewById(R.id.task_title);
         }
 

@@ -14,15 +14,15 @@ import java.util.UUID;
         }, indices = {@Index(value = "taskId"), @Index(value = "participantPublicKey")})
 public class TaskParticipantJoin {
     @NonNull
-    private UUID taskId;
+    private Integer taskId;
     @NonNull
     private String participantPublicKey;
 
-    public UUID getTaskId() {
+    public Integer getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(UUID taskId) {
+    public void setTaskId(Integer taskId) {
         this.taskId = taskId;
     }
 

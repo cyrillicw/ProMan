@@ -14,15 +14,15 @@ import java.util.UUID;
 public class GroupDBEntity {
     @PrimaryKey
     @NonNull
-    private UUID groupId;
+    private Integer groupId;
     private String title;
-    private UUID boardId;
+    private Integer boardId;
 
-    public UUID getGroupId() {
+    public Integer getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(UUID groupId) {
+    public void setGroupId(Integer groupId) {
         this.groupId = groupId;
     }
 
@@ -34,11 +34,11 @@ public class GroupDBEntity {
         this.title = title;
     }
 
-    public UUID getBoardId() {
+    public Integer getBoardId() {
         return boardId;
     }
 
-    public void setBoardId(UUID boardId) {
+    public void setBoardId(Integer boardId) {
         this.boardId = boardId;
     }
 }

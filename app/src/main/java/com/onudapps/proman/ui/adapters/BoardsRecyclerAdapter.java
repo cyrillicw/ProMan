@@ -19,7 +19,7 @@ import com.onudapps.proman.ui.activities.BoardActivity;
 import com.onudapps.proman.data.pojo.BoardCard;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAdapter.BoardViewHolder> {
@@ -79,43 +79,46 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
             final BoardCard board = boards.get(position);
             //title.setText("HELLLOOOOOOOOOOOO");
             title.setText(board.getTitle());
-            participantsCount.setText(Integer.toString(board.getParticipants()));
-            participants.setText(itemView.getResources().getQuantityText(R.plurals.participants, board.getParticipants()));
             drawChart(board);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(view.getContext(), BoardActivity.class);
-                    intent.putExtra(BoardActivity.BOARD_KEY, board.getId());
+                    intent.putExtra(BoardActivity.BOARD_KEY, board.getBoardId());
                     view.getContext().startActivity(intent);
                 }
             });
         }
 
         private void drawChart(BoardCard board) {
-            int finished = Math.min(100, (int)((double) (new Date().getTime() - board.getStartDate().getTime()) / (board.getFinishDate().getTime() - board.getStartDate().getTime()) * 100));
-            Log.e(LOG_TAG, "finished " + finished);
-            List<BarEntry> barEntries = new ArrayList<>();
-            barEntries.add(new BarEntry(1, finished));
-            BarDataSet barDataSet = new BarDataSet(barEntries, "E");
-            barDataSet.setValueTextSize(30);
-            int color = colors[Math.min(colors.length - 1, (int) (colors.length * (double)finished / 100))];
-            barDataSet.setColor(color, 0xFF);
-            BarData barData = new BarData(barDataSet);
-            barChart.setData(barData);
-            Description description = new Description();
-            description.setText("");
-            barChart.setDescription(description);    // Hide the description
-            barChart.getAxisLeft().setDrawLabels(false);
-            barChart.getAxisRight().setDrawLabels(false);
-            barChart.getXAxis().setDrawLabels(false);
-            barChart.getLegend().setEnabled(false);
-            barChart.getAxisLeft().setAxisMinimum(0);
-            barChart.getAxisLeft().setAxisMaximum(100);
-            barChart.getXAxis().setDrawGridLines(false);
-            barChart.getAxisLeft().setDrawGridLines(false);
-            barChart.getAxisRight().setDrawGridLines(false);
-            barChart.setTouchEnabled(false);
+            Calendar current = Calendar.getInstance();
+            Calendar start = board.getStart();
+            Calendar finish = board.getFinish();
+            if (start != null && finish != null) {
+                int finished = Math.min(100, (int) ((double) (finish.getTimeInMillis() - current.getTimeInMillis()) / (current.getTimeInMillis() - board.getStart().getTimeInMillis()) * 100));
+                Log.e(LOG_TAG, "finished " + finished);
+                List<BarEntry> barEntries = new ArrayList<>();
+                barEntries.add(new BarEntry(1, finished));
+                BarDataSet barDataSet = new BarDataSet(barEntries, "E");
+                barDataSet.setValueTextSize(30);
+                int color = colors[Math.min(colors.length - 1, (int) (colors.length * (double) finished / 100))];
+                barDataSet.setColor(color, 0xFF);
+                BarData barData = new BarData(barDataSet);
+                barChart.setData(barData);
+                Description description = new Description();
+                description.setText("");
+                barChart.setDescription(description);    // Hide the description
+                barChart.getAxisLeft().setDrawLabels(false);
+                barChart.getAxisRight().setDrawLabels(false);
+                barChart.getXAxis().setDrawLabels(false);
+                barChart.getLegend().setEnabled(false);
+                barChart.getAxisLeft().setAxisMinimum(0);
+                barChart.getAxisLeft().setAxisMaximum(100);
+                barChart.getXAxis().setDrawGridLines(false);
+                barChart.getAxisLeft().setDrawGridLines(false);
+                barChart.getAxisRight().setDrawGridLines(false);
+                barChart.setTouchEnabled(false);
+            }
         }
     }
 }

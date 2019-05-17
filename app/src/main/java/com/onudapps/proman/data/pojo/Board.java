@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Board {
-    private String boardId;
+    private Integer boardId;
     private String title;
     private Date startDate;
     private Date finishDate;
@@ -46,11 +46,11 @@ public class Board {
         this.participants = participants;
     }
 
-    public String getBoardId() {
+    public Integer getBoardId() {
         return boardId;
     }
 
-    public void setBoardId(String boardId) {
+    public void setBoardId(Integer boardId) {
         this.boardId = boardId;
     }
 

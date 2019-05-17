@@ -61,7 +61,6 @@ public class TaskActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String s = BuildConfig.hostAPI;
         setContentView(R.layout.activity_task);
         // insert();
         taskId = UUID.fromString("8537dee2-2b9f-4658-b500-71d582628f6e");
@@ -123,46 +122,46 @@ public class TaskActivity extends AppCompatActivity {
 
     }
 
-    private void  insert() {
-        ProManDatabase database = Room.databaseBuilder(this, ProManDatabase.class, "ProManDatabase").build();
-        ProManDao proManDao = database.getProManDao();
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(() -> {
-            BoardDBEntity boardDBEntity = new BoardDBEntity();
-            boardDBEntity.setBoardId(UUID.randomUUID());
-            boardDBEntity.setTitle("BOARD TEST 1");
-            Calendar start = Calendar.getInstance();
-            start.add(Calendar.DAY_OF_MONTH, -5);
-            Calendar finish = Calendar.getInstance();
-            finish.add(Calendar.DAY_OF_MONTH, 5);
-            boardDBEntity.setStart(start);
-            boardDBEntity.setFinish(finish);
-            GroupDBEntity groupDBEntity = new GroupDBEntity();
-            groupDBEntity.setGroupId(UUID.randomUUID());
-            groupDBEntity.setBoardId(boardDBEntity.getBoardId());
-            groupDBEntity.setTitle("GROUP TEST 1");
-            Task task = new Task();
-            List<ParticipantDBEntity> participantDBEntities = new ArrayList<>();
-            for (int i = 0; i < 3; i++) {
-                ParticipantDBEntity participantDBEntity = new ParticipantDBEntity();
-                participantDBEntity.setNickName("cyrillicw " + i);
-                participantDBEntity.setPublicKey("cyrillicw " + i);
-                participantDBEntities.add(participantDBEntity);
-            }
-            task.setTaskId(UUID.randomUUID());
-            task.setParticipants(participantDBEntities);
-            task.setTitle("HELLO");
-            task.setDescription("");
-            task.setStart(start);
-            task.setFinish(finish);
-            task.setBoardId(boardDBEntity.getBoardId());
-            task.setGroupId(groupDBEntity.getGroupId());
-            proManDao.insertBoard(boardDBEntity);
-            proManDao.insertGroup(groupDBEntity);
-            proManDao.insertTask(task);
-            Log.e("INSERTED", "YES");
-        });
-    }
+//    private void  insert() {
+//        ProManDatabase database = Room.databaseBuilder(this, ProManDatabase.class, "ProManDatabase").build();
+//        ProManDao proManDao = database.getProManDao();
+//        ExecutorService executorService = Executors.newSingleThreadExecutor();
+//        executorService.execute(() -> {
+//            BoardDBEntity boardDBEntity = new BoardDBEntity();
+//            boardDBEntity.setBoardId(UUID.randomUUID());
+//            boardDBEntity.setTitle("BOARD TEST 1");
+//            Calendar start = Calendar.getInstance();
+//            start.add(Calendar.DAY_OF_MONTH, -5);
+//            Calendar finish = Calendar.getInstance();
+//            finish.add(Calendar.DAY_OF_MONTH, 5);
+//            boardDBEntity.setStart(start);
+//            boardDBEntity.setFinish(finish);
+//            GroupDBEntity groupDBEntity = new GroupDBEntity();
+//            groupDBEntity.setGroupId(UUID.randomUUID());
+//            groupDBEntity.setBoardId(boardDBEntity.getBoardId());
+//            groupDBEntity.setTitle("GROUP TEST 1");
+//            Task task = new Task();
+//            List<ParticipantDBEntity> participantDBEntities = new ArrayList<>();
+//            for (int i = 0; i < 3; i++) {
+//                ParticipantDBEntity participantDBEntity = new ParticipantDBEntity();
+//                participantDBEntity.setNickName("cyrillicw " + i);
+//                participantDBEntity.setPublicKey("cyrillicw " + i);
+//                participantDBEntities.add(participantDBEntity);
+//            }
+//            task.setTaskId(UUID.randomUUID());
+//            task.setParticipants(participantDBEntities);
+//            task.setTitle("HELLO");
+//            task.setDescription("");
+//            task.setStart(start);
+//            task.setFinish(finish);
+//            task.setBoardId(boardDBEntity.getBoardId());
+//            task.setGroupId(groupDBEntity.getGroupId());
+//            proManDao.insertBoard(boardDBEntity);
+//            proManDao.insertGroup(groupDBEntity);
+//            proManDao.insertTask(task);
+//            Log.e("INSERTED", "YES");
+//        });
+//    }
 
     private void descriptionClickListener(View v) {
         description.setVisibility(View.INVISIBLE);

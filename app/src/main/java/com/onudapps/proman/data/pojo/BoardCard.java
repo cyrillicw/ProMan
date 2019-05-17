@@ -1,13 +1,12 @@
 package com.onudapps.proman.data.pojo;
 
-import java.util.Date;
+import java.util.Calendar;
 
 public class BoardCard {
-    private String id;
+    private Integer boardId;
     private String title;
-    private Date startDate;
-    private Date finishDate;
-    private int participants;
+    private Calendar start;
+    private Calendar finish;
 
     public String getTitle() {
         return title;
@@ -17,35 +16,27 @@ public class BoardCard {
         this.title = title;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public Calendar getStart() {
+        return start;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setStart(Calendar start) {
+        this.start = start;
     }
 
-    public Date getFinishDate() {
-        return finishDate;
+    public Calendar getFinish() {
+        return finish;
     }
 
-    public void setFinishDate(Date finishDate) {
-        this.finishDate = finishDate;
+    public void setFinish(Calendar finish) {
+        this.finish = finish;
     }
 
-    public int getParticipants() {
-        return participants;
+    public Integer getBoardId() {
+        return boardId;
     }
 
-    public void setParticipants(int participants) {
-        this.participants = participants;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public void setBoardId(Integer boardId) {
+        this.boardId = boardId;
     }
 }

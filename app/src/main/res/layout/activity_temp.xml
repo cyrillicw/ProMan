@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,9 +7,35 @@
     android:background="@color/backround"
     tools:context=".ui.activities.TempActivity">
 
+     <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+                                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                                        android:id="@+id/toolbar"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="?android:actionBarSize"
+                                        android:background="@color/toolbar"
+                                        app:layout_collapseMode="pin">
+
+          <RelativeLayout
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent">
+
+               <ImageView
+                       android:id="@+id/create_board"
+                       android:layout_width="50dp"
+                       android:layout_height="match_parent"
+                       android:src="@drawable/create"
+                       android:layout_alignParentEnd="true"
+                       android:padding="4dp"/>
+
+          </RelativeLayout>
+
+     </androidx.appcompat.widget.Toolbar>
+
      <androidx.recyclerview.widget.RecyclerView
          android:id="@+id/recycle_boards"
          android:layout_width="match_parent"
-         android:layout_height="match_parent" />
+         android:layout_height="match_parent"
+         android:layout_below="@id/toolbar"
+     />
 
-</FrameLayout>
+</RelativeLayout>

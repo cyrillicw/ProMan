@@ -11,16 +11,16 @@ import java.util.UUID;
 public class BoardDBEntity {
     @PrimaryKey
     @NonNull
-    private UUID boardId;
+    private Integer boardId;
     private String title;
     private Calendar start;
     private Calendar finish;
 
-    public UUID getBoardId() {
+    public Integer getBoardId() {
         return boardId;
     }
 
-    public void setBoardId(UUID boardId) {
+    public void setBoardId(Integer boardId) {
         this.boardId = boardId;
     }
 

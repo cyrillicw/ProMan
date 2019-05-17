@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class Task {
-    private UUID taskId;
+    private Integer taskId;
     private String title;
     private String description;
     @Ignore
@@ -19,8 +19,8 @@ public class Task {
     private Calendar finish;
     private String boardTitle;
     private String groupTitle;
-    private UUID boardId;
-    private UUID groupId;
+    private Integer boardId;
+    private Integer groupId;
     @Ignore
     private TaskChange taskChange;
 
@@ -37,11 +37,11 @@ public class Task {
         taskChange = null;
     }
 
-    public UUID getTaskId() {
+    public Integer getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(UUID taskId) {
+    public void setTaskId(Integer taskId) {
         this.taskId = taskId;
     }
 
@@ -137,19 +137,19 @@ public class Task {
         this.groupTitle = groupTitle;
     }
 
-    public UUID getBoardId() {
+    public Integer getBoardId() {
         return boardId;
     }
 
-    public void setBoardId(UUID boardId) {
+    public void setBoardId(Integer boardId) {
         this.boardId = boardId;
     }
 
-    public UUID getGroupId() {
+    public Integer getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(UUID groupId) {
+    public void setGroupId(Integer groupId) {
         this.groupId = groupId;
     }
 }

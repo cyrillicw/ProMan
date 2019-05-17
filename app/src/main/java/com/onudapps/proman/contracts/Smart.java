@@ -133,6 +133,10 @@ public class Smart extends Contract {
         return executeRemoteCallTransaction(function);
     }
 
+    public RemoteCall<TransactionReceipt> addBoard(String title) {
+        return null;
+    }
+
     @Deprecated
     public static Smart load(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
         return new Smart(contractAddress, web3j, credentials, gasPrice, gasLimit);
@@ -174,4 +178,6 @@ public class Smart extends Contract {
 
         public BigInteger id;
     }
+
+
 }

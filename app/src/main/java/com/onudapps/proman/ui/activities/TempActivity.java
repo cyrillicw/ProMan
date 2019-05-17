@@ -1,11 +1,17 @@
 package com.onudapps.proman.ui.activities;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
+import android.os.PersistableBundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.MutableLiveData;
+import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,7 +21,6 @@ import com.onudapps.proman.data.Repository;
 import com.onudapps.proman.data.pojo.BoardCard;
 import com.onudapps.proman.ui.adapters.BoardsRecyclerAdapter;
 import io.reactivex.Flowable;
-import java8.util.concurrent.CompletableFuture;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.io.IOException;
@@ -31,9 +36,11 @@ public class TempActivity extends AppCompatActivity implements Observer<List<Boa
     private String blockChainURL;
     private String privateKey;
     private String publicKey;
-    private MutableLiveData<List<BoardCard>> boardsLive;
+    //private MutableLiveData<List<BoardCard>> boardsLive;
     private RecyclerView recyclerView;
     private ProManSmartContractDeclaration contract;
+    private LiveData<List<BoardCard>> data;
+    private boolean dialogOpened = true;
 
     @Override
     public void onChanged(List<BoardCard> boardCards) {
@@ -47,12 +54,22 @@ public class TempActivity extends AppCompatActivity implements Observer<List<Boa
         setContentView(R.layout.activity_temp);
         SharedPreferences sharedPreferences = getSharedPreferences(APP_NAME, MODE_PRIVATE);
         privateKey = sharedPreferences.getString(PRIVATE_KEY_PATTERN, null);
+        data = Repository.REPOSITORY.getBoardCards();
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        final ImageView createBoard = toolbar.findViewById(R.id.create_board);
+        createBoard.setOnClickListener(this::createBoardListener);
         recyclerView = findViewById(R.id.recycle_boards);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(new BoardsRecyclerAdapter(new ArrayList<>()));
-        boardsLive = new MutableLiveData<>();
-        refresh();
+        data.observe(this, l -> {
+            ((BoardsRecyclerAdapter)recyclerView.getAdapter()).updateData(l);
+        });
+        // boardsLive = new MutableLiveData<>();
+        // refresh();
         //contract = Smart.load(contractAddress, web3j, credentials, new DefaultGasProvider());
     }
 
@@ -66,13 +83,13 @@ public class TempActivity extends AppCompatActivity implements Observer<List<Boa
                 start.add(Calendar.DAY_OF_MONTH, -(random.nextInt() % 30));
                 Calendar finish = Calendar.getInstance();
                 finish.add(Calendar.DAY_OF_MONTH, random.nextInt() % 30);
-                boardCard.setStartDate(start.getTime());
-                boardCard.setFinishDate(finish.getTime());
+                boardCard.setStart(start);
+                boardCard.setFinish(finish);
                 Flowable<TransactionReceipt> flowable = Repository.REPOSITORY.addBoard(boardCard);
                 flowable.subscribe(tx -> {
-                    String id = Integer.toString(Integer.parseInt(tx.getLogs().get(0).getData().substring(2), 16));
-                    boardCard.setId(id);
-                    Log.e("ADDED", id);
+                    Integer id = Integer.parseInt(tx.getLogs().get(0).getData().substring(2), 16);
+                    boardCard.setBoardId(id);
+                    // Log.e("ADDED", id);
                     runOnUiThread(() -> {
                         ((BoardsRecyclerAdapter)recyclerView.getAdapter()).addBoardCard(boardCard);
                     });
@@ -85,10 +102,25 @@ public class TempActivity extends AppCompatActivity implements Observer<List<Boa
         });
     }
 
+    /*
+        Как сохранять состояние диалога
+     */
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+
+    }
+
+    private void createBoardListener(View v) {
+        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(R.layout.alert_create).
+                setPositiveButton(R.string.ok, null).create();
+        alertDialog.show();
+        final EditText boardTitle = alertDialog.findViewById(R.id.created_board_title);
+        Button positive = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        positive.setOnClickListener(b -> {
+            String title = boardTitle.getText().toString();
+            Repository.REPOSITORY.createBoard(title);
+        });
     }
 
     /*private void getBoards() {
@@ -114,14 +146,14 @@ public class TempActivity extends AppCompatActivity implements Observer<List<Boa
 
     }
 
-    private void getBoards() {
-        CompletableFuture<List<BoardCard>> completableFuture = contract.getBoards(privateKey).sendAsync();
-        completableFuture.thenAccept(boards -> {
-            boardsLive.postValue(boards);
-        }).exceptionally(throwable -> {
-            Log.e(LOG_TAG, "ERROR LOADING CARDS" + throwable.getMessage());
-            return null;
-        });
-    }
+//    private void getBoards() {
+//        CompletableFuture<List<BoardCard>> completableFuture = contract.getBoards(privateKey).sendAsync();
+//        completableFuture.thenAccept(boards -> {
+//            boardsLive.postValue(boards);
+//        }).exceptionally(throwable -> {
+//            Log.e(LOG_TAG, "ERROR LOADING CARDS" + throwable.getMessage());
+//            return null;
+//        });
+//    }
 }
 

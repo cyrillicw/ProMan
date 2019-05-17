@@ -1,7 +1,9 @@
 package com.onudapps.proman.data;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.*;
 import com.onudapps.proman.data.db.entities.*;
+import com.onudapps.proman.data.pojo.BoardCard;
 import com.onudapps.proman.data.pojo.Task;
 
 import java.util.ArrayList;
@@ -67,4 +69,7 @@ public abstract class ProManDao {
         insertParticipants(task.getParticipants());
         insertTaskParticipantJoins(taskParticipantJoins);
     }
+
+    @Query("SELECT * FROM boards")
+    public abstract LiveData<List<BoardCard>> getBoardCards();
 }

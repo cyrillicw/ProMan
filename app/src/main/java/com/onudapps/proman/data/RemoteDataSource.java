@@ -24,7 +24,7 @@ public class RemoteDataSource {
     public Flowable<TransactionReceipt> addBoard(BoardCard boardCard) {
         try {
             //TransactionReceipt transactionReceipt = smartContract.addBoard("gg", BigInteger.valueOf(0), BigInteger.valueOf(1)).send();
-            return smartContract.addBoard(boardCard.getTitle(), BigInteger.valueOf(boardCard.getStartDate().getTime()), BigInteger.valueOf(boardCard.getFinishDate().getTime())).flowable();
+            return smartContract.addBoard(boardCard.getTitle(), BigInteger.valueOf(boardCard.getStart().getTimeInMillis()), BigInteger.valueOf(boardCard.getFinish().getTimeInMillis())).flowable();
 //            Flowable<Smart.BoardAddedEventResponse> boardAddedEventResponseFlowable = smartContract.boardAddedEventFlowable(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST);
 //            boardAddedEventResponseFlowable.subscribe(event -> {
 //                Log.e(LOG_TAG, event.id.toString());
@@ -35,6 +35,10 @@ public class RemoteDataSource {
             Log.e(LOG_TAG, "ERROR" + e.getMessage());
             return null;
         }
+    }
+
+    public Flowable<TransactionReceipt> createBoard(String title) {
+        return smartContract.addBoard(title).flowable();
     }
 
 //    public Task getTask(UUID id) {

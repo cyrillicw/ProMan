@@ -17,13 +17,13 @@ import java.util.UUID;
 public class TaskDBEntity {
     @PrimaryKey
     @NonNull
-    private UUID taskId;
+    private Integer taskId;
     private String title;
     private String description;
     private Calendar start;
     private Calendar finish;
-    private UUID boardId;
-    private UUID groupId;
+    private Integer boardId;
+    private Integer groupId;
 
     public TaskDBEntity(){}
 
@@ -39,11 +39,11 @@ public class TaskDBEntity {
         groupId = task.getGroupId();
     }
 
-    public UUID getTaskId() {
+    public Integer getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(UUID taskId) {
+    public void setTaskId(Integer taskId) {
         this.taskId = taskId;
     }
 
@@ -79,19 +79,19 @@ public class TaskDBEntity {
         this.finish = finish;
     }
 
-    public UUID getBoardId() {
+    public Integer getBoardId() {
         return boardId;
     }
 
-    public void setBoardId(UUID boardId) {
+    public void setBoardId(Integer boardId) {
         this.boardId = boardId;
     }
 
-    public UUID getGroupId() {
+    public Integer getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(UUID groupId) {
+    public void setGroupId(Integer groupId) {
         this.groupId = groupId;
     }
 }

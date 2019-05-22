@@ -1,7 +1,7 @@
 package com.onudapps.proman.ui.adapters;
 
+import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.LinearGradient;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +15,9 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.onudapps.proman.R;
-import com.onudapps.proman.ui.activities.BoardActivity;
 import com.onudapps.proman.data.pojo.BoardCard;
+import com.onudapps.proman.ui.activities.BoardActivity;
+import com.onudapps.proman.viewmodels.BoardCardsViewModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,10 +27,11 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
     private static final String LOG_TAG = "BoardsRecyclerAdapter";
 
     private List<BoardCard> boards;
-    private LinearGradient linearGradient;
+    private BoardCardsViewModel viewModel;
 
-    public BoardsRecyclerAdapter(List<BoardCard> boards) {
+    public BoardsRecyclerAdapter(List<BoardCard> boards, BoardCardsViewModel viewModel) {
         this.boards = boards;
+        this.viewModel = viewModel;
     }
 
     public void updateData(List<BoardCard> boards) {
@@ -64,14 +66,16 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
         View view;
         TextView title;
         BarChart barChart;
-        TextView participantsCount;
-        TextView participants;
+        TextView motivation;
+//        TextView participantsCount;
+//        TextView participants;
         private BoardViewHolder(final View view) {
             super(view);
             title = view.findViewById(R.id.board_title);
             barChart = view.findViewById(R.id.chart);
-            participantsCount = view.findViewById(R.id.participants_count);
-            participants = view.findViewById(R.id.participants);
+            motivation = view.findViewById(R.id.motivation);
+//            participantsCount = view.findViewById(R.id.participants_count);
+//            participants = view.findViewById(R.id.participants);
             this.view = view;
         }
 
@@ -88,13 +92,26 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
                     view.getContext().startActivity(intent);
                 }
             });
+            view.setOnLongClickListener(v -> {
+                String[] options = {v.getResources().getString(R.string.leave_board),
+                        v.getResources().getString(R.string.delete_board)};
+                AlertDialog alertDialog = new AlertDialog.Builder(v.getContext()).setItems(options, (d, w) -> {
+                    if (w == 0) {
+                        viewModel.leaveBoard(board.getBoardId());
+                    }
+                }).create();
+                alertDialog.show();
+                return true;
+            });
         }
 
         private void drawChart(BoardCard board) {
-            Calendar current = Calendar.getInstance();
             Calendar start = board.getStart();
             Calendar finish = board.getFinish();
             if (start != null && finish != null) {
+                barChart.setVisibility(View.VISIBLE);
+                motivation.setVisibility(View.GONE);
+                Calendar current = Calendar.getInstance();
                 int finished = Math.min(100, (int) ((double) (finish.getTimeInMillis() - current.getTimeInMillis()) / (current.getTimeInMillis() - board.getStart().getTimeInMillis()) * 100));
                 Log.e(LOG_TAG, "finished " + finished);
                 List<BarEntry> barEntries = new ArrayList<>();
@@ -118,6 +135,10 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
                 barChart.getAxisLeft().setDrawGridLines(false);
                 barChart.getAxisRight().setDrawGridLines(false);
                 barChart.setTouchEnabled(false);
+            }
+            else {
+                barChart.setVisibility(View.GONE);
+                motivation.setVisibility(View.VISIBLE);
             }
         }
     }

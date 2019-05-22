@@ -8,11 +8,10 @@ import androidx.room.PrimaryKey;
 import com.onudapps.proman.data.pojo.Task;
 
 import java.util.Calendar;
-import java.util.UUID;
 
 @Entity(tableName = "tasks", foreignKeys = {
-        @ForeignKey(entity = BoardDBEntity.class, parentColumns = "boardId", childColumns = "boardId"),
-        @ForeignKey(entity = GroupDBEntity.class, parentColumns = "groupId", childColumns = "groupId")},
+        @ForeignKey(entity = BoardDBEntity.class, parentColumns = "boardId", childColumns = "boardId", onDelete = ForeignKey.CASCADE),
+        @ForeignKey(entity = GroupDBEntity.class, parentColumns = "groupId", childColumns = "groupId", onDelete = ForeignKey.CASCADE)},
         indices = {@Index(value = "boardId"), @Index(value = "groupId")})
 public class TaskDBEntity {
     @PrimaryKey

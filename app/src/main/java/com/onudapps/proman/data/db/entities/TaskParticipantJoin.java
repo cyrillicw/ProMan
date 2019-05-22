@@ -5,12 +5,10 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
 
-import java.util.UUID;
-
 @Entity(tableName = "task_participant_join", primaryKeys = {"taskId", "participantPublicKey"},
         foreignKeys = {
-            @ForeignKey(entity = TaskDBEntity.class, parentColumns = "taskId", childColumns = "taskId"),
-            @ForeignKey(entity = ParticipantDBEntity.class, parentColumns = "publicKey", childColumns = "participantPublicKey")
+            @ForeignKey(entity = TaskDBEntity.class, parentColumns = "taskId", childColumns = "taskId", onDelete = ForeignKey.CASCADE),
+            @ForeignKey(entity = ParticipantDBEntity.class, parentColumns = "publicKey", childColumns = "participantPublicKey", onDelete = ForeignKey.CASCADE)
         }, indices = {@Index(value = "taskId"), @Index(value = "participantPublicKey")})
 public class TaskParticipantJoin {
     @NonNull

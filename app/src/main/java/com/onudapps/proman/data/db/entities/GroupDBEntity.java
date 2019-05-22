@@ -6,10 +6,8 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import java.util.UUID;
-
 @Entity(tableName = "groups", foreignKeys = {
-        @ForeignKey(entity = BoardDBEntity.class, parentColumns = "boardId", childColumns = "boardId")},
+        @ForeignKey(entity = BoardDBEntity.class, parentColumns = "boardId", childColumns = "boardId", onDelete = ForeignKey.CASCADE)},
         indices = {@Index(value = "boardId")})
 public class GroupDBEntity {
     @PrimaryKey

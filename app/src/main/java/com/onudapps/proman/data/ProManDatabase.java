@@ -6,8 +6,8 @@ import androidx.room.TypeConverters;
 import com.onudapps.proman.data.db.ProManTypeConverters;
 import com.onudapps.proman.data.db.entities.*;
 
-@Database(entities = {TaskDBEntity.class, GroupDBEntity.class, ParticipantDBEntity.class, BoardDBEntity.class, TaskParticipantJoin.class},
-        version = 1, exportSchema = false)
+@Database(entities = {TaskDBEntity.class, GroupDBEntity.class, ParticipantDBEntity.class, BoardDBEntity.class, TaskParticipantJoin.class, LastUpdateEntity.class},
+        version = 4, exportSchema = false)
 @TypeConverters(value = {ProManTypeConverters.class})
 public abstract class ProManDatabase extends RoomDatabase {
     public abstract ProManDao getProManDao();

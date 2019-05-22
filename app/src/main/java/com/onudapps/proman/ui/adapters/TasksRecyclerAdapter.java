@@ -8,15 +8,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.onudapps.proman.R;
-import com.onudapps.proman.data.pojo.Task;
+import com.onudapps.proman.data.pojo.TaskCard;
 
 import java.util.List;
 
 public class TasksRecyclerAdapter extends RecyclerView.Adapter<TasksRecyclerAdapter.TaskViewHolder> {
-    private List<Task> tasks;
+    private List<TaskCard> tasks;
 
-    public TasksRecyclerAdapter(List<Task> tasks) {
+    public TasksRecyclerAdapter(List<TaskCard> tasks) {
         this.tasks = tasks;
+    }
+
+    public void updateData(List<TaskCard> taskCards) {
+        this.tasks = taskCards;
+        notifyDataSetChanged();
     }
 
     @NonNull

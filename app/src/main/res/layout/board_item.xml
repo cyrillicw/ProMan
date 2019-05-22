@@ -9,7 +9,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
         <TextView
             android:id="@+id/board_title"
             android:layout_width="wrap_content"
@@ -18,33 +18,44 @@
             android:layout_alignParentEnd="true"
             android:textSize="30sp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"/>
+            android:layout_marginEnd="10dp"
+            android:layout_centerVertical="true"/>
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/chart"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:layout_alignParentLeft="true"/>
+            android:layout_alignParentStart="true"/>
 
         <TextView
-            android:id="@+id/participants_count"
-            android:layout_width="wrap_content"
+            android:id="@+id/motivation"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|end"
+            android:text="@string/motivation"
             android:textSize="30sp"
-            android:layout_marginEnd="10dp"
-            android:text="4"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/board_title"/>
+            android:textColor="@color/motivation"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"/>
 
-        <TextView
-            android:id="@+id/participants"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:textSize="20sp"
-            android:layout_marginEnd="10dp"
-            android:layout_below="@id/participants_count"/>
+        <!--<TextView-->
+            <!--android:id="@+id/participants_count"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center_vertical|end"-->
+            <!--android:textSize="30sp"-->
+            <!--android:layout_marginEnd="10dp"-->
+            <!--android:text="4"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--android:layout_below="@id/board_title"/>-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/participants"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--android:textSize="20sp"-->
+            <!--android:layout_marginEnd="10dp"-->
+            <!--android:layout_below="@id/participants_count"/>-->
     </RelativeLayout>
 
     <!--<TextView-->

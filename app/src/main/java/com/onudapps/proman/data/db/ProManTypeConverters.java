@@ -1,6 +1,7 @@
 package com.onudapps.proman.data.db;
 
 import androidx.room.TypeConverter;
+import com.onudapps.proman.data.db.entities.LastUpdateEntity;
 
 import java.util.Calendar;
 import java.util.UUID;
@@ -44,5 +45,15 @@ public class ProManTypeConverters {
         } else {
             return value.toString();
         }
+    }
+
+    @TypeConverter
+    public String queryTypeToString(LastUpdateEntity.Query query) {
+        return query.name();
+    }
+
+    @TypeConverter
+    public LastUpdateEntity.Query queryTypeFromString(String s) {
+        return LastUpdateEntity.Query.valueOf(s);
     }
 }

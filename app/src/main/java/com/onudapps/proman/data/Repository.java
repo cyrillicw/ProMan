@@ -1,50 +1,189 @@
 package com.onudapps.proman.data;
 
 import android.content.Context;
+import android.util.Log;
 import androidx.lifecycle.LiveData;
 import com.onudapps.proman.data.db.entities.BoardDBEntity;
+import com.onudapps.proman.data.db.entities.GroupDBEntity;
+import com.onudapps.proman.data.db.entities.LastUpdateEntity;
+import com.onudapps.proman.data.db.entities.TaskDBEntity;
 import com.onudapps.proman.data.pojo.BoardCard;
 import com.onudapps.proman.data.pojo.Task;
-import io.reactivex.Flowable;
+import com.onudapps.proman.data.pojo.TaskCard;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple2;
+import org.web3j.tuples.generated.Tuple4;
+import org.web3j.tuples.generated.Tuple6;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public enum  Repository {
     REPOSITORY;
     private LocalDataSource localDataSource;
     private RemoteDataSource remoteDataSource;
+    private ExecutorService executorService;
 
     public static void initialize(Context context) {
         REPOSITORY.localDataSource = new LocalDataSource(context);
         REPOSITORY.remoteDataSource = new RemoteDataSource();
+        REPOSITORY.executorService = Executors.newSingleThreadExecutor();
     }
 
     public Task getTask(UUID id) {
         return localDataSource.getTask(id);
     }
 
-    public Flowable<TransactionReceipt> addBoard(BoardCard boardCard) {
-        return remoteDataSource.addBoard(boardCard);
-    }
-
     public LiveData<List<BoardCard>> getBoardCards() {
         return localDataSource.getBoardCards();
     }
 
+    public LiveData<List<GroupDBEntity>> getBoardGroups(int boardId) {
+        return localDataSource.getBoardGroups(boardId);
+    }
+
     public void createBoard(String title) {
-        Flowable<TransactionReceipt> transactionReceiptFlowable = remoteDataSource.createBoard(title);
-        transactionReceiptFlowable.subscribe(tx -> {
-            Integer id = Integer.parseInt(tx.getLogs().get(0).getData().substring(2), 16);
-            BoardCard boardCard = new BoardCard();
-            BoardDBEntity boardDBEntity = new BoardDBEntity();
-            boardDBEntity.setBoardId(id);
-            boardDBEntity.setTitle(title);
-            boardDBEntity.setStart(null);
-            boardDBEntity.setFinish(null);
-            localDataSource.insertBoardCard(boardCard);
+        executorService.execute(() -> {
+            TransactionReceipt tx = remoteDataSource.createBoard(title);
+            if (tx != null) {
+                Integer id = Integer.parseInt(tx.getLogs().get(0).getData().substring(2), 16);
+                BoardDBEntity boardDBEntity = new BoardDBEntity();
+                boardDBEntity.setBoardId(id);
+                boardDBEntity.setTitle(title);
+                boardDBEntity.setStart(null);
+                boardDBEntity.setFinish(null);
+                localDataSource.insertBoard(boardDBEntity);
+            }
         });
+    }
+
+    public void createGroup(String title, int boardId) {
+        executorService.execute(() -> {
+            TransactionReceipt tx = remoteDataSource.createGroup(title, boardId);
+            if (tx != null) {
+                Integer id = Integer.parseInt(tx.getLogs().get(0).getData().substring(2), 16);
+                GroupDBEntity groupDBEntity = new GroupDBEntity();
+                groupDBEntity.setGroupId(id);
+                groupDBEntity.setBoardId(boardId);
+                groupDBEntity.setTitle(title);
+                localDataSource.insertGroup(groupDBEntity);
+            }
+        });
+    }
+
+    public void leaveBoard(int id) {
+        executorService.execute(() -> {
+            Log.e("IN DELETE", "ID " + id);
+            try {
+                TransactionReceipt transactionReceipt = remoteDataSource.leaveBoard(id).send();
+                localDataSource.removeBoard(id);
+                Log.e("REPO" , "answer " + transactionReceipt.getLogs().get(0).getData());
+            }
+            catch (Exception e) {
+                Log.e("REPO", "error" + e.getMessage());
+            }
+        });
+    }
+
+    public LiveData<List<TaskCard>> getTaskCards(int groupId) {
+        return localDataSource.getTaskCards(groupId);
+    }
+
+    public LiveData<String> getGroupTitle(int groupId) {
+        return localDataSource.getGroupTitle(groupId);
+    }
+
+    public void updateBoardCards() {
+        executorService.execute(() -> {
+            Tuple4<List<BigInteger>, List<String>, List<BigInteger>, List<BigInteger>> tuple4
+                    = remoteDataSource.getBoards();
+            if (tuple4 != null) {
+                List<BoardDBEntity> boardDBEntities = new ArrayList<>();
+                for (int i = 0; i < tuple4.getValue1().size(); i++) {
+                    BoardDBEntity boardDBEntity = new BoardDBEntity();
+                    boardDBEntity.setBoardId(tuple4.getValue1().get(i).intValue());
+                    boardDBEntity.setTitle(tuple4.getValue2().get(i));
+                    boardDBEntity.setStart(numToCalendar(tuple4.getValue3().get(i)));
+                    boardDBEntity.setFinish(numToCalendar(tuple4.getValue4().get(i)));
+                    boardDBEntities.add(boardDBEntity);
+                }
+                localDataSource.updateBoardCards(boardDBEntities);
+            }
+        });
+    }
+
+    public LiveData<Calendar> getLastUpdate(LastUpdateEntity.Query queryType, int id) {
+        return localDataSource.getLastUpdate(queryType, id);
+    }
+
+    private Tuple2<GroupDBEntity, List<TaskDBEntity>> getBoardGroup(int groupId, int boardId) {
+        Tuple6<String, List<BigInteger>, List<String>, List<String>, List<BigInteger>, List<BigInteger>> tuple =
+                remoteDataSource.getGroup(groupId);
+        String title = tuple.getValue1();
+        List<BigInteger> tasksId = tuple.getValue2();
+        List<String> tasksTitle = tuple.getValue3();
+        List<String> tasksDescription = tuple.getValue4();
+        List<BigInteger> tasksStart = tuple.getValue5();
+        List<BigInteger> tasksFinish = tuple.getValue6();
+        List<TaskDBEntity> taskDBEntities = new ArrayList<>();
+        for (int i = 0; i < tasksTitle.size(); i++) {
+            TaskDBEntity taskDBEntity = new TaskDBEntity();
+            taskDBEntity.setTaskId(tasksId.get(i).intValue());
+            taskDBEntity.setTitle(tasksTitle.get(i));
+            taskDBEntity.setDescription(tasksDescription.get(i));
+            Calendar start = numToCalendar(tasksStart.get(i));
+            Calendar finish = numToCalendar(tasksFinish.get(i));
+            taskDBEntity.setStart(start);
+            taskDBEntity.setFinish(finish);
+            taskDBEntity.setBoardId(boardId);
+            taskDBEntity.setGroupId(groupId);
+            taskDBEntities.add(taskDBEntity);
+        }
+        GroupDBEntity groupDBEntity = new GroupDBEntity();
+        groupDBEntity.setTitle(title);
+        groupDBEntity.setBoardId(boardId);
+        groupDBEntity.setGroupId(groupId);
+        return new Tuple2<>(groupDBEntity, taskDBEntities);
+    }
+
+    public void updateBoard(int id) {
+        executorService.execute(() -> {
+            Tuple4<String, BigInteger, BigInteger, List<BigInteger>> tuple = remoteDataSource.getBoard(id);
+            if (tuple != null) {
+                BoardDBEntity boardDBEntity = tupleToBoardDBEntity(id, tuple);
+                List<Tuple2<GroupDBEntity, List<TaskDBEntity>>> groups = new ArrayList<>();
+                for (int i = 0; i < tuple.getValue4().size(); i++) {
+                    groups.add(getBoardGroup(tuple.getValue4().get(i).intValue(), id));
+                }
+                localDataSource.updateBoard(boardDBEntity, groups);
+            }
+        });
+    }
+
+    private BoardDBEntity tupleToBoardDBEntity(int id, Tuple4<String, BigInteger, BigInteger, List<BigInteger>> tuple) {
+        BoardDBEntity boardDBEntity = new BoardDBEntity();
+        boardDBEntity.setBoardId(id);
+        boardDBEntity.setTitle(tuple.getValue1());
+        boardDBEntity.setStart(numToCalendar(tuple.getValue2()));
+        boardDBEntity.setFinish(numToCalendar(tuple.getValue3()));
+        return boardDBEntity;
+    }
+
+    private Calendar numToCalendar(BigInteger bigInteger) {
+        long date = bigInteger.longValue();
+        if (date < 0) {
+            return null;
+        }
+        else {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(date);
+            return calendar;
+        }
     }
 
 //    public Task getTaskFromServer(UUID id) {

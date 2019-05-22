@@ -6,4 +6,5 @@
     <color name="backround">#AAAAAA</color>
     <color name="toolbar">#6D6DF7</color>
     <color name="toolbar_text">#FFFFFF</color>
+    <color name="motivation">#099609</color>
 </resources>

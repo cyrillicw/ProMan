@@ -28,7 +28,7 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value=".ui.activities.SignActivity"/>
         </activity>
-        <activity android:name=".ui.activities.TempActivity">
+        <activity android:name=".ui.activities.BoardCardsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

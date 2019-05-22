@@ -8,14 +8,21 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.onudapps.proman.R;
+import com.onudapps.proman.data.pojo.TaskCard;
 import com.onudapps.proman.ui.adapters.TasksRecyclerAdapter;
-import com.onudapps.proman.data.pojo.BoardGroup;
+import com.onudapps.proman.viewmodels.GroupViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,22 +33,31 @@ import com.onudapps.proman.data.pojo.BoardGroup;
  * create an instance of this fragment.
  */
 public class BoardGroupFragment extends Fragment {
-    private BoardGroup boardGroup;
-    public BoardGroupFragment(BoardGroup boardGroup) {
+    // private BoardGroup boardGroup;
+    private int groupId;
+
+    private TextView title;
+    private RecyclerView recyclerView;
+
+    public BoardGroupFragment(int groupId) {
         super();
-        this.boardGroup = boardGroup;
+        this.groupId = groupId;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_board_group, container, false);
-        final RecyclerView recyclerView = view.findViewById(R.id.recycler_board_group);
+        recyclerView = view.findViewById(R.id.recycler_board_group);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(new TasksRecyclerAdapter(boardGroup.getTasks()));
+        recyclerView.setAdapter(new TasksRecyclerAdapter(new ArrayList<>()));
+        GroupViewModel groupViewModel = ViewModelProviders
+                .of(this, new GroupViewModel.GroupModelFactory(groupId))
+                .get(GroupViewModel.class);
         final Button button = view.findViewById(R.id.add_task);
         final EditText editText = view.findViewById(R.id.add_task_edit);
+        title = view.findViewById(R.id.group_title);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,6 +69,18 @@ public class BoardGroupFragment extends Fragment {
                 imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
             }
         });
+        LiveData<String> titleData = groupViewModel.getTitleData();
+        titleData.observe(this, this::onTitleChangedListener);
+        LiveData<List<TaskCard>> tasksData = groupViewModel.getTaskCardData();
+        tasksData.observe(this, this::onTasksChangedListener);
         return view;
+    }
+
+    private void onTitleChangedListener(String s) {
+        title.setText(s);
+    }
+
+    private void onTasksChangedListener(List<TaskCard> taskCards) {
+        ((TasksRecyclerAdapter)recyclerView.getAdapter()).updateData(taskCards);
     }
 }

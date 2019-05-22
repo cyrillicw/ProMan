@@ -23,7 +23,11 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="create_board">Create new board</string>
+    <string name="create_group">Create new group</string>
     <string name="enter_board_name">Enter board name</string>
+    <string name="motivation">Don\'t waste time. Do it!</string>
+    <string name="leave_board">Leave board</string>
+    <string name="delete_board">Delete board</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

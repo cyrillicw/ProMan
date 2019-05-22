@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backround"
-    tools:context=".ui.activities.TempActivity">
+    tools:context=".ui.activities.BoardCardsActivity">
 
      <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
                                         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -20,11 +20,19 @@
                   android:layout_height="match_parent">
 
                <ImageView
-                       android:id="@+id/create_board"
+                   android:id="@+id/update"
+                   android:layout_width="50dp"
+                   android:layout_height="match_parent"
+                   android:src="@drawable/update"
+                   android:layout_alignParentEnd="true"
+                   android:padding="4dp"/>
+
+               <ImageView
+                       android:id="@+id/create"
                        android:layout_width="50dp"
                        android:layout_height="match_parent"
                        android:src="@drawable/create"
-                       android:layout_alignParentEnd="true"
+                       android:layout_toStartOf="@+id/update"
                        android:padding="4dp"/>
 
           </RelativeLayout>

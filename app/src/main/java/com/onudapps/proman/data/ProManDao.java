@@ -1,21 +1,27 @@
 package com.onudapps.proman.data;
 
+import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.room.*;
 import com.onudapps.proman.data.db.entities.*;
 import com.onudapps.proman.data.pojo.BoardCard;
 import com.onudapps.proman.data.pojo.Task;
+import com.onudapps.proman.data.pojo.TaskCard;
+import org.web3j.tuples.generated.Tuple2;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
 @Dao
 public abstract class ProManDao {
-    @Insert
+    private static final String LOG_TAG = "ProManDao";
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertBoard(BoardDBEntity boardDBEntity);
 
-    @Insert
+    @Insert (onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertGroup(GroupDBEntity groupDBEntity);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -54,6 +60,9 @@ public abstract class ProManDao {
     @Insert
     public abstract void insertTaskParticipantJoins(List<TaskParticipantJoin> taskParticipantJoins);
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    public abstract long insertTaskTitle(TaskDBEntity taskDBEntity);
+
 
     @Transaction
     public void insertTask(Task task) {
@@ -70,6 +79,77 @@ public abstract class ProManDao {
         insertTaskParticipantJoins(taskParticipantJoins);
     }
 
+    @Query("DELETE FROM boards")
+    public abstract void clearBoards();
+
+    @Insert
+    public abstract void insertBoards(List<BoardDBEntity> boardDBEntities);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void updateLastUpdate(LastUpdateEntity lastUpdateEntity);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void updateLastUpdates(List<LastUpdateEntity> lastUpdateEntities);
+
+    @Transaction
+    public void updateBoards(List<BoardDBEntity> boardDBEntities) {
+        clearBoards();
+        Log.e(LOG_TAG, "size " + boardDBEntities.size());
+        insertBoards(boardDBEntities);
+        LastUpdateEntity lastUpdateEntity = new LastUpdateEntity();
+        lastUpdateEntity.setQueryType(LastUpdateEntity.Query.BOARDS);
+        lastUpdateEntity.setId(-1);
+        lastUpdateEntity.setUpdated(Calendar.getInstance());
+        updateLastUpdate(lastUpdateEntity);
+    }
+
+    @Transaction
+    public void updateBoard(BoardDBEntity boardDBEntity, List<Tuple2<GroupDBEntity, List<TaskDBEntity>>> groups) {
+        insertBoard(boardDBEntity);
+        for (Tuple2<GroupDBEntity, List<TaskDBEntity>> tuple : groups) {
+            updateBoardGroup(tuple.getValue1(), tuple.getValue2());
+        }
+        LastUpdateEntity lastUpdateEntity = new LastUpdateEntity();
+        lastUpdateEntity.setQueryType(LastUpdateEntity.Query.BOARD);
+        lastUpdateEntity.setId(boardDBEntity.getBoardId());
+        lastUpdateEntity.setUpdated(Calendar.getInstance());
+        updateLastUpdate(lastUpdateEntity);
+    }
+
+    @Query("DELETE FROM boards where boardId = :id")
+    public abstract void removeBoard(int id);
+
+    @Query("SELECT updated FROM last_update WHERE queryType = :queryType and id = :id")
+    public abstract LiveData<Calendar> getLastUpdate(LastUpdateEntity.Query queryType, int id);
+
     @Query("SELECT * FROM boards")
     public abstract LiveData<List<BoardCard>> getBoardCards();
+
+    @Query("SELECT * FROM groups WHERE boardId = :boardId")
+    public abstract LiveData<List<GroupDBEntity>> getBoardGroups(int boardId);
+
+    @Query("SELECT taskId, title FROM tasks WHERE groupId = :groupId")
+    public abstract LiveData<List<TaskCard>> getTaskCards(int groupId);
+
+    @Query("SELECT title FROM groups WHERE groupId = :groupId")
+    public abstract LiveData<String> getGroupTitle(int groupId);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void insertTaskDBEntities(List<TaskDBEntity> taskDBEntities);
+
+    @Transaction
+    public void updateBoardGroup(GroupDBEntity groupDBEntity, List<TaskDBEntity> taskDBEntities) {
+        insertGroup(groupDBEntity);
+        insertTaskDBEntities(taskDBEntities);
+        Calendar calendar = Calendar.getInstance();
+        List<LastUpdateEntity> tasksUpdated = new ArrayList<>();
+        for (int i = 0; i < taskDBEntities.size(); i++) {
+            LastUpdateEntity taskUpdateEntity = new LastUpdateEntity();
+            taskUpdateEntity.setQueryType(LastUpdateEntity.Query.TASK);
+            taskUpdateEntity.setId(taskDBEntities.get(i).getTaskId());
+            taskUpdateEntity.setUpdated(calendar);
+            tasksUpdated.add(taskUpdateEntity);
+        }
+        updateLastUpdates(tasksUpdated);
+    }
 }

@@ -3,32 +3,30 @@ package com.onudapps.proman.ui.adapters;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import com.onudapps.proman.data.db.entities.GroupDBEntity;
 import com.onudapps.proman.ui.fragments.BoardGroupFragment;
-import com.onudapps.proman.data.pojo.Board;
-import com.onudapps.proman.data.pojo.BoardGroup;
 
 import java.util.List;
 
 public class BoardPagerAdapter extends FragmentPagerAdapter {
-    private Board board;
-    public BoardPagerAdapter(FragmentManager fm, Board board) {
+    private List<GroupDBEntity> groupDBEntities;
+    public BoardPagerAdapter(FragmentManager fm, List<GroupDBEntity> groupDBEntities) {
         super(fm);
-        this.board = board;
+        this.groupDBEntities = groupDBEntities;
     }
 
-    public void updateData(Board board) {
-        this.board = board;
+    public void updateData(List<GroupDBEntity> groupDBEntities) {
+        this.groupDBEntities = groupDBEntities;
         notifyDataSetChanged();
     }
 
     @Override
     public Fragment getItem(int position) {
-        return new BoardGroupFragment(board.getBoardGroups().get(position));
+        return new BoardGroupFragment(groupDBEntities.get(position).getGroupId());
     }
 
     @Override
     public int getCount() {
-        List<BoardGroup> boardGroups = board.getBoardGroups();
-        return boardGroups == null ? 0 : boardGroups.size();
+        return groupDBEntities.size();
     }
 }

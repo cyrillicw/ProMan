@@ -17,7 +17,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 import com.onudapps.proman.R;
 import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
-import com.onudapps.proman.data.Repository;
 import com.onudapps.proman.data.db.entities.GroupDBEntity;
 import com.onudapps.proman.ui.adapters.BoardPagerAdapter;
 import com.onudapps.proman.viewmodels.BoardViewModel;
@@ -34,10 +33,12 @@ public class BoardActivity extends AppCompatActivity {
     private ProManSmartContractDeclaration contract;
     private String privateKey;
     private Calendar lastUpdate;
+
     private BoardViewModel viewModel;
 
-
     private ViewPager viewPager;
+    private TextView title;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,17 +50,14 @@ public class BoardActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        title = findViewById(R.id.headline);
         viewModel = ViewModelProviders
                 .of(this, new BoardViewModel.BoardModelFactory(boardId))
                 .get(BoardViewModel.class);
-        LiveData<List<GroupDBEntity>> data = viewModel.getGroupsData();
-        data.observe(this, this::onGroupsChangedListener);
-        LiveData<Calendar> lastUpdateData = viewModel.getLastUpdateData();
-        lastUpdateData.observe(this, calendar -> this.lastUpdate = calendar);
         ImageView createGroup = toolbar.findViewById(R.id.create);
         createGroup.setOnClickListener(this::createGroupListener);
         ImageView update = toolbar.findViewById(R.id.update);
-        // update.setOnClickListener(this::updateOnClickListener);
+        update.setOnClickListener(this::updateOnClickListener);
         //getBoard(boardTitle);
         /*Board board = new Board();
         List<BoardGroup> boardGroups = new ArrayList<>();
@@ -88,6 +86,21 @@ public class BoardActivity extends AppCompatActivity {
 //                .build();
 //        BoardService boardService = retrofit.create(BoardService.class);
 //        boardService.getBoardById(boardId).enqueue(new BoardCallback());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        LiveData<List<GroupDBEntity>> data = viewModel.getGroupsData();
+        LiveData<String> titleData = viewModel.getTitleData();
+        titleData.observe(this, s -> title.setText(s));
+        data.observe(this, this::onGroupsChangedListener);
+        LiveData<Calendar> lastUpdateData = viewModel.getLastUpdateData();
+        lastUpdateData.observe(this, calendar -> this.lastUpdate = calendar);
+    }
+
+    private void updateOnClickListener(View v) {
+        viewModel.forceBoardUpdate();
     }
 
     private void createGroupListener(View v) {

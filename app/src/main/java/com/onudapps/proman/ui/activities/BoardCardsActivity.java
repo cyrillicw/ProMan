@@ -46,8 +46,6 @@ public class BoardCardsActivity extends AppCompatActivity implements Observer<Li
         viewModel = ViewModelProviders.of(this).get(BoardCardsViewModel.class);
         LiveData<Calendar> lastUpdateData = viewModel.getLastUpdateData();
         lastUpdateData.observe(this, calendar -> this.lastUpdate = calendar);
-        LiveData<List<BoardCard>> boardsData = viewModel.getBoardsData();
-        boardsData.observe(this, this::onBoardsDataChangeListener);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -60,6 +58,13 @@ public class BoardCardsActivity extends AppCompatActivity implements Observer<Li
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(new BoardsRecyclerAdapter(new ArrayList<>(), viewModel));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        LiveData<List<BoardCard>> boardsData = viewModel.getBoardsData();
+        boardsData.observe(this, this::onBoardsDataChangeListener);
     }
 
     @Override

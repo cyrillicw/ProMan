@@ -28,6 +28,7 @@
     <string name="motivation">Don\'t waste time. Do it!</string>
     <string name="leave_board">Leave board</string>
     <string name="delete_board">Delete board</string>
+    <string name="board_cards_headline">Boards</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

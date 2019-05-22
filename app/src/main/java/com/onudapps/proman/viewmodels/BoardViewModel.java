@@ -16,6 +16,7 @@ public class BoardViewModel extends ViewModel {
     private int id;
     private LiveData<List<GroupDBEntity>> groupsData;
     private LiveData<Calendar> lastUpdateData;
+    private LiveData<String> titleData;
 
     private BoardViewModel(int id) {
         this.id = id;
@@ -26,6 +27,13 @@ public class BoardViewModel extends ViewModel {
             groupsData = Repository.REPOSITORY.getBoardGroups(id);
         }
         return groupsData;
+    }
+
+    public  LiveData<String> getTitleData() {
+        if (titleData == null) {
+            titleData = Repository.REPOSITORY.getBoardTitle(id);
+        }
+        return titleData;
     }
 
     public LiveData<Calendar> getLastUpdateData() {

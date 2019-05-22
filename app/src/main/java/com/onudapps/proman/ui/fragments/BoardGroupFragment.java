@@ -35,6 +35,7 @@ import java.util.List;
 public class BoardGroupFragment extends Fragment {
     // private BoardGroup boardGroup;
     private int groupId;
+    private GroupViewModel groupViewModel;
 
     private TextView title;
     private RecyclerView recyclerView;
@@ -52,7 +53,7 @@ public class BoardGroupFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(new TasksRecyclerAdapter(new ArrayList<>()));
-        GroupViewModel groupViewModel = ViewModelProviders
+        groupViewModel = ViewModelProviders
                 .of(this, new GroupViewModel.GroupModelFactory(groupId))
                 .get(GroupViewModel.class);
         final Button button = view.findViewById(R.id.add_task);
@@ -69,11 +70,16 @@ public class BoardGroupFragment extends Fragment {
                 imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
             }
         });
+        return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         LiveData<String> titleData = groupViewModel.getTitleData();
         titleData.observe(this, this::onTitleChangedListener);
         LiveData<List<TaskCard>> tasksData = groupViewModel.getTaskCardData();
         tasksData.observe(this, this::onTasksChangedListener);
-        return view;
     }
 
     private void onTitleChangedListener(String s) {

@@ -99,9 +99,12 @@ public abstract class ProManDao {
         LastUpdateEntity lastUpdateEntity = new LastUpdateEntity();
         lastUpdateEntity.setQueryType(LastUpdateEntity.Query.BOARDS);
         lastUpdateEntity.setId(-1);
-        lastUpdateEntity.setUpdated(Calendar.getInstance());
+        lastUpdateEntity .setUpdated(Calendar.getInstance());
         updateLastUpdate(lastUpdateEntity);
     }
+
+    @Query("SELECT title FROM boards WHERE boardId = :id")
+    public abstract LiveData<String> getBoardTitle(int id);
 
     @Transaction
     public void updateBoard(BoardDBEntity boardDBEntity, List<Tuple2<GroupDBEntity, List<TaskDBEntity>>> groups) {

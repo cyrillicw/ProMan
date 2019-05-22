@@ -20,7 +20,7 @@ public class RemoteDataSource {
     public RemoteDataSource() {
         Web3j web3j = Web3j.build(new HttpService("http://192.168.1.102:7545"));
         Credentials credentials = Credentials.create("28f3d307e639526a072b94cfa7f484ac84991118fbe7ac59cceb3abf53a58b67");
-        smartContract = Smart.load("a9Be246969B6b19a8755252A332e12502a2F442A", web3j, credentials, new DefaultGasProvider());
+        smartContract = Smart.load("cb873726d48110661A45c43995b95167e5D44259", web3j, credentials, new DefaultGasProvider());
     }
 
 //    public Flowable<TransactionReceipt> addBoard(String title) {

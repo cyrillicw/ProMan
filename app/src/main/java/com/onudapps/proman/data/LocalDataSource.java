@@ -63,6 +63,10 @@ class LocalDataSource {
         database.getProManDao().updateBoards(boardDBEntities);
     }
 
+    public LiveData<String> getBoardTitle(int id) {
+        return database.getProManDao().getBoardTitle(id);
+    }
+
     public void updateBoard(BoardDBEntity boardDBEntity, List<Tuple2<GroupDBEntity, List<TaskDBEntity>>> groups) {
         database.getProManDao().updateBoard(boardDBEntity, groups);
     }

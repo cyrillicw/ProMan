@@ -76,6 +76,10 @@ public enum  Repository {
         });
     }
 
+    public LiveData<String> getBoardTitle(int id) {
+        return localDataSource.getBoardTitle(id);
+    }
+
     public void leaveBoard(int id) {
         executorService.execute(() -> {
             Log.e("IN DELETE", "ID " + id);

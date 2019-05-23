@@ -37,7 +37,10 @@
         </activity>
         <activity
                 android:name=".ui.activities.BoardActivity"
-                android:windowSoftInputMode="adjustUnspecified">
+                android:windowSoftInputMode="adjustResize">
+                <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value=".ui.activities.BoardCardsActivity"/>
         </activity>
         <activity android:name=".ui.activities.TaskActivity">
         </activity>

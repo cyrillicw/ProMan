@@ -6,7 +6,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragments.BoardGroupFragment"
     android:background="@color/backround"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <TextView
         android:id="@+id/group_title"
@@ -19,6 +21,7 @@
     <!-- TODO: Update blank fragment layout -->
     <androidx.recyclerview.widget.RecyclerView
         android:layout_below="@id/group_title"
+        android:layout_above="@id/add_task_card"
         android:id="@+id/recycler_board_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -36,13 +39,43 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/add_task"
+            android:background="@color/toolbar_text"
+            android:visibility="visible"
             android:layout_weight="1"/>
-        <EditText
-            android:id="@+id/add_task_edit"
+
+        <LinearLayout
+            android:id="@+id/edit_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            android:textSize="30sp"/>
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/add_task_edit"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="8"
+                android:textSize="30sp" />
+
+            <ImageView
+                android:id="@+id/cross"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:src="@drawable/cross_fragment"
+                android:layout_gravity="center_vertical"
+                android:padding="4dp" />
+
+            <ImageView
+                android:id="@+id/tick"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:src="@drawable/tick_fragment"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:padding="4dp" />
+
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
 </RelativeLayout>

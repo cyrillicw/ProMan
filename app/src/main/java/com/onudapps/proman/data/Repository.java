@@ -7,7 +7,8 @@ import com.onudapps.proman.data.db.entities.BoardDBEntity;
 import com.onudapps.proman.data.db.entities.GroupDBEntity;
 import com.onudapps.proman.data.db.entities.LastUpdateEntity;
 import com.onudapps.proman.data.db.entities.TaskDBEntity;
-import com.onudapps.proman.data.pojo.BoardCard;
+import com.onudapps.proman.data.pojo.BoardWithUpdate;
+import com.onudapps.proman.data.pojo.GroupWithUpdate;
 import com.onudapps.proman.data.pojo.Task;
 import com.onudapps.proman.data.pojo.TaskCard;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -39,11 +40,11 @@ public enum  Repository {
         return localDataSource.getTask(id);
     }
 
-    public LiveData<List<BoardCard>> getBoardCards() {
+    public LiveData<List<BoardWithUpdate>> getBoardCards() {
         return localDataSource.getBoardCards();
     }
 
-    public LiveData<List<GroupDBEntity>> getBoardGroups(int boardId) {
+    public LiveData<List<GroupWithUpdate>> getBoardGroups(int boardId) {
         return localDataSource.getBoardGroups(boardId);
     }
 
@@ -166,6 +167,24 @@ public enum  Repository {
                 }
                 localDataSource.updateBoard(boardDBEntity, groups);
             }
+        });
+    }
+
+    public void createTask(int boardId, int groupId, String title) {
+        executorService.execute(() -> {
+            TransactionReceipt tx = remoteDataSource.createTask(groupId, title);
+            if (tx != null) {
+                Integer id = Integer.parseInt(tx.getLogs().get(0).getData().substring(2), 16);
+                TaskDBEntity taskDBEntity = new TaskDBEntity();
+                taskDBEntity.setTaskId(id);
+                taskDBEntity.setBoardId(boardId);
+                taskDBEntity.setGroupId(groupId);
+                taskDBEntity.setTitle(title);
+                taskDBEntity.setDescription("");
+                taskDBEntity.setStart(null);
+                taskDBEntity.setFinish(null);
+                localDataSource.insertTaskDBEntity(taskDBEntity);
+        }
         });
     }
 

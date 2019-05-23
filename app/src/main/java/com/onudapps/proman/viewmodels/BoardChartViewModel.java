@@ -9,13 +9,11 @@ import com.onudapps.proman.data.pojo.GroupWithUpdate;
 
 import java.util.List;
 
-public class BoardViewModel extends ViewModel {
-
+public class BoardChartViewModel extends ViewModel{
     private int id;
     private LiveData<List<GroupWithUpdate>> groupsData;
-    private LiveData<String> titleData;
 
-    private BoardViewModel(int id) {
+    private BoardChartViewModel(int id) {
         this.id = id;
     }
 
@@ -26,26 +24,11 @@ public class BoardViewModel extends ViewModel {
         return groupsData;
     }
 
-    public  LiveData<String> getTitleData() {
-        if (titleData == null) {
-            titleData = Repository.REPOSITORY.getBoardTitle(id);
-        }
-        return titleData;
-    }
-
-    public void forceBoardUpdate() {
-        Repository.REPOSITORY.updateBoard(id);
-    }
-
-    public void createGroup(String title) {
-        Repository.REPOSITORY.createGroup(title, id);
-    }
-
-    public static class BoardModelFactory extends ViewModelProvider.NewInstanceFactory {
+    public static class BoardChartModelFactory extends ViewModelProvider.NewInstanceFactory {
 
         private final int id;
 
-        public BoardModelFactory(int id) {
+        public BoardChartModelFactory(int id) {
             super();
             this.id = id;
         }
@@ -53,8 +36,8 @@ public class BoardViewModel extends ViewModel {
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            if (modelClass == BoardViewModel.class) {
-                return (T) new BoardViewModel(id);
+            if (modelClass == BoardChartViewModel.class) {
+                return (T) new BoardChartViewModel(id);
             }
             return null;
         }

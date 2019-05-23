@@ -12,14 +12,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.onudapps.proman.R;
 import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
 import com.onudapps.proman.data.Repository;
-import com.onudapps.proman.data.pojo.BoardCard;
+import com.onudapps.proman.data.pojo.BoardWithUpdate;
 import com.onudapps.proman.ui.adapters.BoardsRecyclerAdapter;
 import com.onudapps.proman.viewmodels.BoardCardsViewModel;
 
@@ -27,16 +26,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class BoardCardsActivity extends AppCompatActivity implements Observer<List<BoardCard>> {
+public class BoardCardsActivity extends AppCompatActivity {
     private static final String LOG_TAG = "BOARDCARDS ACTIVITY";
     private static final String APP_NAME = "PROMAN";
-
-    private Calendar lastUpdate;
 
     private RecyclerView recyclerView;
     private ProManSmartContractDeclaration contract;
     private boolean dialogOpened = true;
     private BoardCardsViewModel viewModel;
+    private LiveData<List<BoardWithUpdate>> boardsData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +42,10 @@ public class BoardCardsActivity extends AppCompatActivity implements Observer<Li
         setContentView(R.layout.activity_board_cards);
         SharedPreferences sharedPreferences = getSharedPreferences(APP_NAME, MODE_PRIVATE);
         viewModel = ViewModelProviders.of(this).get(BoardCardsViewModel.class);
-        LiveData<Calendar> lastUpdateData = viewModel.getLastUpdateData();
-        lastUpdateData.observe(this, calendar -> this.lastUpdate = calendar);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayShowHomeEnabled(true);
         ImageView createBoard = toolbar.findViewById(R.id.create);
         createBoard.setOnClickListener(this::createBoardListener);
         ImageView update = toolbar.findViewById(R.id.update);
@@ -58,24 +54,19 @@ public class BoardCardsActivity extends AppCompatActivity implements Observer<Li
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(new BoardsRecyclerAdapter(new ArrayList<>(), viewModel));
+        boardsData = viewModel.getBoardsData();
+        boardsData.observe(this, this::onBoardsDataChangeListener);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        LiveData<List<BoardCard>> boardsData = viewModel.getBoardsData();
-        boardsData.observe(this, this::onBoardsDataChangeListener);
     }
 
-    @Override
-    public void onChanged(List<BoardCard> boardCards) {
-        ((BoardsRecyclerAdapter) recyclerView.getAdapter()).updateData(boardCards);
-    }
-
-    private void onBoardsDataChangeListener(List<BoardCard> boardCards) {
+    private void onBoardsDataChangeListener(List<BoardWithUpdate> boardCards) {
         Calendar threshold = Calendar.getInstance();
         threshold.add(Calendar.HOUR_OF_DAY, -1);
-        if (lastUpdate == null || lastUpdate.before(threshold)) {
+        if (boardCards.size() == 0 || boardCards.get(0).getUpdated().before(threshold)) {
             viewModel.forceBoardsUpdate();
         }
         else {

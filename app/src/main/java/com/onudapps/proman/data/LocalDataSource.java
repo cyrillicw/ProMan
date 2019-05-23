@@ -7,7 +7,8 @@ import com.onudapps.proman.data.db.entities.BoardDBEntity;
 import com.onudapps.proman.data.db.entities.GroupDBEntity;
 import com.onudapps.proman.data.db.entities.LastUpdateEntity;
 import com.onudapps.proman.data.db.entities.TaskDBEntity;
-import com.onudapps.proman.data.pojo.BoardCard;
+import com.onudapps.proman.data.pojo.BoardWithUpdate;
+import com.onudapps.proman.data.pojo.GroupWithUpdate;
 import com.onudapps.proman.data.pojo.Task;
 import com.onudapps.proman.data.pojo.TaskCard;
 import org.web3j.tuples.generated.Tuple2;
@@ -31,7 +32,11 @@ class LocalDataSource {
         database.getProManDao().insertTask(task);
     }
 
-    public LiveData<List<BoardCard>> getBoardCards() {
+    public void insertTaskDBEntity(TaskDBEntity taskDBEntity) {
+        database.getProManDao().insertTaskDBEntity(taskDBEntity);
+    }
+
+    public LiveData<List<BoardWithUpdate>> getBoardCards() {
         return database.getProManDao().getBoardCards();
     }
 
@@ -39,7 +44,7 @@ class LocalDataSource {
         database.getProManDao().insertBoard(boardDBEntity);
     }
 
-    public LiveData<List<GroupDBEntity>> getBoardGroups(int boardId) {
+    public LiveData<List<GroupWithUpdate>> getBoardGroups(int boardId) {
         return database.getProManDao().getBoardGroups(boardId);
     }
 

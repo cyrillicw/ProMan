@@ -15,7 +15,8 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.onudapps.proman.R;
-import com.onudapps.proman.data.pojo.BoardCard;
+import com.onudapps.proman.data.db.entities.BoardDBEntity;
+import com.onudapps.proman.data.pojo.BoardWithUpdate;
 import com.onudapps.proman.ui.activities.BoardActivity;
 import com.onudapps.proman.viewmodels.BoardCardsViewModel;
 
@@ -26,23 +27,23 @@ import java.util.List;
 public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAdapter.BoardViewHolder> {
     private static final String LOG_TAG = "BoardsRecyclerAdapter";
 
-    private List<BoardCard> boards;
+    private List<BoardWithUpdate> boards;
     private BoardCardsViewModel viewModel;
 
-    public BoardsRecyclerAdapter(List<BoardCard> boards, BoardCardsViewModel viewModel) {
+    public BoardsRecyclerAdapter(List<BoardWithUpdate> boards, BoardCardsViewModel viewModel) {
         this.boards = boards;
         this.viewModel = viewModel;
     }
 
-    public void updateData(List<BoardCard> boards) {
+    public void updateData(List<BoardWithUpdate> boards) {
         this.boards = boards;
         notifyDataSetChanged();
     }
 
-    public void addBoardCard(BoardCard boardCard) {
-        boards.add(boardCard);
-        notifyItemInserted(boards.size() - 1);
-    }
+//    public void addBoardCard(BoardCard boardCard) {
+//        boards.add(boardCard);
+//        notifyItemInserted(boards.size() - 1);
+//    }
 
     @NonNull
     @Override
@@ -80,7 +81,7 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
         }
 
         private void bindData(int position) {
-            final BoardCard board = boards.get(position);
+            final BoardDBEntity board = boards.get(position).getBoardDBEntity();
             //title.setText("HELLLOOOOOOOOOOOO");
             title.setText(board.getTitle());
             drawChart(board);
@@ -105,7 +106,7 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
             });
         }
 
-        private void drawChart(BoardCard board) {
+        private void drawChart(BoardDBEntity board) {
             Calendar start = board.getStart();
             Calendar finish = board.getFinish();
             if (start != null && finish != null) {

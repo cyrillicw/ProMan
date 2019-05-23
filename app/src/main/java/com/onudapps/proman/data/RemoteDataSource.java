@@ -20,7 +20,7 @@ public class RemoteDataSource {
     public RemoteDataSource() {
         Web3j web3j = Web3j.build(new HttpService("http://192.168.1.102:7545"));
         Credentials credentials = Credentials.create("28f3d307e639526a072b94cfa7f484ac84991118fbe7ac59cceb3abf53a58b67");
-        smartContract = Smart.load("cb873726d48110661A45c43995b95167e5D44259", web3j, credentials, new DefaultGasProvider());
+        smartContract = Smart.load("3bEFa9251C52a1948b65a12C0164dB3E0352Db1f", web3j, credentials, new DefaultGasProvider());
     }
 
 //    public Flowable<TransactionReceipt> addBoard(String title) {
@@ -57,6 +57,15 @@ public class RemoteDataSource {
 //        });
         try {
             return smartContract.addGroup(BigInteger.valueOf(boardId), title).send();
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+
+    public TransactionReceipt createTask(int groupId, String title) {
+        try {
+            return smartContract.addTask(BigInteger.valueOf(groupId), title).send();
         }
         catch (Exception e) {
             return null;

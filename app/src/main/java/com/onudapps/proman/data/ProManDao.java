@@ -4,7 +4,8 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.room.*;
 import com.onudapps.proman.data.db.entities.*;
-import com.onudapps.proman.data.pojo.BoardCard;
+import com.onudapps.proman.data.pojo.BoardWithUpdate;
+import com.onudapps.proman.data.pojo.GroupWithUpdate;
 import com.onudapps.proman.data.pojo.Task;
 import com.onudapps.proman.data.pojo.TaskCard;
 import org.web3j.tuples.generated.Tuple2;
@@ -51,7 +52,7 @@ public abstract class ProManDao {
     @Query("DELETE FROM task_participant_join as tpj WHERE tpj.taskId = :id")
     public abstract void deleteTaskParticipants(UUID id);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertTaskDBEntity(TaskDBEntity taskDBEntity);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -125,11 +126,11 @@ public abstract class ProManDao {
     @Query("SELECT updated FROM last_update WHERE queryType = :queryType and id = :id")
     public abstract LiveData<Calendar> getLastUpdate(LastUpdateEntity.Query queryType, int id);
 
-    @Query("SELECT * FROM boards")
-    public abstract LiveData<List<BoardCard>> getBoardCards();
+    @Query("SELECT boards.*, last_update.updated FROM boards, last_update WHERE last_update.queryType = 'BOARDS' and last_update.id = -1")
+    public abstract LiveData<List<BoardWithUpdate>> getBoardCards();
 
-    @Query("SELECT * FROM groups WHERE boardId = :boardId")
-    public abstract LiveData<List<GroupDBEntity>> getBoardGroups(int boardId);
+    @Query("SELECT groups.*, last_update.updated FROM groups, last_update WHERE groups.boardId = :boardId and last_update.queryType = 'BOARD' and last_update.id = :boardId")
+    public abstract LiveData<List<GroupWithUpdate>> getBoardGroups(int boardId);
 
     @Query("SELECT taskId, title FROM tasks WHERE groupId = :groupId")
     public abstract LiveData<List<TaskCard>> getTaskCards(int groupId);

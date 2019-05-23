@@ -11,42 +11,51 @@ import java.util.List;
 
 public class GroupViewModel extends ViewModel {
 
-    private int id;
+    private int groupId;
+    private int boardId;
     private LiveData<String> titleData;
     private LiveData<List<TaskCard>> taskCardsData;
 
-    private GroupViewModel(int id) {
-        this.id = id;
+    private GroupViewModel(int groupId, int boardId) {
+        this.groupId = groupId;
+        this.boardId = boardId;
     }
 
     public LiveData<String> getTitleData() {
         if (titleData == null) {
-            titleData = Repository.REPOSITORY.getGroupTitle(id);
+            titleData = Repository.REPOSITORY.getGroupTitle(groupId);
         }
         return titleData;
     }
 
     public LiveData<List<TaskCard>> getTaskCardData() {
         if (taskCardsData == null) {
-            taskCardsData = Repository.REPOSITORY.getTaskCards(id);
+            taskCardsData = Repository.REPOSITORY.getTaskCards(groupId);
         }
         return taskCardsData;
     }
 
+
+    public void createTask(String title) {
+        Repository.REPOSITORY.createTask(boardId, groupId, title);
+    }
+
     public static class GroupModelFactory extends ViewModelProvider.NewInstanceFactory {
 
-        private final int id;
+        private final int groupId;
+        private final int boardId;
 
-        public GroupModelFactory(int id) {
+        public GroupModelFactory(int groupId, int boardId) {
             super();
-            this.id = id;
+            this.groupId = groupId;
+            this.boardId = boardId;
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
             if (modelClass == GroupViewModel.class) {
-                return (T) new GroupViewModel(id);
+                return (T) new GroupViewModel(groupId, boardId);
             }
             return null;
         }

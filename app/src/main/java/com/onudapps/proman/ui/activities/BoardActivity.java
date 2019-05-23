@@ -3,7 +3,7 @@ package com.onudapps.proman.ui.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 import com.onudapps.proman.R;
 import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
-import com.onudapps.proman.data.db.entities.GroupDBEntity;
+import com.onudapps.proman.data.pojo.GroupWithUpdate;
 import com.onudapps.proman.ui.adapters.BoardPagerAdapter;
 import com.onudapps.proman.viewmodels.BoardViewModel;
 
@@ -32,12 +32,14 @@ public class BoardActivity extends AppCompatActivity {
     private static final int OK = 200;
     private ProManSmartContractDeclaration contract;
     private String privateKey;
-    private Calendar lastUpdate;
 
     private BoardViewModel viewModel;
+    private LiveData<List<GroupWithUpdate>> groupsData;
+    private LiveData<String> titleData;
 
     private ViewPager viewPager;
     private TextView title;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +48,7 @@ public class BoardActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.board_pager);
         Intent intent = getIntent();
         int boardId = intent.getIntExtra(BOARD_KEY, -1);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -58,45 +60,24 @@ public class BoardActivity extends AppCompatActivity {
         createGroup.setOnClickListener(this::createGroupListener);
         ImageView update = toolbar.findViewById(R.id.update);
         update.setOnClickListener(this::updateOnClickListener);
-        //getBoard(boardTitle);
-        /*Board board = new Board();
-        List<BoardGroup> boardGroups = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            BoardGroup boardGroup = new BoardGroup();
-            List<Task> tasks = new ArrayList<>();
-            for (int j = 0; j < 100; j ++) {
-                Task task = new Task();
-                task.setTitle("T " + j);
-                String[] parts = {"P1", "P2"};
-                task.setParticipants(parts);
-                tasks.add(task);
-            }
-            boardGroup.setTitle("G " + i);
-            boardGroup.setTasks(tasks);
-            boardGroups.add(boardGroup);
-        }
-        board.setTitle("B");
-        board.setBoardGroups(boardGroups);*/
         viewPager.setAdapter(new BoardPagerAdapter(getSupportFragmentManager(), new ArrayList<>()));
+        groupsData = viewModel.getGroupsData();
+        groupsData.observe(this, this::onGroupsChangedListener);
+        titleData = viewModel.getTitleData();
+        titleData.observe(this, s -> title.setText(s));
+    }
 
-//        viewPager.setAdapter(new BoardPagerAdapter(getSupportFragmentManager(), new Board()));
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("?")
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//        BoardService boardService = retrofit.create(BoardService.class);
-//        boardService.getBoardById(boardId).enqueue(new BoardCallback());
+    public LiveData<List<GroupWithUpdate>> getGroupsData() {
+        return groupsData;
+    }
+
+    public Toolbar getToolbar() {
+        return toolbar;
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        LiveData<List<GroupDBEntity>> data = viewModel.getGroupsData();
-        LiveData<String> titleData = viewModel.getTitleData();
-        titleData.observe(this, s -> title.setText(s));
-        data.observe(this, this::onGroupsChangedListener);
-        LiveData<Calendar> lastUpdateData = viewModel.getLastUpdateData();
-        lastUpdateData.observe(this, calendar -> this.lastUpdate = calendar);
     }
 
     private void updateOnClickListener(View v) {
@@ -118,20 +99,15 @@ public class BoardActivity extends AppCompatActivity {
         });
     }
 
-    private void onGroupsChangedListener(List<GroupDBEntity> groupDBEntities) {
+    private void onGroupsChangedListener(List<GroupWithUpdate> groups) {
         Calendar threshold = Calendar.getInstance();
         threshold.add(Calendar.HOUR_OF_DAY, -1);
-        if (lastUpdate == null || lastUpdate.before(threshold)) {
+        if (groups.size() == 0 || groups.get(0).getUpdated().before(threshold)) {
             viewModel.forceBoardUpdate();
         }
         else {
-            ((BoardPagerAdapter) viewPager.getAdapter()).updateData(groupDBEntities);
+            Log.e(LOG_TAG, "NOW");
+            ((BoardPagerAdapter) viewPager.getAdapter()).updateData(groups);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
     }
 }

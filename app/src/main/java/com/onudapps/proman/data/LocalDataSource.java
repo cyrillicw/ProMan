@@ -7,10 +7,7 @@ import com.onudapps.proman.data.db.entities.BoardDBEntity;
 import com.onudapps.proman.data.db.entities.GroupDBEntity;
 import com.onudapps.proman.data.db.entities.LastUpdateEntity;
 import com.onudapps.proman.data.db.entities.TaskDBEntity;
-import com.onudapps.proman.data.pojo.BoardWithUpdate;
-import com.onudapps.proman.data.pojo.GroupWithUpdate;
-import com.onudapps.proman.data.pojo.Task;
-import com.onudapps.proman.data.pojo.TaskCard;
+import com.onudapps.proman.data.pojo.*;
 import org.web3j.tuples.generated.Tuple2;
 
 import java.util.Calendar;
@@ -66,6 +63,10 @@ class LocalDataSource {
 
     public void updateBoardCards(List<BoardDBEntity> boardDBEntities) {
         database.getProManDao().updateBoards(boardDBEntities);
+    }
+
+    public LiveData<List<GroupStatistic>> getGroupsStatistics(int boardId) {
+        return database.getProManDao().getGroupsStatistics(boardId);
     }
 
     public LiveData<String> getBoardTitle(int id) {

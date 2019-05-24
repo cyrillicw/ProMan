@@ -7,10 +7,7 @@ import com.onudapps.proman.data.db.entities.BoardDBEntity;
 import com.onudapps.proman.data.db.entities.GroupDBEntity;
 import com.onudapps.proman.data.db.entities.LastUpdateEntity;
 import com.onudapps.proman.data.db.entities.TaskDBEntity;
-import com.onudapps.proman.data.pojo.BoardWithUpdate;
-import com.onudapps.proman.data.pojo.GroupWithUpdate;
-import com.onudapps.proman.data.pojo.Task;
-import com.onudapps.proman.data.pojo.TaskCard;
+import com.onudapps.proman.data.pojo.*;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tuples.generated.Tuple4;
@@ -168,6 +165,10 @@ public enum  Repository {
                 localDataSource.updateBoard(boardDBEntity, groups);
             }
         });
+    }
+
+    public LiveData<List<GroupStatistic>> getGroupsStatistics(int boardId) {
+        return localDataSource.getGroupsStatistics(boardId);
     }
 
     public void createTask(int boardId, int groupId, String title) {

@@ -105,9 +105,7 @@ public class BoardActivity extends AppCompatActivity {
         if (groups.size() == 0 || groups.get(0).getUpdated().before(threshold)) {
             viewModel.forceBoardUpdate();
         }
-        else {
-            Log.e(LOG_TAG, "NOW");
-            ((BoardPagerAdapter) viewPager.getAdapter()).updateData(groups);
-        }
+        Log.e(LOG_TAG, "NOW");
+        ((BoardPagerAdapter) viewPager.getAdapter()).updateData(groups);
     }
 }

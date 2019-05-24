@@ -5,21 +5,22 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import com.onudapps.proman.data.Repository;
+import com.onudapps.proman.data.pojo.GroupStatistic;
 import com.onudapps.proman.data.pojo.GroupWithUpdate;
 
 import java.util.List;
 
 public class BoardChartViewModel extends ViewModel{
-    private int id;
-    private LiveData<List<GroupWithUpdate>> groupsData;
+    private int boardId;
+    private LiveData<List<GroupStatistic>> groupsData;
 
-    private BoardChartViewModel(int id) {
-        this.id = id;
+    private BoardChartViewModel(int boardId) {
+        this.boardId = boardId;
     }
 
-    public  LiveData<List<GroupWithUpdate>> getGroupsData() {
+    public  LiveData<List<GroupStatistic>> getGroupsData() {
         if (groupsData == null) {
-            groupsData = Repository.REPOSITORY.getBoardGroups(id);
+            groupsData = Repository.REPOSITORY.getGroupsStatistics(boardId);
         }
         return groupsData;
     }

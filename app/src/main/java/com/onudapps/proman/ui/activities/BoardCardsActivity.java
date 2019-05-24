@@ -69,9 +69,7 @@ public class BoardCardsActivity extends AppCompatActivity {
         if (boardCards.size() == 0 || boardCards.get(0).getUpdated().before(threshold)) {
             viewModel.forceBoardsUpdate();
         }
-        else {
-            ((BoardsRecyclerAdapter)recyclerView.getAdapter()).updateData(boardCards);
-        }
+        ((BoardsRecyclerAdapter)recyclerView.getAdapter()).updateData(boardCards);
     }
 
     private void updateOnClickListener(View v) {

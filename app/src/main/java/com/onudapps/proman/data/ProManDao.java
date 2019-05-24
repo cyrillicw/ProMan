@@ -4,10 +4,7 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.room.*;
 import com.onudapps.proman.data.db.entities.*;
-import com.onudapps.proman.data.pojo.BoardWithUpdate;
-import com.onudapps.proman.data.pojo.GroupWithUpdate;
-import com.onudapps.proman.data.pojo.Task;
-import com.onudapps.proman.data.pojo.TaskCard;
+import com.onudapps.proman.data.pojo.*;
 import org.web3j.tuples.generated.Tuple2;
 
 import java.util.ArrayList;
@@ -103,6 +100,13 @@ public abstract class ProManDao {
         lastUpdateEntity .setUpdated(Calendar.getInstance());
         updateLastUpdate(lastUpdateEntity);
     }
+
+    @Query("SELECT groups.title, count(tasks.taskId) as tasksCount " +
+            "FROM groups " +
+            "INNER JOIN tasks ON tasks.groupId = groups.groupId " +
+            "WHERE groups.boardId = :boardId " +
+            "GROUP BY groups.groupId")
+    public abstract LiveData<List<GroupStatistic>> getGroupsStatistics(int boardId);
 
     @Query("SELECT title FROM boards WHERE boardId = :id")
     public abstract LiveData<String> getBoardTitle(int id);

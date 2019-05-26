@@ -15,10 +15,14 @@ public class GroupViewModel extends ViewModel {
     private int boardId;
     private LiveData<String> titleData;
     private LiveData<List<TaskCard>> taskCardsData;
+    private boolean editMode;
+    private String taskTitle;
 
     private GroupViewModel(int groupId, int boardId) {
         this.groupId = groupId;
         this.boardId = boardId;
+        editMode = false;
+        taskTitle = "";
     }
 
     public LiveData<String> getTitleData() {
@@ -35,6 +39,21 @@ public class GroupViewModel extends ViewModel {
         return taskCardsData;
     }
 
+    public boolean isEditMode() {
+        return editMode;
+    }
+
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
+    }
+
+    public String taskTitle() {
+        return taskTitle;
+    }
+
+    public void setText(String taskTitle) {
+        this.taskTitle = taskTitle;
+    }
 
     public void createTask(String title) {
         Repository.REPOSITORY.createTask(boardId, groupId, title);

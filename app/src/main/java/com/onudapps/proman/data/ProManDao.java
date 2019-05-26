@@ -38,6 +38,9 @@ public abstract class ProManDao {
             "WHERE tpj.taskId = :id")
     public abstract List<ParticipantDBEntity> getTaskParticipants(UUID id);
 
+    @Query("SELECT * FROM tasks WHERE tasks.taskId = :taskId")
+    public abstract LiveData<TaskDBEntity> getTaskDBEntity(int taskId);
+
     @Transaction
     public Task getTask(UUID id) {
         Task task = getTaskWithNoParticipants(id);
@@ -130,10 +133,10 @@ public abstract class ProManDao {
     @Query("SELECT updated FROM last_update WHERE queryType = :queryType and id = :id")
     public abstract LiveData<Calendar> getLastUpdate(LastUpdateEntity.Query queryType, int id);
 
-    @Query("SELECT boards.*, last_update.updated FROM boards, last_update WHERE last_update.queryType = 'BOARDS' and last_update.id = -1")
+    @Query("SELECT boards.*, last_update.updated FROM last_update LEFT JOIN boards WHERE last_update.queryType = 'BOARDS' and last_update.id = -1")
     public abstract LiveData<List<BoardWithUpdate>> getBoardCards();
 
-    @Query("SELECT groups.*, last_update.updated FROM groups, last_update WHERE groups.boardId = :boardId and last_update.queryType = 'BOARD' and last_update.id = :boardId")
+    @Query("SELECT groups.*, last_update.updated FROM last_update LEFT JOIN groups ON groups.boardId = last_update.id WHERE last_update.queryType = 'BOARD' and last_update.id = :boardId")
     public abstract LiveData<List<GroupWithUpdate>> getBoardGroups(int boardId);
 
     @Query("SELECT taskId, title FROM tasks WHERE groupId = :groupId")

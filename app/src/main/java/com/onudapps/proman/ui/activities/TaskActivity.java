@@ -2,14 +2,15 @@ package com.onudapps.proman.ui.activities;
 
 import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.*;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -17,45 +18,31 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 import com.onudapps.TaskChange;
-import com.onudapps.proman.BuildConfig;
 import com.onudapps.proman.R;
-import com.onudapps.proman.data.ProManDao;
-import com.onudapps.proman.data.ProManDatabase;
-import com.onudapps.proman.data.db.entities.BoardDBEntity;
-import com.onudapps.proman.data.db.entities.GroupDBEntity;
-import com.onudapps.proman.data.db.entities.ParticipantDBEntity;
+import com.onudapps.proman.data.db.entities.TaskDBEntity;
 import com.onudapps.proman.data.pojo.Task;
 import com.onudapps.proman.ui.adapters.ParticipantsAdapter;
 import com.onudapps.proman.viewmodels.TaskViewModel;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 public class TaskActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "TaskActivity";
-    private static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
-    private enum DialogMode {
-        MAIN, CALENDAR, TIME;
-    }
+    public static final String taskIdTag = "taskId";
     private enum CalendarMode {
         START, FINISH;
     }
     private TextView title;
 
-    private Task task;
+    //private Task task;
+    TaskDBEntity originalTask;
     private Task editedTask;
     private ImageView tick;
     private ImageView upload;
     private TextView description;
     private EditText descriptionEdit;
     private TaskChange taskChange;
-    private UUID taskId;
+    private int taskId;
 
 
     @Override
@@ -63,11 +50,12 @@ public class TaskActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
         // insert();
-        taskId = UUID.fromString("8537dee2-2b9f-4658-b500-71d582628f6e");
+        Intent intent = getIntent();
+        taskId = intent.getIntExtra(taskIdTag, -1);
         TaskViewModel taskViewModel = ViewModelProviders
-                .of(this, new TaskViewModel.TaskModelFactory(getApplication(), taskId))
+                .of(this, new TaskViewModel.TaskModelFactory(taskId))
                 .get(TaskViewModel.class);
-        LiveData<Task> data = taskViewModel.getData();
+        LiveData<TaskDBEntity> data = taskViewModel.getData();
         tick = findViewById(R.id.tick);
         upload = findViewById(R.id.upload);
         description = findViewById(R.id.detailed_task_description);
@@ -81,14 +69,14 @@ public class TaskActivity extends AppCompatActivity {
         TextView participantsText = findViewById(R.id.detailed_task_participants_text);
         participantsText.setOnClickListener(this::participantsOnClickListener);
         data.observe(this, t -> {
-             task = t;
-             editedTask = new Task(task);
-             taskChange = new TaskChange(task);
-             editedTask.setTaskChange(taskChange);
-             title.setText(task.getTitle());
-             refreshDescription();
-             dateStartText.setOnClickListener(new DateDialog(editedTask, CalendarMode.START));
-             dateFinishText.setOnClickListener(new DateDialog(editedTask, CalendarMode.FINISH));
+            originalTask = t;
+//            editedTask = new Task(task);
+//            taskChange = new TaskChange(task);
+//            editedTask.setTaskChange(taskChange);
+            title.setText(t.getTitle());
+            refreshDescription();
+            //dateStartText.setOnClickListener(new DateDialog(editedTask, CalendarMode.START));
+            //dateFinishText.setOnClickListener(new DateDialog(editedTask, CalendarMode.FINISH));
         });
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -192,115 +180,115 @@ public class TaskActivity extends AppCompatActivity {
         }
     }
 
-    private class DateDialog implements View.OnClickListener {
-
-        private Task task;
-        private Calendar calendar;
-        private Calendar editCalendar;
-        private CalendarMode calendarMode;
-        private DialogMode dialogMode;
-        private TimePicker timePicker;
-        private DatePicker datePicker;
-        private RelativeLayout relativeLayout;
-        private TextView selectedDate;
-        private TextView selectedTime;
-        private DateDialog(Task task, CalendarMode calendarMode) {
-            this.task = task;
-            this.calendarMode = calendarMode;
-            if (calendarMode == CalendarMode.START) {
-                calendar = task.getStart();
-            }
-            else {
-                calendar = task.getFinish();
-            }
-            dialogMode = DialogMode.MAIN;
-        }
-
-        @Override
-        public void onClick(View v) {
-            editCalendar = Calendar.getInstance();
-            editCalendar.setTimeInMillis(calendar.getTimeInMillis());
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(TaskActivity.this);
-            alertDialogBuilder.setView(R.layout.alert_date);
-            alertDialogBuilder.setPositiveButton(R.string.ok, null);
-            alertDialogBuilder.setNegativeButton(R.string.cancel, null);
-            final AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
-            selectedDate = alertDialog.findViewById(R.id.selected_date);
-            relativeLayout = alertDialog.findViewById(R.id.datetime_layout);
-            selectedTime = alertDialog.findViewById(R.id.selected_time);
-            datePicker = alertDialog.findViewById(R.id.calendar);
-            timePicker = alertDialog.findViewById(R.id.time);
-            timePicker.setIs24HourView(DateFormat.is24HourFormat(TaskActivity.this));
-            selectedDate.setText(dateFormat.format(calendar.getTime()));
-            selectedTime.setText(timeFormat.format(calendar.getTime()));
-            Button positiveButton = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-            positiveButton.setOnClickListener(b -> {
-                switch (dialogMode) {
-                    case TIME:
-                        int hour = timePicker.getHour();
-                        int minute = timePicker.getMinute();
-                        editCalendar.set(Calendar.HOUR_OF_DAY, hour);
-                        editCalendar.set(Calendar.MINUTE, minute);
-                        selectedTime.setText(timeFormat.format(editCalendar.getTime()));
-                        timePicker.setVisibility(View.GONE);
-                        relativeLayout.setVisibility(View.VISIBLE);
-                        dialogMode = DialogMode.MAIN;
-                        break;
-                    case CALENDAR:
-                        editCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-                        editCalendar.set(Calendar.MONTH, datePicker.getMonth());
-                        editCalendar.set(Calendar.YEAR, datePicker.getYear());
-                        selectedDate.setText(dateFormat.format(editCalendar.getTimeInMillis()));
-                        datePicker.setVisibility(View.GONE);
-                        relativeLayout.setVisibility(View.VISIBLE);
-                        dialogMode = DialogMode.MAIN;
-                        break;
-                    default:
-                        if (calendarMode == CalendarMode.START) {
-                            task.setStart(editCalendar);
-                        }
-                        else {
-                            task.setFinish(editCalendar);
-                        }
-                        checkChanges();
-                        alertDialog.dismiss();
-                }
-            });
-            Button negativeButton = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-            negativeButton.setOnClickListener(view -> {
-                switch (dialogMode) {
-                    case TIME:
-                        timePicker.setVisibility(View.GONE);
-                        relativeLayout.setVisibility(View.VISIBLE);
-                        dialogMode = DialogMode.MAIN;
-                        break;
-                    case CALENDAR:
-                        datePicker.setVisibility(View.GONE);
-                        relativeLayout.setVisibility(View.VISIBLE);
-                        dialogMode = DialogMode.MAIN;
-                        break;
-                    default:
-                         alertDialog.dismiss();
-                }
-            });
-            // TextView date = alertDialog.findViewById(R.id.);
-            selectedTime.setOnClickListener(view -> {
-                dialogMode = DialogMode.TIME;
-                relativeLayout.setVisibility(View.GONE);
-                timePicker.setHour(calendar.get(Calendar.HOUR_OF_DAY));
-                timePicker.setMinute(calendar.get(Calendar.MINUTE));
-                timePicker.setVisibility(View.VISIBLE);
-            });
-            selectedDate.setOnClickListener(view -> {
-                dialogMode = DialogMode.CALENDAR;
-                relativeLayout.setVisibility(View.GONE);
-                datePicker.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-                // calendarView.setDate(calendar.getTimeInMillis());
-                datePicker.setVisibility(View.VISIBLE);
-            });
-        }
-    }
+//    private class DateDialog implements View.OnClickListener {
+//
+//        private Task task;
+//        private Calendar calendar;
+//        private Calendar editCalendar;
+//        private CalendarMode calendarMode;
+//        private DialogMode dialogMode;
+//        private TimePicker timePicker;
+//        private DatePicker datePicker;
+//        private RelativeLayout relativeLayout;
+//        private TextView selectedDate;
+//        private TextView selectedTime;
+//        private DateDialog(Task task, CalendarMode calendarMode) {
+//            this.task = task;
+//            this.calendarMode = calendarMode;
+//            if (calendarMode == CalendarMode.START) {
+//                calendar = task.getStart();
+//            }
+//            else {
+//                calendar = task.getFinish();
+//            }
+//            dialogMode = DialogMode.MAIN;
+//        }
+//
+//        @Override
+//        public void onClick(View v) {
+//            editCalendar = Calendar.getInstance();
+//            editCalendar.setTimeInMillis(calendar.getTimeInMillis());
+//            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(TaskActivity.this);
+//            alertDialogBuilder.setView(R.layout.alert_date);
+//            alertDialogBuilder.setPositiveButton(R.string.ok, null);
+//            alertDialogBuilder.setNegativeButton(R.string.cancel, null);
+//            final AlertDialog alertDialog = alertDialogBuilder.create();
+//            alertDialog.show();
+//            selectedDate = alertDialog.findViewById(R.id.selected_date);
+//            relativeLayout = alertDialog.findViewById(R.id.datetime_layout);
+//            selectedTime = alertDialog.findViewById(R.id.selected_time);
+//            datePicker = alertDialog.findViewById(R.id.calendar);
+//            timePicker = alertDialog.findViewById(R.id.time);
+//            timePicker.setIs24HourView(DateFormat.is24HourFormat(TaskActivity.this));
+//            selectedDate.setText(dateFormat.format(calendar.getTime()));
+//            selectedTime.setText(timeFormat.format(calendar.getTime()));
+//            Button positiveButton = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+//            positiveButton.setOnClickListener(b -> {
+//                switch (dialogMode) {
+//                    case TIME:
+//                        int hour = timePicker.getHour();
+//                        int minute = timePicker.getMinute();
+//                        editCalendar.set(Calendar.HOUR_OF_DAY, hour);
+//                        editCalendar.set(Calendar.MINUTE, minute);
+//                        selectedTime.setText(timeFormat.format(editCalendar.getTime()));
+//                        timePicker.setVisibility(View.GONE);
+//                        relativeLayout.setVisibility(View.VISIBLE);
+//                        dialogMode = DialogMode.MAIN;
+//                        break;
+//                    case CALENDAR:
+//                        editCalendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
+//                        editCalendar.set(Calendar.MONTH, datePicker.getMonth());
+//                        editCalendar.set(Calendar.YEAR, datePicker.getYear());
+//                        selectedDate.setText(dateFormat.format(editCalendar.getTimeInMillis()));
+//                        datePicker.setVisibility(View.GONE);
+//                        relativeLayout.setVisibility(View.VISIBLE);
+//                        dialogMode = DialogMode.MAIN;
+//                        break;
+//                    default:
+//                        if (calendarMode == CalendarMode.START) {
+//                            task.setStart(editCalendar);
+//                        }
+//                        else {
+//                            task.setFinish(editCalendar);
+//                        }
+//                        checkChanges();
+//                        alertDialog.dismiss();
+//                }
+//            });
+//            Button negativeButton = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+//            negativeButton.setOnClickListener(view -> {
+//                switch (dialogMode) {
+//                    case TIME:
+//                        timePicker.setVisibility(View.GONE);
+//                        relativeLayout.setVisibility(View.VISIBLE);
+//                        dialogMode = DialogMode.MAIN;
+//                        break;
+//                    case CALENDAR:
+//                        datePicker.setVisibility(View.GONE);
+//                        relativeLayout.setVisibility(View.VISIBLE);
+//                        dialogMode = DialogMode.MAIN;
+//                        break;
+//                    default:
+//                         alertDialog.dismiss();
+//                }
+//            });
+//            // TextView date = alertDialog.findViewById(R.id.);
+//            selectedTime.setOnClickListener(view -> {
+//                dialogMode = DialogMode.TIME;
+//                relativeLayout.setVisibility(View.GONE);
+//                timePicker.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+//                timePicker.setMinute(calendar.get(Calendar.MINUTE));
+//                timePicker.setVisibility(View.VISIBLE);
+//            });
+//            selectedDate.setOnClickListener(view -> {
+//                dialogMode = DialogMode.CALENDAR;
+//                relativeLayout.setVisibility(View.GONE);
+//                datePicker.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+//                // calendarView.setDate(calendar.getTimeInMillis());
+//                datePicker.setVisibility(View.VISIBLE);
+//            });
+//        }
+//    }
 
     private void checkChanges() {
         if (taskChange.changesDetected()) {

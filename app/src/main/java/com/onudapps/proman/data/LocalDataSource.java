@@ -12,7 +12,6 @@ import org.web3j.tuples.generated.Tuple2;
 
 import java.util.Calendar;
 import java.util.List;
-import java.util.UUID;
 
 class LocalDataSource {
     private static final String databaseTitle = "ProManDatabase";
@@ -21,8 +20,8 @@ class LocalDataSource {
         database = Room.databaseBuilder(context, ProManDatabase.class, databaseTitle).fallbackToDestructiveMigration().build();
     }
 
-    public Task getTask(UUID id) {
-        return database.getProManDao().getTask(id);
+    public LiveData<TaskDBEntity> getTaskDBEntity(int taskId) {
+        return database.getProManDao().getTaskDBEntity(taskId);
     }
 
     public void insertTask(Task task) {

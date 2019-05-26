@@ -1,15 +1,11 @@
 package com.onudapps.proman.ui.activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
@@ -19,6 +15,7 @@ import com.onudapps.proman.R;
 import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
 import com.onudapps.proman.data.pojo.GroupWithUpdate;
 import com.onudapps.proman.ui.adapters.BoardPagerAdapter;
+import com.onudapps.proman.ui.fragments.CreateGroupDialogFragment;
 import com.onudapps.proman.viewmodels.BoardViewModel;
 
 import java.util.ArrayList;
@@ -40,6 +37,8 @@ public class BoardActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private TextView title;
     private Toolbar toolbar;
+    private ImageView groupsMode;
+    private ImageView statisticsMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,11 +59,19 @@ public class BoardActivity extends AppCompatActivity {
         createGroup.setOnClickListener(this::createGroupListener);
         ImageView update = toolbar.findViewById(R.id.update);
         update.setOnClickListener(this::updateOnClickListener);
+        viewPager = findViewById(R.id.board_pager);
         viewPager.setAdapter(new BoardPagerAdapter(getSupportFragmentManager(), new ArrayList<>()));
         groupsData = viewModel.getGroupsData();
         groupsData.observe(this, this::onGroupsChangedListener);
         titleData = viewModel.getTitleData();
         titleData.observe(this, s -> title.setText(s));
+//        title.setOnClickListener(v -> {
+//            new BoardEditDialogFragment().show(getSupportFragmentManager(), "CREATE BOARD");
+//        });
+        groupsMode = findViewById(R.id.mode_groups);
+        groupsMode.setOnClickListener(v -> viewPager.setCurrentItem(0, false));
+        statisticsMode = findViewById(R.id.mode_statistics);
+        statisticsMode.setOnClickListener(v -> viewPager.setCurrentItem(((BoardPagerAdapter)viewPager.getAdapter()).getStatisticModePosition(), false));
     }
 
     public LiveData<List<GroupWithUpdate>> getGroupsData() {
@@ -85,18 +92,12 @@ public class BoardActivity extends AppCompatActivity {
     }
 
     private void createGroupListener(View v) {
-        final AlertDialog alertDialog = new AlertDialog.Builder(this).setView(R.layout.alert_create).
-                setPositiveButton(R.string.ok, null).create();
-        alertDialog.show();
-        TextView textView = alertDialog.findViewById(R.id.create_hint);
-        textView.setText(R.string.create_group);
-        final EditText groupTitle = alertDialog.findViewById(R.id.created_title);
-        Button positive = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-        positive.setOnClickListener(b -> {
-            String title = groupTitle.getText().toString();
-            viewModel.createGroup(title);
-            alertDialog.dismiss();
-        });
+        CreateGroupDialogFragment createGroup = new CreateGroupDialogFragment();
+        createGroup.show(getSupportFragmentManager(), "CREATE GROUP");
+    }
+
+    public BoardViewModel getViewModel() {
+        return viewModel;
     }
 
     private void onGroupsChangedListener(List<GroupWithUpdate> groups) {
@@ -105,7 +106,10 @@ public class BoardActivity extends AppCompatActivity {
         if (groups.size() == 0 || groups.get(0).getUpdated().before(threshold)) {
             viewModel.forceBoardUpdate();
         }
-        Log.e(LOG_TAG, "NOW");
-        ((BoardPagerAdapter) viewPager.getAdapter()).updateData(groups);
+        else if (groups.get(0).getGroupDBEntity() != null) {
+            Log.e(LOG_TAG, "NOW");
+            ((BoardPagerAdapter) viewPager.getAdapter()).updateData(groups);
+            viewPager.invalidate();
+        }
     }
 }

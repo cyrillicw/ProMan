@@ -78,6 +78,9 @@ public class BoardGroupFragment extends Fragment {
         titleData.observe(this, this::onTitleChangedListener);
         LiveData<List<TaskCard>> tasksData = groupViewModel.getTaskCardData();
         tasksData.observe(this, this::onTasksChangedListener);
+        if (groupViewModel.isEditMode()) {
+            enableEditMode();
+        }
         return view;
     }
 
@@ -88,12 +91,15 @@ public class BoardGroupFragment extends Fragment {
     private void enableStandardMode() {
         InputMethodManager imm = (InputMethodManager) addTaskEdit.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(addTaskEdit.getWindowToken(), 0);
+        groupViewModel.setEditMode(false);
+        groupViewModel.setText("");
         addTaskEdit.getText().clear();
         editLayout.setVisibility(View.VISIBLE);
         addTask.setVisibility(View.VISIBLE);
     }
 
     private void enableEditMode() {
+        groupViewModel.setEditMode(true);
         addTask.setVisibility(View.GONE);
         editLayout.setVisibility(View.VISIBLE);
     }
@@ -114,6 +120,12 @@ public class BoardGroupFragment extends Fragment {
             groupViewModel.createTask(title);
             enableStandardMode();
         }
+    }
+
+    @Override
+    public void onStop() {
+        groupViewModel.setText(addTaskEdit.getText().toString());
+        super.onStop();
     }
 
     @Override

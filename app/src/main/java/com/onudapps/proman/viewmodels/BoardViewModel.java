@@ -12,11 +12,22 @@ import java.util.List;
 public class BoardViewModel extends ViewModel {
 
     private int id;
-    private LiveData<List<GroupWithUpdate>> groupsData;
     private LiveData<String> titleData;
+    private LiveData<List<GroupWithUpdate>> groupsData;
+    private boolean createAlertOpened;
+    private String expectedGroupName;
 
     private BoardViewModel(int id) {
         this.id = id;
+        createAlertOpened = false;
+
+    }
+
+    public  LiveData<String> getTitleData() {
+        if (titleData == null) {
+            titleData = Repository.REPOSITORY.getBoardTitle(id);
+        }
+        return titleData;
     }
 
     public  LiveData<List<GroupWithUpdate>> getGroupsData() {
@@ -26,11 +37,23 @@ public class BoardViewModel extends ViewModel {
         return groupsData;
     }
 
-    public  LiveData<String> getTitleData() {
-        if (titleData == null) {
-            titleData = Repository.REPOSITORY.getBoardTitle(id);
+    public boolean isCreateAlertOpened() {
+        return createAlertOpened;
+    }
+
+    public String getExpectedGroupName() {
+        return expectedGroupName;
+    }
+
+    public void setCreateAlertOpened(boolean createAlertOpened) {
+        this.createAlertOpened = createAlertOpened;
+        if (!createAlertOpened) {
+            expectedGroupName = "";
         }
-        return titleData;
+    }
+
+    public void setExpectedGroupName(String expectedGroupName) {
+        this.expectedGroupName = expectedGroupName;
     }
 
     public void forceBoardUpdate() {

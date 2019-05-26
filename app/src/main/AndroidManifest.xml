@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.onudapps.proman">
+    package="com.onudapps.proman">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.READ_PROFILE"/>
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name="com.onudapps.ProManApplication"
@@ -16,34 +16,33 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activities.MainActivity"/>
-        <activity android:name=".ui.activities.SignActivity"/>
+        <activity android:name=".ui.activities.MainActivity" />
+        <activity android:name=".ui.activities.SignActivity" />
         <activity android:name=".ui.activities.SignInActivity">
             <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".ui.activities.SignActivity"/>
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.activities.SignActivity" />
         </activity>
         <activity android:name=".ui.activities.SignUpActivity">
             <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".ui.activities.SignActivity"/>
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.activities.SignActivity" />
         </activity>
         <activity android:name=".ui.activities.BoardCardsActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-                android:name=".ui.activities.BoardActivity"
-                android:windowSoftInputMode="adjustResize">
-                <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".ui.activities.BoardCardsActivity"/>
+            android:name=".ui.activities.BoardActivity"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.activities.BoardCardsActivity" />
         </activity>
-        <activity android:name=".ui.activities.TaskActivity">
-        </activity>
+        <activity android:name=".ui.activities.TaskActivity"></activity>
     </application>
 
 </manifest>

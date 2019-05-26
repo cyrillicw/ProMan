@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.onudapps.proman.R;
 import com.onudapps.proman.data.pojo.TaskCard;
+import com.onudapps.proman.ui.activities.TaskActivity;
 
 import java.util.List;
 
@@ -53,6 +54,7 @@ public class TasksRecyclerAdapter extends RecyclerView.Adapter<TasksRecyclerAdap
         private void bindData(int position) {
             view.setOnClickListener(v -> {
                 Intent intent = new Intent();
+                intent.putExtra(TaskActivity.taskIdTag, tasks.get(position).getTaskId());
             });
             title.setText(tasks.get(position).getTitle());
         }

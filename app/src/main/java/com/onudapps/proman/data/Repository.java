@@ -7,7 +7,10 @@ import com.onudapps.proman.data.db.entities.BoardDBEntity;
 import com.onudapps.proman.data.db.entities.GroupDBEntity;
 import com.onudapps.proman.data.db.entities.LastUpdateEntity;
 import com.onudapps.proman.data.db.entities.TaskDBEntity;
-import com.onudapps.proman.data.pojo.*;
+import com.onudapps.proman.data.pojo.BoardWithUpdate;
+import com.onudapps.proman.data.pojo.GroupStatistic;
+import com.onudapps.proman.data.pojo.GroupWithUpdate;
+import com.onudapps.proman.data.pojo.TaskCard;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tuples.generated.Tuple4;
@@ -17,7 +20,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -33,8 +35,8 @@ public enum  Repository {
         REPOSITORY.executorService = Executors.newSingleThreadExecutor();
     }
 
-    public Task getTask(UUID id) {
-        return localDataSource.getTask(id);
+    public LiveData<TaskDBEntity> getTaskDBEntity(int taskId) {
+        return localDataSource.getTaskDBEntity(taskId);
     }
 
     public LiveData<List<BoardWithUpdate>> getBoardCards() {
@@ -106,7 +108,7 @@ public enum  Repository {
                     = remoteDataSource.getBoards();
             if (tuple4 != null) {
                 List<BoardDBEntity> boardDBEntities = new ArrayList<>();
-                for (int i = 0; i < tuple4.getValue1().size(); i++) {
+                for (int i = 1; i < tuple4.getValue1().size(); i++) {
                     BoardDBEntity boardDBEntity = new BoardDBEntity();
                     boardDBEntity.setBoardId(tuple4.getValue1().get(i).intValue());
                     boardDBEntity.setTitle(tuple4.getValue2().get(i));
@@ -162,6 +164,7 @@ public enum  Repository {
                 for (int i = 0; i < tuple.getValue4().size(); i++) {
                     groups.add(getBoardGroup(tuple.getValue4().get(i).intValue(), id));
                 }
+                Log.e("REPOSITURY", "in update " + groups.size());
                 localDataSource.updateBoard(boardDBEntity, groups);
             }
         });

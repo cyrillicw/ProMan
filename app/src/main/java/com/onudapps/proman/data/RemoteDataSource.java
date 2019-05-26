@@ -20,7 +20,7 @@ public class RemoteDataSource {
     public RemoteDataSource() {
         Web3j web3j = Web3j.build(new HttpService("http://192.168.1.102:7545"));
         Credentials credentials = Credentials.create("28f3d307e639526a072b94cfa7f484ac84991118fbe7ac59cceb3abf53a58b67");
-        smartContract = Smart.load("3bEFa9251C52a1948b65a12C0164dB3E0352Db1f", web3j, credentials, new DefaultGasProvider());
+        smartContract = Smart.load("d3a6be40CfE7B7e1d7ecc05f64389Fa839EfC4A0", web3j, credentials, new DefaultGasProvider());
     }
 
 //    public Flowable<TransactionReceipt> addBoard(String title) {
@@ -98,6 +98,7 @@ public class RemoteDataSource {
             return smartContract.getBoard(BigInteger.valueOf(id)).send();
         }
         catch (Exception e){
+            Log.e(LOG_TAG, "Failed loading board " + e.getMessage());
             return null;
         }
     }

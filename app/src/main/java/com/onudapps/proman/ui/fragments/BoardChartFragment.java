@@ -1,6 +1,7 @@
 package com.onudapps.proman.ui.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,17 +11,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.data.DataSet;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.onudapps.proman.R;
-import com.onudapps.proman.data.pojo.Board;
 import com.onudapps.proman.data.pojo.GroupStatistic;
-import com.onudapps.proman.data.pojo.GroupWithUpdate;
-import com.onudapps.proman.ui.activities.BoardActivity;
 import com.onudapps.proman.viewmodels.BoardChartViewModel;
-import com.onudapps.proman.viewmodels.BoardViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,14 +62,23 @@ public class BoardChartFragment extends Fragment {
     }
 
     private void onGroupsChangedListener(List<GroupStatistic> groupStatistics) {
+        Log.e("CHART", "STAT " + groupStatistics.size());
         List<PieEntry> yValues = new ArrayList<>();
         for (GroupStatistic groupStatistic : groupStatistics) {
             yValues.add(new PieEntry(groupStatistic.getTasksCount(), groupStatistic.getTitle()));
 
         }
         PieDataSet pieDataSet = new PieDataSet(yValues, "groups");
+        pieDataSet.setColors(ColorTemplate.PASTEL_COLORS);
         PieData pieData = new PieData(pieDataSet);
+        pieDataSet.setDrawValues(false);
         groupsDistribution.setData(pieData);
-        groupsDistribution.setVisibility(View.VISIBLE);
+        groupsDistribution.setTouchEnabled(false);
+        Description description = new Description();
+        description.setText("GROUPS DISTRIBUTION");
+        groupsDistribution.setDescription(description);
+        groupsDistribution.notifyDataSetChanged();
+        groupsDistribution.invalidate();
+        // groupsDistribution.setLayoutParams(new FrameLayout.LayoutParams(width, width));
     }
 }

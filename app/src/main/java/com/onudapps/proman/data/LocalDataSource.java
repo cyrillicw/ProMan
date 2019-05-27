@@ -79,4 +79,12 @@ class LocalDataSource {
     public LiveData<Calendar> getLastUpdate(LastUpdateEntity.Query queryType, int id) {
         return database.getProManDao().getLastUpdate(queryType, id);
     }
+
+    public void setTaskStart(int taskId, Calendar calendar) {
+        database.getProManDao().setTaskStart(taskId, calendar);
+    }
+
+    public void setTaskFinish(int taskId, Calendar calendar) {
+        database.getProManDao().setTaskFinish(taskId, calendar);
+    }
 }

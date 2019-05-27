@@ -125,6 +125,27 @@ public enum  Repository {
         return localDataSource.getLastUpdate(queryType, id);
     }
 
+    public void setTaskStart(int taskId, Calendar calendar) {
+        executorService.execute(() -> {
+            TransactionReceipt tx = remoteDataSource.setTaskStart(taskId, calendar);
+            if (tx != null) {
+                    localDataSource.setTaskStart(taskId, calendar);
+            }
+        });
+    }
+
+    public void setTaskFinish(int taskId, Calendar calendar) {
+        executorService.execute(() -> {
+            TransactionReceipt tx = remoteDataSource.setTaskFinish(taskId, calendar);
+            if (tx != null) {
+                int res = Integer.parseInt(tx.getLogs().get(0).getData().substring(2));
+                if (res > 0) {
+                    localDataSource.setTaskFinish(taskId, calendar);
+                }
+            }
+        });
+    }
+
     private Tuple2<GroupDBEntity, List<TaskDBEntity>> getBoardGroup(int groupId, int boardId) {
         Tuple6<String, List<BigInteger>, List<String>, List<String>, List<BigInteger>, List<BigInteger>> tuple =
                 remoteDataSource.getGroup(groupId);

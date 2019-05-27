@@ -12,6 +12,7 @@ import org.web3j.tuples.generated.Tuple6;
 import org.web3j.tx.gas.DefaultGasProvider;
 
 import java.math.BigInteger;
+import java.util.Calendar;
 import java.util.List;
 
 public class RemoteDataSource {
@@ -20,7 +21,7 @@ public class RemoteDataSource {
     public RemoteDataSource() {
         Web3j web3j = Web3j.build(new HttpService("http://192.168.1.102:7545"));
         Credentials credentials = Credentials.create("28f3d307e639526a072b94cfa7f484ac84991118fbe7ac59cceb3abf53a58b67");
-        smartContract = Smart.load("d3a6be40CfE7B7e1d7ecc05f64389Fa839EfC4A0", web3j, credentials, new DefaultGasProvider());
+        smartContract = Smart.load("53fe53a67bC4d78984BD870bFEA58fdFA6E4aCc6", web3j, credentials, new DefaultGasProvider());
     }
 
 //    public Flowable<TransactionReceipt> addBoard(String title) {
@@ -57,6 +58,27 @@ public class RemoteDataSource {
 //        });
         try {
             return smartContract.addGroup(BigInteger.valueOf(boardId), title).send();
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+
+    public TransactionReceipt setTaskStart(int taskId, Calendar calendar) {
+        long time = calendar == null ? -1 : calendar.getTimeInMillis();
+        try {
+            return smartContract.setTaskStart(BigInteger.valueOf(taskId), BigInteger.valueOf(time)).send();
+        }
+        catch (Exception e) {
+            Log.e(LOG_TAG, "start set failed " + taskId + " " + e.getMessage());
+            return null;
+        }
+    }
+
+    public TransactionReceipt setTaskFinish(int taskId, Calendar calendar) {
+        long time = calendar == null ? -1 : calendar.getTimeInMillis();
+        try {
+            return smartContract.setTaskFinish(BigInteger.valueOf(taskId), BigInteger.valueOf(time)).send();
         }
         catch (Exception e) {
             return null;

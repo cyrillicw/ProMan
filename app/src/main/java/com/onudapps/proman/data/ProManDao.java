@@ -83,6 +83,9 @@ public abstract class ProManDao {
     @Query("DELETE FROM boards")
     public abstract void clearBoards();
 
+    @Query("SELECT count(*) FROM boards")
+    public abstract int getBoardsCount();
+
     @Insert
     public abstract void insertBoards(List<BoardDBEntity> boardDBEntities);
 
@@ -95,7 +98,7 @@ public abstract class ProManDao {
     @Transaction
     public void updateBoards(List<BoardDBEntity> boardDBEntities) {
         clearBoards();
-        Log.e(LOG_TAG, "size " + boardDBEntities.size());
+        Log.e(LOG_TAG, "size " + getBoardsCount());
         insertBoards(boardDBEntities);
         LastUpdateEntity lastUpdateEntity = new LastUpdateEntity();
         lastUpdateEntity.setQueryType(LastUpdateEntity.Query.BOARDS);
@@ -163,4 +166,10 @@ public abstract class ProManDao {
         }
         updateLastUpdates(tasksUpdated);
     }
+
+    @Query("UPDATE tasks SET start = :calendar WHERE taskId = :taskId")
+    public abstract void setTaskStart(int taskId, Calendar calendar);
+
+    @Query("UPDATE tasks SET finish = :calendar WHERE taskId = :taskId")
+    public abstract void setTaskFinish(int taskId, Calendar calendar);
 }

@@ -23,6 +23,7 @@ import com.onudapps.proman.R;
 import com.onudapps.proman.data.db.entities.TaskDBEntity;
 import com.onudapps.proman.data.pojo.Task;
 import com.onudapps.proman.ui.adapters.ParticipantsAdapter;
+import com.onudapps.proman.ui.fragments.TaskDateDialogFragment;
 import com.onudapps.proman.viewmodels.TaskViewModel;
 
 public class TaskActivity extends AppCompatActivity {
@@ -35,14 +36,16 @@ public class TaskActivity extends AppCompatActivity {
     private TextView title;
 
     //private Task task;
-    TaskDBEntity originalTask;
     private Task editedTask;
     private ImageView tick;
     private ImageView upload;
     private TextView description;
     private EditText descriptionEdit;
+
+    TaskDBEntity originalTask;
     private TaskChange taskChange;
     private int taskId;
+    private TaskViewModel taskViewModel;
 
 
     @Override
@@ -52,7 +55,8 @@ public class TaskActivity extends AppCompatActivity {
         // insert();
         Intent intent = getIntent();
         taskId = intent.getIntExtra(taskIdTag, -1);
-        TaskViewModel taskViewModel = ViewModelProviders
+        Log.e("TACTIVITY", "Taskid " + taskId);
+        taskViewModel = ViewModelProviders
                 .of(this, new TaskViewModel.TaskModelFactory(taskId))
                 .get(TaskViewModel.class);
         LiveData<TaskDBEntity> data = taskViewModel.getData();
@@ -74,7 +78,8 @@ public class TaskActivity extends AppCompatActivity {
 //            taskChange = new TaskChange(task);
 //            editedTask.setTaskChange(taskChange);
             title.setText(t.getTitle());
-            refreshDescription();
+            //refreshDescription();
+            dateStartText.setOnClickListener(this::startOnClickListener);
             //dateStartText.setOnClickListener(new DateDialog(editedTask, CalendarMode.START));
             //dateFinishText.setOnClickListener(new DateDialog(editedTask, CalendarMode.FINISH));
         });
@@ -83,6 +88,14 @@ public class TaskActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
+
+    private void startOnClickListener(View v) {
+        long time = originalTask.getStart() == null ? -1 : originalTask.getStart().getTimeInMillis();
+        TaskDateDialogFragment taskDateDialogFragment = TaskDateDialogFragment.newInstance(time,
+                TaskDateDialogFragment.CalendarType.START);
+        taskDateDialogFragment.show(getSupportFragmentManager(), "DATE START");
+    }
+
 
     private void tickClickListener(View v) {
         tick.setVisibility(View.INVISIBLE);
@@ -109,6 +122,8 @@ public class TaskActivity extends AppCompatActivity {
     private void uploadClickListener(View v) {
 
     }
+
+
 
 //    private void  insert() {
 //        ProManDatabase database = Room.databaseBuilder(this, ProManDatabase.class, "ProManDatabase").build();
@@ -180,7 +195,11 @@ public class TaskActivity extends AppCompatActivity {
         }
     }
 
-//    private class DateDialog implements View.OnClickListener {
+    public TaskViewModel getTaskViewModel() {
+        return taskViewModel;
+    }
+
+    //    private class DateDialog implements View.OnClickListener {
 //
 //        private Task task;
 //        private Calendar calendar;

@@ -1,46 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent" android:layout_height="match_parent">
+                android:layout_width="wrap_content" android:layout_height="wrap_content">
 
-    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:id="@+id/datetime_layout">
-        <TextView
-                android:id="@+id/selected_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:text="24 DECEMBER 2018"
-                android:padding="4dp" />
-        <TextView
-                android:id="@+id/selected_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/selected_date"
-                android:textSize="20sp"
-                android:text="18:25"
-                android:padding="4dp"/>
+    <RelativeLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:id="@+id/datetime_layout">
+            <TextView
+                    android:id="@+id/selected_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:text="24 DECEMBER 2018"
+                    android:padding="4dp" />
+            <TextView
+                    android:id="@+id/selected_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/selected_date"
+                    android:textSize="20sp"
+                    android:text="18:25"
+                    android:padding="4dp"/>
 
-        <ImageView
-                android:id="@+id/clear"
-                android:layout_width="wrap_content"
+            <ImageView
+                    android:id="@+id/clear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/clear"
+                    android:padding="4dp"
+                    android:layout_alignParentEnd="true"/>
+        </RelativeLayout>
+        <DatePicker
+                android:id="@+id/calendar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/clear"
+                android:layout_centerHorizontal="true"
                 android:padding="4dp"
-                android:layout_alignParentEnd="true"/>
-    </RelativeLayout>
-    <DatePicker
-            android:id="@+id/calendar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:padding="4dp"
-            android:visibility="gone"/>
+                android:visibility="gone"/>
 
-    <TimePicker
-            android:id="@+id/time"
+        <TimePicker
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:padding="4dp"
+                android:visibility="gone"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/confirm_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ok"
+        android:layout_margin="4dp"
+        android:layout_below="@id/content"
+        android:layout_alignParentEnd="true"
+        android:textColor="@color/manage"
+        android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:padding="4dp"
-            android:visibility="gone"/>
+            android:text="@string/cancel"
+            android:layout_margin="4dp"
+            android:layout_toStartOf="@id/confirm_button"
+            android:layout_below="@id/content"
+            android:textColor="@color/manage"
+            android:textSize="20sp"/>
 </RelativeLayout>

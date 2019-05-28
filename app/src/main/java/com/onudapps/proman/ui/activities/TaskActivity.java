@@ -80,6 +80,7 @@ public class TaskActivity extends AppCompatActivity {
             title.setText(t.getTitle());
             //refreshDescription();
             dateStartText.setOnClickListener(this::startOnClickListener);
+            dateFinishText.setOnClickListener(this::finishOnClickListener);
             //dateStartText.setOnClickListener(new DateDialog(editedTask, CalendarMode.START));
             //dateFinishText.setOnClickListener(new DateDialog(editedTask, CalendarMode.FINISH));
         });
@@ -90,12 +91,16 @@ public class TaskActivity extends AppCompatActivity {
     }
 
     private void startOnClickListener(View v) {
-        long time = originalTask.getStart() == null ? -1 : originalTask.getStart().getTimeInMillis();
-        TaskDateDialogFragment taskDateDialogFragment = TaskDateDialogFragment.newInstance(time,
-                TaskDateDialogFragment.CalendarType.START);
+        taskViewModel.setStartChanged(originalTask.getStart());
+        TaskDateDialogFragment taskDateDialogFragment = TaskDateDialogFragment.newInstance(TaskDateDialogFragment.CalendarType.START);
         taskDateDialogFragment.show(getSupportFragmentManager(), "DATE START");
     }
 
+    private void finishOnClickListener(View v) {
+        taskViewModel.setFinishChanged(originalTask.getFinish());
+        TaskDateDialogFragment taskDateDialogFragment = TaskDateDialogFragment.newInstance(TaskDateDialogFragment.CalendarType.FINISH);
+        taskDateDialogFragment.show(getSupportFragmentManager(), "DATE FINISH");
+    }
 
     private void tickClickListener(View v) {
         tick.setVisibility(View.INVISIBLE);

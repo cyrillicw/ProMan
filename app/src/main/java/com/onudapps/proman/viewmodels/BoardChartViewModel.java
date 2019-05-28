@@ -6,13 +6,14 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import com.onudapps.proman.data.Repository;
 import com.onudapps.proman.data.pojo.GroupStatistic;
-import com.onudapps.proman.data.pojo.GroupWithUpdate;
+import com.onudapps.proman.data.pojo.TaskCalendarCard;
 
 import java.util.List;
 
 public class BoardChartViewModel extends ViewModel{
     private int boardId;
     private LiveData<List<GroupStatistic>> groupsData;
+    private LiveData<List<TaskCalendarCard>> tasksCalendarData;
 
     private BoardChartViewModel(int boardId) {
         this.boardId = boardId;
@@ -23,6 +24,13 @@ public class BoardChartViewModel extends ViewModel{
             groupsData = Repository.REPOSITORY.getGroupsStatistics(boardId);
         }
         return groupsData;
+    }
+
+    public  LiveData<List<TaskCalendarCard>> getTasksCalendarData() {
+        if (tasksCalendarData == null) {
+            tasksCalendarData = Repository.REPOSITORY.getTasksCalendarData(boardId);
+        }
+        return tasksCalendarData;
     }
 
     public static class BoardChartModelFactory extends ViewModelProvider.NewInstanceFactory {

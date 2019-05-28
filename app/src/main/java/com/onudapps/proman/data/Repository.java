@@ -7,14 +7,10 @@ import com.onudapps.proman.data.db.entities.BoardDBEntity;
 import com.onudapps.proman.data.db.entities.GroupDBEntity;
 import com.onudapps.proman.data.db.entities.LastUpdateEntity;
 import com.onudapps.proman.data.db.entities.TaskDBEntity;
-import com.onudapps.proman.data.pojo.BoardWithUpdate;
-import com.onudapps.proman.data.pojo.GroupStatistic;
-import com.onudapps.proman.data.pojo.GroupWithUpdate;
-import com.onudapps.proman.data.pojo.TaskCard;
+import com.onudapps.proman.data.pojo.*;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tuples.generated.Tuple4;
-import org.web3j.tuples.generated.Tuple6;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -41,6 +37,10 @@ public enum  Repository {
 
     public LiveData<List<BoardWithUpdate>> getBoardCards() {
         return localDataSource.getBoardCards();
+    }
+
+    public LiveData<List<TaskCalendarCard>> getTasksCalendarData(int boardId) {
+        return localDataSource.getTasksCalendarData(boardId);
     }
 
     public LiveData<List<GroupWithUpdate>> getBoardGroups(int boardId) {
@@ -138,41 +138,58 @@ public enum  Repository {
         executorService.execute(() -> {
             TransactionReceipt tx = remoteDataSource.setTaskFinish(taskId, calendar);
             if (tx != null) {
-                int res = Integer.parseInt(tx.getLogs().get(0).getData().substring(2));
-                if (res > 0) {
                     localDataSource.setTaskFinish(taskId, calendar);
-                }
             }
         });
     }
 
     private Tuple2<GroupDBEntity, List<TaskDBEntity>> getBoardGroup(int groupId, int boardId) {
-        Tuple6<String, List<BigInteger>, List<String>, List<String>, List<BigInteger>, List<BigInteger>> tuple =
-                remoteDataSource.getGroup(groupId);
-        String title = tuple.getValue1();
-        List<BigInteger> tasksId = tuple.getValue2();
-        List<String> tasksTitle = tuple.getValue3();
-        List<String> tasksDescription = tuple.getValue4();
-        List<BigInteger> tasksStart = tuple.getValue5();
-        List<BigInteger> tasksFinish = tuple.getValue6();
-        List<TaskDBEntity> taskDBEntities = new ArrayList<>();
-        for (int i = 0; i < tasksTitle.size(); i++) {
-            TaskDBEntity taskDBEntity = new TaskDBEntity();
-            taskDBEntity.setTaskId(tasksId.get(i).intValue());
-            taskDBEntity.setTitle(tasksTitle.get(i));
-            taskDBEntity.setDescription(tasksDescription.get(i));
-            Calendar start = numToCalendar(tasksStart.get(i));
-            Calendar finish = numToCalendar(tasksFinish.get(i));
-            taskDBEntity.setStart(start);
-            taskDBEntity.setFinish(finish);
-            taskDBEntity.setBoardId(boardId);
-            taskDBEntity.setGroupId(groupId);
-            taskDBEntities.add(taskDBEntity);
-        }
+//        Tuple6<String, List<BigInteger>, List<String>, List<String>, List<BigInteger>, List<BigInteger>> tuple =
+//                remoteDataSource.getGroup(groupId);
+//        String title = tuple.getValue1();
+//        List<BigInteger> tasksId = tuple.getValue2();
+//        List<String> tasksTitle = tuple.getValue3();
+//        List<String> tasksDescription = tuple.getValue4();
+//        List<BigInteger> tasksStart = tuple.getValue5();
+//        List<BigInteger> tasksFinish = tuple.getValue6();
+//        List<TaskDBEntity> taskDBEntities = new ArrayList<>();
+//        for (int i = 0; i < tasksTitle.size(); i++) {
+//            TaskDBEntity taskDBEntity = new TaskDBEntity();
+//            taskDBEntity.setTaskId(tasksId.get(i).intValue());
+//            taskDBEntity.setTitle(tasksTitle.get(i));
+//            taskDBEntity.setDescription(tasksDescription.get(i));
+//            Calendar start = numToCalendar(tasksStart.get(i));
+//            Calendar finish = numToCalendar(tasksFinish.get(i));
+//            taskDBEntity.setStart(start);
+//            taskDBEntity.setFinish(finish);
+//            taskDBEntity.setBoardId(boardId);
+//            taskDBEntity.setGroupId(groupId);
+//            taskDBEntities.add(taskDBEntity);
+//        }
+//        GroupDBEntity groupDBEntity = new GroupDBEntity();
+//        groupDBEntity.setTitle(title);
+//        groupDBEntity.setBoardId(boardId);
+//        groupDBEntity.setGroupId(groupId);
+//        return new Tuple2<>(groupDBEntity, taskDBEntities);
         GroupDBEntity groupDBEntity = new GroupDBEntity();
-        groupDBEntity.setTitle(title);
+        groupDBEntity.setTitle("F");
         groupDBEntity.setBoardId(boardId);
         groupDBEntity.setGroupId(groupId);
+        List<TaskDBEntity> taskDBEntities = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            TaskDBEntity taskDBEntity = new TaskDBEntity();
+            taskDBEntity.setTitle("TASKАААААFFFFFFFFFFFFFFFААААА " + i);
+            Calendar start = Calendar.getInstance();
+            start.add(Calendar.DAY_OF_MONTH, -i - 1);
+            Calendar finish = Calendar.getInstance();
+            finish.add(Calendar.DAY_OF_MONTH, i + 1);
+            taskDBEntity.setTaskId((int)(Math.random() * 100000));
+            taskDBEntity.setStart(start);
+            taskDBEntity.setFinish(finish);
+            taskDBEntity.setGroupId(groupId);
+            taskDBEntity.setBoardId(boardId);
+            taskDBEntities.add(taskDBEntity);
+        }
         return new Tuple2<>(groupDBEntity, taskDBEntities);
     }
 

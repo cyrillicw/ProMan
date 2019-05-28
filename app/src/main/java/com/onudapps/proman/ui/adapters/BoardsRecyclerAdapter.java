@@ -126,9 +126,6 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
                 Description description = new Description();
                 description.setText("");
                 barChart.setDescription(description);    // Hide the description
-                barChart.getAxisLeft().setDrawLabels(false);
-                barChart.getAxisRight().setDrawLabels(false);
-                barChart.getXAxis().setDrawLabels(false);
                 barChart.getLegend().setEnabled(false);
                 barChart.getAxisLeft().setAxisMinimum(0);
                 barChart.getAxisLeft().setAxisMaximum(100);

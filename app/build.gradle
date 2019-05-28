@@ -46,6 +46,7 @@ dependencies {
     implementation 'org.web3j:core:4.2.0-android'
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+//    implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
     annotationProcessor "androidx.room:room-compiler:$room_version"
     // https://mvnrepository.com/artifact/org.web3j/codegen
     // https://mvnrepository.com/artifact/org.web3j/core

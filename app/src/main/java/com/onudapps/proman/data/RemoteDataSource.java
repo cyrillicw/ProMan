@@ -21,7 +21,7 @@ public class RemoteDataSource {
     public RemoteDataSource() {
         Web3j web3j = Web3j.build(new HttpService("http://192.168.1.102:7545"));
         Credentials credentials = Credentials.create("28f3d307e639526a072b94cfa7f484ac84991118fbe7ac59cceb3abf53a58b67");
-        smartContract = Smart.load("53fe53a67bC4d78984BD870bFEA58fdFA6E4aCc6", web3j, credentials, new DefaultGasProvider());
+        smartContract = Smart.load("393dEb1E2fEeD5cf8cb2e7dd5bF87716C14DfE7f", web3j, credentials, new DefaultGasProvider());
     }
 
 //    public Flowable<TransactionReceipt> addBoard(String title) {
@@ -99,6 +99,7 @@ public class RemoteDataSource {
             return smartContract.getGroup(BigInteger.valueOf(groupId)).send();
         }
         catch (Exception e) {
+            Log.e(LOG_TAG, "failed load group " + e.getMessage());
             return null;
         }
     }

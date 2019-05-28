@@ -36,7 +36,6 @@ public class TaskDateDialogFragment extends DialogFragment {
     private RelativeLayout datetimeLayout;
     private TextView selectedDate;
     private TextView selectedTime;
-    private Calendar originalCalendar;
 
     private DialogMode dialogMode;
     private CalendarType calendarType;
@@ -45,9 +44,8 @@ public class TaskDateDialogFragment extends DialogFragment {
     private boolean confirmPressed;
     private TaskViewModel viewModel;
 
-    public static TaskDateDialogFragment newInstance(long datetime, CalendarType calendarType) {
+    public static TaskDateDialogFragment newInstance(CalendarType calendarType) {
         Bundle args = new Bundle();
-        args.putLong(DATE_TIME_TAG, datetime);
         args.putString(CALENDAR_TYPE_TAG, calendarType.toString());
         TaskDateDialogFragment fragment = new TaskDateDialogFragment();
         fragment.setArguments(args);
@@ -61,20 +59,11 @@ public class TaskDateDialogFragment extends DialogFragment {
         dialogMode = DialogMode.MAIN;
         calendarType = CalendarType.valueOf(getArguments().getString(CALENDAR_TYPE_TAG));
         confirmPressed = false;
-        long datetime = getArguments().getLong(DATE_TIME_TAG, -1);
-        if (datetime != -1) {
-            originalCalendar = Calendar.getInstance();
-            originalCalendar.setTimeInMillis(datetime);
-        }
-        else {
-            originalCalendar = null;
-        }
         datetimeLayout = view.findViewById(R.id.datetime_layout);
         selectedDate = view.findViewById(R.id.selected_date);
         selectedTime = view.findViewById(R.id.selected_time);
         viewModel = ((TaskActivity)getActivity()).getTaskViewModel();
-        if (originalCalendar != null) {
-            getCalendar().setTimeInMillis(originalCalendar.getTimeInMillis());
+        if (getCalendar() != null) {
             selectedDate.setText(dateFormat.format(getCalendar().getTime()));
             selectedTime.setText(timeFormat.format(getCalendar().getTime()));
             dateSet = true;
@@ -120,6 +109,9 @@ public class TaskDateDialogFragment extends DialogFragment {
             case TIME:
                 int hour = timePicker.getHour();
                 int minute = timePicker.getMinute();
+                if (getCalendar() == null) {
+                    initializeCalendar();
+                }
                 getCalendar().set(Calendar.HOUR_OF_DAY, hour);
                 getCalendar().set(Calendar.MINUTE, minute);
                 selectedTime.setText(timeFormat.format(getCalendar().getTime()));
@@ -129,6 +121,9 @@ public class TaskDateDialogFragment extends DialogFragment {
                 timeSet = true;
                 break;
             case CALENDAR:
+                if (getCalendar() == null) {
+                    initializeCalendar();
+                }
                 getCalendar().set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
                 getCalendar().set(Calendar.MONTH, datePicker.getMonth());
                 getCalendar().set(Calendar.YEAR, datePicker.getYear());
@@ -146,9 +141,12 @@ public class TaskDateDialogFragment extends DialogFragment {
     private void selectedDateOnClickListener(View v) {
         dialogMode = DialogMode.CALENDAR;
         datetimeLayout.setVisibility(View.GONE);
-        datePicker.updateDate(getCalendar().get(Calendar.YEAR),
-                getCalendar().get(Calendar.MONTH),
-                getCalendar().get(Calendar.DAY_OF_MONTH));
+        if (getCalendar() != null) {
+            datePicker.updateDate(getCalendar().get(Calendar.YEAR),
+                    getCalendar().get(Calendar.MONTH),
+                    getCalendar().get(Calendar.DAY_OF_MONTH));
+        }
+
         // calendarView.setDate(calendar.getTimeInMillis());
         datePicker.setVisibility(View.VISIBLE);
     }
@@ -179,6 +177,14 @@ public class TaskDateDialogFragment extends DialogFragment {
         }
     }
 
+    private void initializeCalendar() {
+        if (calendarType == CalendarType.START) {
+            viewModel.setStartChanged(Calendar.getInstance());
+        }
+        else {
+            viewModel.setFinishChanged(Calendar.getInstance());
+        }
+    }
     private void updateCalendar() {
         if (timeSet && dateSet) {
             if (calendarType == CalendarType.START)

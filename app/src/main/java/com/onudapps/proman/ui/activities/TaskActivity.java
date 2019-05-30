@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -100,6 +101,13 @@ public class TaskActivity extends AppCompatActivity {
         taskViewModel.setFinishChanged(originalTask.getFinish());
         TaskDateDialogFragment taskDateDialogFragment = TaskDateDialogFragment.newInstance(TaskDateDialogFragment.CalendarType.FINISH);
         taskDateDialogFragment.show(getSupportFragmentManager(), "DATE FINISH");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        finish();
+        return true;
     }
 
     private void tickClickListener(View v) {

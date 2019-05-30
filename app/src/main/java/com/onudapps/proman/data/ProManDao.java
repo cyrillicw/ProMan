@@ -151,7 +151,6 @@ public abstract class ProManDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertTaskDBEntities(List<TaskDBEntity> taskDBEntities);
 
-    @Transaction
     public void updateBoardGroup(GroupDBEntity groupDBEntity, List<TaskDBEntity> taskDBEntities) {
         insertGroup(groupDBEntity);
         insertTaskDBEntities(taskDBEntities);
@@ -173,6 +172,6 @@ public abstract class ProManDao {
     @Query("UPDATE tasks SET finish = :calendar WHERE taskId = :taskId")
     public abstract void setTaskFinish(int taskId, Calendar calendar);
 
-    @Query("SELECT title, start, finish FROM tasks WHERE boardId = :boardId")// and finish != NULL and start != NULL and start <= finish")
+    @Query("SELECT title, start, finish FROM tasks WHERE boardId = :boardId and start IS NOT NULL and finish IS NOT NULL and start <= finish ORDER BY finish DESC")// and finish != NULL and start != NULL and start <= finish")
     public abstract LiveData<List<TaskCalendarCard>> getTasksCalendarCard(int boardId);
 }

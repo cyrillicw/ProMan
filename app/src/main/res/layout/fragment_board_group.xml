@@ -30,7 +30,7 @@
         android:id="@+id/add_task_card"
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
-        android:layout_height="100dp"
+        android:layout_height="50dp"
         app:cardCornerRadius="4dp"
         android:layout_gravity="center"
         android:layout_margin="2dp">
@@ -40,8 +40,7 @@
             android:layout_height="match_parent"
             android:text="@string/add_task"
             android:background="@color/toolbar_text"
-            android:visibility="visible"
-            android:layout_weight="1"/>
+            android:visibility="visible" />
 
         <LinearLayout
             android:id="@+id/edit_layout"
@@ -54,8 +53,7 @@
                 android:id="@+id/add_task_edit"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="8"
-                android:textSize="30sp" />
+                android:layout_weight="8" />
 
             <ImageView
                 android:id="@+id/cross"

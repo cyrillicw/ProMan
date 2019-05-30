@@ -9,12 +9,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.onudapps.proman.R;
 
-public class LoadBoardFragment extends Fragment {
-
+public class EmptyBoardFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_load_board, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_empty_board, container, false);
     }
 }

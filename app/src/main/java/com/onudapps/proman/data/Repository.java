@@ -13,7 +13,6 @@ import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tuples.generated.Tuple4;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -104,18 +103,8 @@ public enum  Repository {
 
     public void updateBoardCards() {
         executorService.execute(() -> {
-            Tuple4<List<BigInteger>, List<String>, List<BigInteger>, List<BigInteger>> tuple4
-                    = remoteDataSource.getBoards();
-            if (tuple4 != null) {
-                List<BoardDBEntity> boardDBEntities = new ArrayList<>();
-                for (int i = 1; i < tuple4.getValue1().size(); i++) {
-                    BoardDBEntity boardDBEntity = new BoardDBEntity();
-                    boardDBEntity.setBoardId(tuple4.getValue1().get(i).intValue());
-                    boardDBEntity.setTitle(tuple4.getValue2().get(i));
-                    boardDBEntity.setStart(numToCalendar(tuple4.getValue3().get(i)));
-                    boardDBEntity.setFinish(numToCalendar(tuple4.getValue4().get(i)));
-                    boardDBEntities.add(boardDBEntity);
-                }
+            List<BoardDBEntity> boardDBEntities = remoteDataSource.getBoards();
+            if (boardDBEntities != null) {
                 localDataSource.updateBoardCards(boardDBEntities);
             }
         });
@@ -143,7 +132,7 @@ public enum  Repository {
         });
     }
 
-    private Tuple2<GroupDBEntity, List<TaskDBEntity>> getBoardGroup(int groupId, int boardId) {
+//    private Tuple2<GroupDBEntity, List<TaskDBEntity>> getBoardGroup(int groupId, int boardId) {
 //        Tuple6<String, List<BigInteger>, List<String>, List<String>, List<BigInteger>, List<BigInteger>> tuple =
 //                remoteDataSource.getGroup(groupId);
 //        String title = tuple.getValue1();
@@ -171,39 +160,34 @@ public enum  Repository {
 //        groupDBEntity.setBoardId(boardId);
 //        groupDBEntity.setGroupId(groupId);
 //        return new Tuple2<>(groupDBEntity, taskDBEntities);
-        GroupDBEntity groupDBEntity = new GroupDBEntity();
-        groupDBEntity.setTitle("F");
-        groupDBEntity.setBoardId(boardId);
-        groupDBEntity.setGroupId(groupId);
-        List<TaskDBEntity> taskDBEntities = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            TaskDBEntity taskDBEntity = new TaskDBEntity();
-            taskDBEntity.setTitle("TASKАААААFFFFFFFFFFFFFFFААААА " + i);
-            Calendar start = Calendar.getInstance();
-            start.add(Calendar.DAY_OF_MONTH, -i - 1);
-            Calendar finish = Calendar.getInstance();
-            finish.add(Calendar.DAY_OF_MONTH, i + 1);
-            taskDBEntity.setTaskId((int)(Math.random() * 100000));
-            taskDBEntity.setStart(start);
-            taskDBEntity.setFinish(finish);
-            taskDBEntity.setGroupId(groupId);
-            taskDBEntity.setBoardId(boardId);
-            taskDBEntities.add(taskDBEntity);
-        }
-        return new Tuple2<>(groupDBEntity, taskDBEntities);
-    }
+////        GroupDBEntity groupDBEntity = new GroupDBEntity();
+////        groupDBEntity.setTitle("F");
+////        groupDBEntity.setBoardId(boardId);
+////        groupDBEntity.setGroupId(groupId);
+////        List<TaskDBEntity> taskDBEntities = new ArrayList<>();
+////        for (int i = 0; i < 8; i++) {
+////            TaskDBEntity taskDBEntity = new TaskDBEntity();
+////            taskDBEntity.setTitle("TASKАААААFFFFFFFFFFFFFFFААААА " + i);
+////            Calendar start = Calendar.getInstance();
+////            start.add(Calendar.DAY_OF_MONTH, -i - 1);
+////            Calendar finish = Calendar.getInstance();
+////            finish.add(Calendar.DAY_OF_MONTH, i + 1);
+////            taskDBEntity.setTaskId((int)(Math.random() * 100000));
+////            taskDBEntity.setStart(start);
+////            taskDBEntity.setFinish(finish);
+////            taskDBEntity.setGroupId(groupId);
+////            taskDBEntity.setBoardId(boardId);
+////            taskDBEntities.add(taskDBEntity);
+////        }
+//        return new Tuple2<>(groupDBEntity, taskDBEntities);
+//    }
 
     public void updateBoard(int id) {
         executorService.execute(() -> {
-            Tuple4<String, BigInteger, BigInteger, List<BigInteger>> tuple = remoteDataSource.getBoard(id);
-            if (tuple != null) {
-                BoardDBEntity boardDBEntity = tupleToBoardDBEntity(id, tuple);
-                List<Tuple2<GroupDBEntity, List<TaskDBEntity>>> groups = new ArrayList<>();
-                for (int i = 0; i < tuple.getValue4().size(); i++) {
-                    groups.add(getBoardGroup(tuple.getValue4().get(i).intValue(), id));
-                }
-                Log.e("REPOSITURY", "in update " + groups.size());
-                localDataSource.updateBoard(boardDBEntity, groups);
+            Tuple2<BoardDBEntity, List<Tuple2<GroupDBEntity, List<TaskDBEntity>>>> board
+                    = remoteDataSource.getBoard(id);
+            if (board != null) {
+                localDataSource.updateBoard(board.getValue1(), board.getValue2());
             }
         });
     }
@@ -239,7 +223,7 @@ public enum  Repository {
         return boardDBEntity;
     }
 
-    private Calendar numToCalendar(BigInteger bigInteger) {
+    public Calendar numToCalendar(BigInteger bigInteger) {
         long date = bigInteger.longValue();
         if (date < 0) {
             return null;

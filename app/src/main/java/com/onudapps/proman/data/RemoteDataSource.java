@@ -2,16 +2,21 @@ package com.onudapps.proman.data;
 
 import android.util.Log;
 import com.onudapps.proman.contracts.Smart;
+import com.onudapps.proman.data.db.entities.BoardDBEntity;
+import com.onudapps.proman.data.db.entities.GroupDBEntity;
+import com.onudapps.proman.data.db.entities.TaskDBEntity;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.RemoteCall;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tuples.generated.Tuple2;
+import org.web3j.tuples.generated.Tuple3;
 import org.web3j.tuples.generated.Tuple4;
-import org.web3j.tuples.generated.Tuple6;
 import org.web3j.tx.gas.DefaultGasProvider;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -19,9 +24,9 @@ public class RemoteDataSource {
     private static final String LOG_TAG = "RemoteDataSource";
     private Smart smartContract;
     public RemoteDataSource() {
-        Web3j web3j = Web3j.build(new HttpService("http://192.168.1.102:7545"));
-        Credentials credentials = Credentials.create("28f3d307e639526a072b94cfa7f484ac84991118fbe7ac59cceb3abf53a58b67");
-        smartContract = Smart.load("393dEb1E2fEeD5cf8cb2e7dd5bF87716C14DfE7f", web3j, credentials, new DefaultGasProvider());
+        Web3j web3j = Web3j.build(new HttpService("http://192.168.1.103:7545"));
+        Credentials credentials = Credentials.create("1dae1d2536cfe598574a4b2ba677b5a7173b4ae31052d2ce9e727a98b1709632");
+        smartContract = Smart.load("D353369D755253F56E868feDe85c1B99A521F844", web3j, credentials, new DefaultGasProvider());
     }
 
 //    public Flowable<TransactionReceipt> addBoard(String title) {
@@ -94,21 +99,71 @@ public class RemoteDataSource {
         }
     }
 
-    public Tuple6<String, List<BigInteger>, List<String>, List<String>, List<BigInteger>, List<BigInteger>> getGroup(int groupId) {
+    public Tuple2<BoardDBEntity, List<Tuple2<GroupDBEntity, List<TaskDBEntity>>>> getBoard(int boardId) {
         try {
-            return smartContract.getGroup(BigInteger.valueOf(groupId)).send();
+            Tuple4<String, BigInteger, BigInteger, List<BigInteger>> tuple
+                    = smartContract.getBoard(BigInteger.valueOf(boardId)).send();
+            BoardDBEntity boardDBEntity = new BoardDBEntity();
+            boardDBEntity.setBoardId(boardId);
+            boardDBEntity.setTitle(tuple.getValue1());
+            boardDBEntity.setStart(Repository.REPOSITORY.numToCalendar(tuple.getValue2()));
+            boardDBEntity.setFinish(Repository.REPOSITORY.numToCalendar(tuple.getValue3()));
+            List<Tuple2<GroupDBEntity, List<TaskDBEntity>>> groupsWithTasks = new ArrayList<>();
+            for (BigInteger groupId : tuple.getValue4()) {
+                Tuple2<String, List<BigInteger>> groupTuple = smartContract.getGroup(groupId).send();
+                GroupDBEntity groupDBEntity = new GroupDBEntity();
+                groupDBEntity.setGroupId(groupId.intValue());
+                groupDBEntity.setBoardId(boardId);
+                groupDBEntity.setTitle(groupTuple.getValue1());
+                List<TaskDBEntity> taskDBEntities = new ArrayList<>();
+                for (BigInteger taskId : groupTuple.getValue2()) {
+                    TaskDBEntity taskDBEntity = new TaskDBEntity();
+                    Tuple4<String, String, BigInteger, BigInteger> taskTuple = smartContract.getTask(taskId).send();
+                    taskDBEntity.setTaskId(taskId.intValue());
+                    taskDBEntity.setTitle(taskTuple.getValue1());
+                    taskDBEntity.setDescription(taskTuple.getValue2());
+                    taskDBEntity.setStart(Repository.REPOSITORY.numToCalendar(taskTuple.getValue3()));
+                    taskDBEntity.setFinish(Repository.REPOSITORY.numToCalendar(taskTuple.getValue4()));
+                    taskDBEntity.setGroupId(groupId.intValue());
+                    taskDBEntity.setBoardId(boardId);
+                    taskDBEntities.add(taskDBEntity);
+                }
+                groupsWithTasks.add(new Tuple2<>(groupDBEntity, taskDBEntities));
+            }
+            return new Tuple2<>(boardDBEntity, groupsWithTasks);
         }
         catch (Exception e) {
-            Log.e(LOG_TAG, "failed load group " + e.getMessage());
+            Log.e(LOG_TAG, "FAILED LOADING BOARD");
             return null;
         }
     }
 
+    public Smart getSmartContract() {
+        return smartContract;
+    }
+
     //Tuple3<String, List<BigInteger>, List<String>> res =
 
-    public Tuple4<List<BigInteger>, List<String>, List<BigInteger>, List<BigInteger>> getBoards() {
+
+
+    public List<BoardDBEntity> getBoards() {
         try {
-            return smartContract.getBoardCards().send();
+            List<BigInteger> boards = smartContract.getBoardsIndices().send();
+            List<BoardDBEntity> boardDBEntities = new ArrayList<>();
+            Log.e(LOG_TAG, "boards size " + boards.size());
+            for (BigInteger id: boards) {
+                Tuple3<String, BigInteger, BigInteger> tuple =
+                        smartContract.getBoardCard(id).send();
+                BoardDBEntity boardDBEntity = new BoardDBEntity();
+                boardDBEntity.setBoardId(id.intValue());
+                boardDBEntity.setTitle(tuple.getValue1());
+                Calendar start = Repository.REPOSITORY.numToCalendar(tuple.getValue2());
+                Calendar finish = Repository.REPOSITORY.numToCalendar(tuple.getValue3());
+                boardDBEntity.setStart(start);
+                boardDBEntity.setFinish(finish);
+                boardDBEntities.add(boardDBEntity);
+            }
+            return boardDBEntities;
         }
         catch (Exception e) {
             Log.e(LOG_TAG, "Failed loading boards " + e.getMessage());
@@ -116,15 +171,15 @@ public class RemoteDataSource {
         }
     }
 
-    public Tuple4<String, BigInteger, BigInteger, List<BigInteger>> getBoard(int id) {
-        try {
-            return smartContract.getBoard(BigInteger.valueOf(id)).send();
-        }
-        catch (Exception e){
-            Log.e(LOG_TAG, "Failed loading board " + e.getMessage());
-            return null;
-        }
-    }
+//    public Tuple4<String, BigInteger, BigInteger, List<BigInteger>> getBoard(int id) {
+//        try {
+//            return smartContract.getBoard(BigInteger.valueOf(id)).send();
+//        }
+//        catch (Exception e){
+//            Log.e(LOG_TAG, "Failed loading board " + e.getMessage());
+//            return null;
+//        }
+//    }
 
     public RemoteCall<TransactionReceipt> leaveBoard(int id) {
         return smartContract.leaveBoard(BigInteger.valueOf(id));

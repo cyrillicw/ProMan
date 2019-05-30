@@ -4,10 +4,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -69,8 +66,11 @@ public class BoardCardsActivity extends AppCompatActivity {
         if (boardCards.size() == 0 || boardCards.get(0).getUpdated().before(threshold)) {
             viewModel.forceBoardsUpdate();
         }
-        else if (boardCards.get(0).getBoardDBEntity() != null) {
+        if (boardCards.size() != 0 && boardCards.get(0).getBoardDBEntity() != null) {
             ((BoardsRecyclerAdapter) recyclerView.getAdapter()).updateData(boardCards);
+        }
+        else {
+            ((BoardsRecyclerAdapter) recyclerView.getAdapter()).updateData(new ArrayList<>());
         }
     }
 

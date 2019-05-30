@@ -193,6 +193,7 @@ public class TaskDateDialogFragment extends DialogFragment {
                 viewModel.updateFinish(getCalendar());
             }
             dismiss();
+            Toast.makeText(getContext(), getResources().getString(R.string.update_alert), Toast.LENGTH_LONG).show();
         }
         else if (!timeSet && !dateSet) {
             if (calendarType == CalendarType.START)
@@ -201,8 +202,8 @@ public class TaskDateDialogFragment extends DialogFragment {
                 viewModel.updateFinish(null);
             }
             dismiss();
+            Toast.makeText(getContext(), getResources().getString(R.string.update_alert), Toast.LENGTH_LONG).show();
         }
-        Toast.makeText(getContext(), getResources().getString(R.string.update_alert), Toast.LENGTH_LONG).show();
     }
 
     public boolean isConfirmPressed() {

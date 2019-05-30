@@ -109,7 +109,7 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
         private void drawChart(BoardDBEntity board) {
             Calendar start = board.getStart();
             Calendar finish = board.getFinish();
-            if (start != null && finish != null) {
+            if (start != null && finish != null && !finish.before(start)) {
                 barChart.setVisibility(View.VISIBLE);
                 motivation.setVisibility(View.GONE);
                 Calendar current = Calendar.getInstance();
@@ -119,6 +119,9 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
                 barEntries.add(new BarEntry(1, finished));
                 BarDataSet barDataSet = new BarDataSet(barEntries, "E");
                 barDataSet.setValueTextSize(30);
+                Log.e("TITLE", board.getTitle());
+                Log.e("START", start.getTime().toString());
+                Log.e("FINISH", finish.getTime().toString());
                 int color = colors[Math.min(colors.length - 1, (int) (colors.length * (double) finished / 100))];
                 barDataSet.setColor(color, 0xFF);
                 BarData barData = new BarData(barDataSet);

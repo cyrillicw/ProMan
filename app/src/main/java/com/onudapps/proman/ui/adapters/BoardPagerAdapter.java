@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import com.onudapps.proman.data.pojo.GroupWithUpdate;
 import com.onudapps.proman.ui.fragments.BoardChartFragment;
 import com.onudapps.proman.ui.fragments.BoardGroupFragment;
+import com.onudapps.proman.ui.fragments.EmptyBoardFragment;
 
 import java.util.List;
 
@@ -43,6 +44,9 @@ public class BoardPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        if (groupDBEntities.size() == 0) {
+            return new EmptyBoardFragment();
+        }
         if (position < groupDBEntities.size()) {
             return BoardGroupFragment.newInstance(groupDBEntities.get(position)
                     .getGroupDBEntity().getGroupId(), groupDBEntities.get(position).getGroupDBEntity().getBoardId());
@@ -52,10 +56,7 @@ public class BoardPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        if (groupDBEntities.size() > 0) {
-            return groupDBEntities.size() + 1;
-        }
-        return 0;
+        return groupDBEntities.size() + 1;
     }
 
     @Override

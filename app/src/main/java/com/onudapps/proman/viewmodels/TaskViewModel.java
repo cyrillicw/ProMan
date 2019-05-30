@@ -27,10 +27,16 @@ public class TaskViewModel extends ViewModel {
     }
 
     public void updateStart(Calendar calendar) {
+        if (calendar != null) {
+            calendar.set(Calendar.SECOND, 0);
+        }
         Repository.REPOSITORY.setTaskStart(taskId, calendar);
     }
 
     public void updateFinish(Calendar calendar) {
+        if (calendar != null) {
+            calendar.set(Calendar.SECOND, 0);
+        }
         Repository.REPOSITORY.setTaskFinish(taskId, calendar);
     }
 

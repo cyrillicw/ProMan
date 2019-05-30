@@ -2,9 +2,11 @@ package com.onudapps.proman.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -30,6 +32,7 @@ public class BoardActivity extends AppCompatActivity {
     private ProManSmartContractDeclaration contract;
     private String privateKey;
 
+    private int boardId;
     private BoardViewModel viewModel;
     private LiveData<List<GroupWithUpdate>> groupsData;
     private LiveData<String> titleData;
@@ -39,6 +42,7 @@ public class BoardActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ImageView groupsMode;
     private ImageView statisticsMode;
+    private LinearLayout viewSwitcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +50,16 @@ public class BoardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_board);
         viewPager = findViewById(R.id.board_pager);
         Intent intent = getIntent();
-        int boardId = intent.getIntExtra(BOARD_KEY, -1);
+        boardId = intent.getIntExtra(BOARD_KEY, -1);
+//        if (boardId == -1) {
+//             boardId = savedInstanceState.getInt(BOARD_KEY);
+//        }
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         title = findViewById(R.id.headline);
+        viewSwitcher = findViewById(R.id.modes_layout);
         viewModel = ViewModelProviders
                 .of(this, new BoardViewModel.BoardModelFactory(boardId))
                 .get(BoardViewModel.class);
@@ -106,10 +114,23 @@ public class BoardActivity extends AppCompatActivity {
         if (groups.size() == 0 || groups.get(0).getUpdated().before(threshold)) {
             viewModel.forceBoardUpdate();
         }
-        else if (groups.get(0).getGroupDBEntity() != null) {
+        if (groups.size() != 0 && groups.get(0).getGroupDBEntity() != null) {
             Log.e(LOG_TAG, "NOW");
+            viewSwitcher.setVisibility(View.VISIBLE);
             ((BoardPagerAdapter) viewPager.getAdapter()).updateData(groups);
             viewPager.invalidate();
         }
+        else {
+            viewSwitcher.setVisibility(View.GONE);
+            ((BoardPagerAdapter) viewPager.getAdapter()).updateData(new ArrayList<>());
+            viewPager.invalidate();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        Log.e(LOG_TAG, "ON SAVED INSTANCE");
+        outState.putInt(BOARD_KEY, boardId);
     }
 }

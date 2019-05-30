@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -13,7 +15,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.*;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
@@ -35,6 +36,11 @@ public class BoardChartFragment extends Fragment {
 
     private PieChart groupsDistribution;
     private HorizontalBarChart gantt;
+    private LinearLayout availableGantt;
+    private TextView unvailableGantt;
+    private LinearLayout availableGroupsDistribution;
+    private TextView unavailableGroupsDistribution;
+
 
     public BoardChartFragment() {
         super();
@@ -61,6 +67,10 @@ public class BoardChartFragment extends Fragment {
         groupData.observe(this, this::onGroupsChangedListener );
         LiveData<List<TaskCalendarCard>> taskCalendarData = null;
         gantt = view.findViewById(R.id.ganttChart);
+        availableGroupsDistribution = view.findViewById(R.id.available_groups_distribution);
+        unavailableGroupsDistribution = view.findViewById(R.id.unavailable_groups_distribution);
+        availableGantt = view.findViewById(R.id.available_gantt);
+        unvailableGantt = view.findViewById(R.id.unavailable_gantt);
         taskCalendarData = boardChartViewModel.getTasksCalendarData();
         taskCalendarData.observe(this, this::onTaskCalendarChangeListener);
 //        DataSet
@@ -71,6 +81,7 @@ public class BoardChartFragment extends Fragment {
     }
 
     private void onTaskCalendarChangeListener(List<TaskCalendarCard> taskCalendarCards) {
+        Log.e("CHART GANTT", "HERE");
         Calendar start = Calendar.getInstance();
         start.set(Calendar.DAY_OF_MONTH, 1);
         start.set(Calendar.HOUR_OF_DAY, 0);
@@ -90,17 +101,19 @@ public class BoardChartFragment extends Fragment {
             Calendar currentStart = taskCalendarCards.get(i).getStart();
             Calendar currentFinish = taskCalendarCards.get(i).getFinish();
             if (!currentStart.after(finish) && !currentFinish.before(start)) {
-                int dStart;
+                float dStart;
                 if (currentStart.before(start)) {
                     dStart = 1;
                 } else {
                     dStart = currentStart.get(Calendar.DAY_OF_MONTH);
+                    dStart += dayPart(start);
                 }
-                int dFinish;
+                float dFinish;
                 if (currentFinish.after(finish)) {
                     dFinish = maxDays;
                 } else {
                     dFinish = currentFinish.get(Calendar.DAY_OF_MONTH);
+                    dFinish += dayPart(finish);
                 }
                 barEntries.add(new BarEntry(i, new float[]{dStart, dFinish - dStart}));
                 if (taskCalendarCards.get(i).getTitle().length() <= maxLength) {
@@ -114,49 +127,61 @@ public class BoardChartFragment extends Fragment {
 
             }
         }
-        //BarEntry barEntry1  = new BarEntry()
-        BarDataSet barDataSet = new BarDataSet(barEntries, "LABEL");
-        barDataSet.setDrawValues(false);
-        int mainColor = ContextCompat.getColor(getContext(), R.color.chart);
-        int chartColor = ContextCompat.getColor(getContext(), R.color.blank);
-        barDataSet.setColors(chartColor, mainColor);
-        BarData barData = new BarData(barDataSet);
-        //gantt.getAxisLeft().setDrawLabels(false);
-        //gantt.getAxisRight().setDrawLabels(false);
-        //gantt.getXAxis().setDrawLabels(false);
-        gantt.setDrawGridBackground(false);
-        gantt.getAxisRight().disableGridDashedLine();
-        //gantt.getAxisRight().setDrawTopYLabelEntry(false);
-        gantt.getAxisRight().setDrawGridLines(false);
-        gantt.getAxisRight().setDrawAxisLine(false);
-        gantt.getAxisLeft().disableGridDashedLine();
-        gantt.getAxisLeft().setAxisMinimum(1);
-        gantt.getAxisLeft().setAxisMaximum(maxDays);
-        gantt.getAxisRight().setAxisMinimum(1);
-        gantt.getAxisRight().setAxisMaximum(maxDays);
-        //gantt.getAxisLeft().setDrawTopYLabelEntry(false);
-        gantt.getAxisLeft().setDrawGridLines(false);
-        List<String> yLabels = new ArrayList<>();
-        for (int i = 0; i <= maxDays; i++) {
-            yLabels.add(Integer.toString(i));
+        if (barEntries.size() > 0) {
+            //BarEntry barEntry1  = new BarEntry()
+            BarDataSet barDataSet = new BarDataSet(barEntries, "LABEL");
+            barDataSet.setDrawValues(false);
+            int mainColor = ContextCompat.getColor(getContext(), R.color.chart);
+            int chartColor = ContextCompat.getColor(getContext(), R.color.blank);
+            barDataSet.setColors(chartColor, mainColor);
+            BarData barData = new BarData(barDataSet);
+            //gantt.getAxisLeft().setDrawLabels(false);
+            //gantt.getAxisRight().setDrawLabels(false);
+            //gantt.getXAxis().setDrawLabels(false);
+            gantt.setDrawGridBackground(false);
+            gantt.getAxisRight().disableGridDashedLine();
+            //gantt.getAxisRight().setDrawTopYLabelEntry(false);
+            gantt.getAxisRight().setDrawGridLines(false);
+            gantt.getAxisRight().setDrawAxisLine(false);
+            gantt.getAxisLeft().disableGridDashedLine();
+            gantt.getAxisLeft().setAxisMinimum(1);
+            gantt.getAxisLeft().setAxisMaximum(maxDays);
+            gantt.getAxisRight().setAxisMinimum(1);
+            gantt.getAxisRight().setAxisMaximum(maxDays);
+            //gantt.getAxisLeft().setDrawTopYLabelEntry(false);
+            gantt.getAxisLeft().setDrawGridLines(false);
+            List<String> yLabels = new ArrayList<>();
+            for (int i = 0; i <= maxDays; i++) {
+                yLabels.add(Integer.toString(i));
+            }
+            Log.e("GANTT", "WIDTH" + gantt.getWidth());
+            gantt.getAxisLeft().setValueFormatter(new IndexAxisValueFormatter(yLabels));
+            gantt.getAxisRight().setValueFormatter(new IndexAxisValueFormatter(yLabels));
+            gantt.getAxisRight().setLabelCount(maxDays / 2);
+            gantt.getAxisLeft().setLabelCount(maxDays / 2);
+            gantt.getAxisLeft().setDrawAxisLine(false);
+            gantt.getXAxis().setDrawGridLines(false);
+            gantt.getXAxis().setDrawAxisLine(false);
+            gantt.getXAxis().disableGridDashedLine();
+            gantt.setData(barData);
+            XAxis xAxis = gantt.getXAxis();
+            Log.e("CHART", "xSize " + xAxisLabel.size());
+            xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisLabel));
+            xAxis.setLabelCount(xAxisLabel.size());
+            gantt.setTouchEnabled(false);
+            gantt.notifyDataSetChanged();
+            gantt.setDescription(null);
+            gantt.getLegend().setEnabled(false);
+            float height = getResources().getDimension(R.dimen.chart_column_height);
+            gantt.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height * (barEntries.size() + 1))));
+            unvailableGantt.setVisibility(View.GONE);
+            availableGantt.setVisibility(View.VISIBLE);
+            gantt.invalidate();
         }
-        gantt.getAxisLeft().setValueFormatter(new IndexAxisValueFormatter(yLabels));
-        gantt.getAxisRight().setValueFormatter(new IndexAxisValueFormatter(yLabels));
-        gantt.getAxisRight().setLabelCount(maxDays / 2);
-        gantt.getAxisLeft().setLabelCount(maxDays / 2);
-        gantt.getAxisLeft().setDrawAxisLine(false);
-        gantt.getXAxis().setDrawGridLines(false);
-        gantt.getXAxis().setDrawAxisLine(false);
-        gantt.getXAxis().disableGridDashedLine();
-        gantt.setData(barData);
-        XAxis xAxis = gantt.getXAxis();
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisLabel));
-        xAxis.setLabelCount(xAxisLabel.size());
-        gantt.setTouchEnabled(false);
-        gantt.notifyDataSetChanged();
-        gantt.setDescription(null);
-        gantt.getLegend().setEnabled(false);
-        gantt.invalidate();
+        else {
+            unvailableGantt.setVisibility(View.VISIBLE);
+            availableGantt.setVisibility(View.GONE);
+        }
 
 //        HorizontalBarChart horizontalBarChart = new HorizontalBarChart()
 //        RangeBar rangeBar = new RangeBar("J");
@@ -165,23 +190,35 @@ public class BoardChartFragment extends Fragment {
     }
 
     private void onGroupsChangedListener(List<GroupStatistic> groupStatistics) {
-        Log.e("CHART", "STAT " + groupStatistics.size());
+        Log.e("CHART", "STAT GROUP");
         List<PieEntry> yValues = new ArrayList<>();
+        int tasksCount = 0;
         for (GroupStatistic groupStatistic : groupStatistics) {
+            tasksCount += groupStatistic.getTasksCount();
             yValues.add(new PieEntry(groupStatistic.getTasksCount(), groupStatistic.getTitle()));
-
         }
-        PieDataSet pieDataSet = new PieDataSet(yValues, "groups");
-        pieDataSet.setColors(ColorTemplate.PASTEL_COLORS);
-        PieData pieData = new PieData(pieDataSet);
-        pieDataSet.setDrawValues(false);
-        groupsDistribution.setData(pieData);
-        groupsDistribution.setTouchEnabled(false);
-        Description description = new Description();
-        description.setText("GROUPS DISTRIBUTION");
-        groupsDistribution.setDescription(description);
-        groupsDistribution.notifyDataSetChanged();
-        groupsDistribution.invalidate();
+        if (tasksCount > 0) {
+            PieDataSet pieDataSet = new PieDataSet(yValues, "groups");
+            pieDataSet.setColors(ColorTemplate.PASTEL_COLORS);
+            PieData pieData = new PieData(pieDataSet);
+            pieDataSet.setDrawValues(false);
+            groupsDistribution.setData(pieData);
+            groupsDistribution.setTouchEnabled(false);
+            groupsDistribution.setDescription(null);
+            availableGroupsDistribution.setVisibility(View.VISIBLE);
+            unavailableGroupsDistribution.setVisibility(View.GONE);
+            groupsDistribution.notifyDataSetChanged();
+            groupsDistribution.invalidate();
+        }
+        else {
+            availableGroupsDistribution.setVisibility(View.GONE);
+            unavailableGroupsDistribution.setVisibility(View.VISIBLE);
+        }
         // groupsDistribution.setLayoutParams(new FrameLayout.LayoutParams(width, width));
+    }
+
+    private float dayPart(Calendar calendar) {
+        return (float) ((double)(calendar.get(Calendar.HOUR_OF_DAY) * 3600
+                + calendar.get(Calendar.MINUTE) * 60 + calendar.get(Calendar.SECOND)) / (24 * 3600));
     }
 }

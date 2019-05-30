@@ -90,6 +90,28 @@ public class RemoteDataSource {
         }
     }
 
+    public TransactionReceipt setBoardStart(int boardId, Calendar calendar) {
+        long time = calendar == null ? -1 : calendar.getTimeInMillis();
+        try {
+            return smartContract.setBoardStart(BigInteger.valueOf(boardId), BigInteger.valueOf(time)).send();
+        }
+        catch (Exception e) {
+            //Log.e(LOG_TAG, "start set failed " + boardId + " " + e.getMessage());
+            return null;
+        }
+    }
+
+    public TransactionReceipt setBoardFinish(int boardId, Calendar calendar) {
+        long time = calendar == null ? -1 : calendar.getTimeInMillis();
+        try {
+            return smartContract.setBoardFinish(BigInteger.valueOf(boardId), BigInteger.valueOf(time)).send();
+        }
+        catch (Exception e) {
+            //Log.e(LOG_TAG, "start set failed " + boardId + " " + e.getMessage());
+            return null;
+        }
+    }
+
     public TransactionReceipt createTask(int groupId, String title) {
         try {
             return smartContract.addTask(BigInteger.valueOf(groupId), title).send();

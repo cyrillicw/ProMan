@@ -10,14 +10,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import com.onudapps.proman.R;
+import com.onudapps.proman.ui.activities.StartFinishViewSupport;
 import com.onudapps.proman.ui.activities.TaskActivity;
+import com.onudapps.proman.viewmodels.StartFinishViewModelSupport;
 import com.onudapps.proman.viewmodels.TaskViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class TaskDateDialogFragment extends DialogFragment {
+public class DateDialogFragment extends DialogFragment {
     private static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
     private static final String DATE_TIME_TAG = "datetime";
@@ -42,12 +44,12 @@ public class TaskDateDialogFragment extends DialogFragment {
     private boolean dateSet;
     private boolean timeSet;
     private boolean confirmPressed;
-    private TaskViewModel viewModel;
+    private StartFinishViewModelSupport viewModel;
 
-    public static TaskDateDialogFragment newInstance(CalendarType calendarType) {
+    public static DateDialogFragment newInstance(CalendarType calendarType) {
         Bundle args = new Bundle();
         args.putString(CALENDAR_TYPE_TAG, calendarType.toString());
-        TaskDateDialogFragment fragment = new TaskDateDialogFragment();
+        DateDialogFragment fragment = new DateDialogFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -62,7 +64,7 @@ public class TaskDateDialogFragment extends DialogFragment {
         datetimeLayout = view.findViewById(R.id.datetime_layout);
         selectedDate = view.findViewById(R.id.selected_date);
         selectedTime = view.findViewById(R.id.selected_time);
-        viewModel = ((TaskActivity)getActivity()).getTaskViewModel();
+        viewModel = ((StartFinishViewSupport)getActivity()).getStartFinishViewModel();
         if (getCalendar() != null) {
             selectedDate.setText(dateFormat.format(getCalendar().getTime()));
             selectedTime.setText(timeFormat.format(getCalendar().getTime()));

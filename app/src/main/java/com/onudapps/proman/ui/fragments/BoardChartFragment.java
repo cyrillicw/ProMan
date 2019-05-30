@@ -37,7 +37,7 @@ public class BoardChartFragment extends Fragment {
     private PieChart groupsDistribution;
     private HorizontalBarChart gantt;
     private LinearLayout availableGantt;
-    private TextView unvailableGantt;
+    private TextView unavailableGantt;
     private LinearLayout availableGroupsDistribution;
     private TextView unavailableGroupsDistribution;
 
@@ -70,7 +70,7 @@ public class BoardChartFragment extends Fragment {
         availableGroupsDistribution = view.findViewById(R.id.available_groups_distribution);
         unavailableGroupsDistribution = view.findViewById(R.id.unavailable_groups_distribution);
         availableGantt = view.findViewById(R.id.available_gantt);
-        unvailableGantt = view.findViewById(R.id.unavailable_gantt);
+        unavailableGantt = view.findViewById(R.id.unavailable_gantt);
         taskCalendarData = boardChartViewModel.getTasksCalendarData();
         taskCalendarData.observe(this, this::onTaskCalendarChangeListener);
 //        DataSet
@@ -174,12 +174,12 @@ public class BoardChartFragment extends Fragment {
             gantt.getLegend().setEnabled(false);
             float height = getResources().getDimension(R.dimen.chart_column_height);
             gantt.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height * (barEntries.size() + 1))));
-            unvailableGantt.setVisibility(View.GONE);
+            unavailableGantt.setVisibility(View.GONE);
             availableGantt.setVisibility(View.VISIBLE);
             gantt.invalidate();
         }
         else {
-            unvailableGantt.setVisibility(View.VISIBLE);
+            unavailableGantt.setVisibility(View.VISIBLE);
             availableGantt.setVisibility(View.GONE);
         }
 

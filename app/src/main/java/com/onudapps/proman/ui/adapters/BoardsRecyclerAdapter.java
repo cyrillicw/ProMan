@@ -136,6 +136,9 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
                 barChart.getAxisLeft().setDrawGridLines(false);
                 barChart.getAxisRight().setDrawGridLines(false);
                 barChart.setTouchEnabled(false);
+                barDataSet.setDrawValues(false);
+                barChart.notifyDataSetChanged();
+                barChart.invalidate();
             }
             else {
                 barChart.setVisibility(View.GONE);

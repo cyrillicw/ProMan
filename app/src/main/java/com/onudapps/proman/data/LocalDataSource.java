@@ -3,10 +3,7 @@ package com.onudapps.proman.data;
 import android.content.Context;
 import androidx.lifecycle.LiveData;
 import androidx.room.Room;
-import com.onudapps.proman.data.db.entities.BoardDBEntity;
-import com.onudapps.proman.data.db.entities.GroupDBEntity;
-import com.onudapps.proman.data.db.entities.LastUpdateEntity;
-import com.onudapps.proman.data.db.entities.TaskDBEntity;
+import com.onudapps.proman.data.db.entities.*;
 import com.onudapps.proman.data.pojo.*;
 import org.web3j.tuples.generated.Tuple2;
 
@@ -24,6 +21,10 @@ class LocalDataSource {
         return database.getProManDao().getTaskDBEntity(taskId);
     }
 
+    public LiveData<List<ParticipantDBEntity>> getBoardParticipants(int boardId) {
+        return database.getProManDao().getBoardParticipants(boardId);
+    }
+
     public void insertTask(Task task) {
         database.getProManDao().insertTask(task);
     }
@@ -34,6 +35,9 @@ class LocalDataSource {
 
     public LiveData<List<TaskCalendarCard>> getTasksCalendarData(int boardId) {
         return database.getProManDao().getTasksCalendarCard(boardId);
+    }
+    public LiveData<StartFinishDates> getBoardStartFinishDates(int boardId) {
+        return database.getProManDao().getBoardStartFinishDates(boardId);
     }
 
     public LiveData<List<BoardWithUpdate>> getBoardCards() {
@@ -90,5 +94,13 @@ class LocalDataSource {
 
     public void setTaskFinish(int taskId, Calendar calendar) {
         database.getProManDao().setTaskFinish(taskId, calendar);
+    }
+
+    public void setBoardStart(int boardId, Calendar calendar) {
+        database.getProManDao().setBoardStart(boardId, calendar);
+    }
+
+    public void setBoardFinish(int boardId, Calendar calendar) {
+        database.getProManDao().setBoardFinish(boardId, calendar);
     }
 }

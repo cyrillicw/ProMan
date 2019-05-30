@@ -3,10 +3,7 @@ package com.onudapps.proman.data;
 import android.content.Context;
 import android.util.Log;
 import androidx.lifecycle.LiveData;
-import com.onudapps.proman.data.db.entities.BoardDBEntity;
-import com.onudapps.proman.data.db.entities.GroupDBEntity;
-import com.onudapps.proman.data.db.entities.LastUpdateEntity;
-import com.onudapps.proman.data.db.entities.TaskDBEntity;
+import com.onudapps.proman.data.db.entities.*;
 import com.onudapps.proman.data.pojo.*;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple2;
@@ -30,6 +27,10 @@ public enum  Repository {
         REPOSITORY.executorService = Executors.newSingleThreadExecutor();
     }
 
+    public LiveData<List<ParticipantDBEntity>> getBoardParticipants(int boardId) {
+        return localDataSource.getBoardParticipants(boardId);
+    }
+
     public LiveData<TaskDBEntity> getTaskDBEntity(int taskId) {
         return localDataSource.getTaskDBEntity(taskId);
     }
@@ -40,6 +41,10 @@ public enum  Repository {
 
     public LiveData<List<TaskCalendarCard>> getTasksCalendarData(int boardId) {
         return localDataSource.getTasksCalendarData(boardId);
+    }
+
+    public LiveData<StartFinishDates> getBoardStartFinishDates(int boardId) {
+        return localDataSource.getBoardStartFinishDates(boardId);
     }
 
     public LiveData<List<GroupWithUpdate>> getBoardGroups(int boardId) {
@@ -128,6 +133,24 @@ public enum  Repository {
             TransactionReceipt tx = remoteDataSource.setTaskFinish(taskId, calendar);
             if (tx != null) {
                     localDataSource.setTaskFinish(taskId, calendar);
+            }
+        });
+    }
+
+    public void setBoardStart(int boardId, Calendar calendar) {
+        executorService.execute(() -> {
+            TransactionReceipt tx = remoteDataSource.setBoardStart(boardId, calendar);
+            if (tx != null) {
+                localDataSource.setBoardStart(boardId, calendar);
+            }
+        });
+    }
+
+    public void setBoardFinish(int boardId, Calendar calendar) {
+        executorService.execute(() -> {
+            TransactionReceipt tx = remoteDataSource.setBoardFinish(boardId, calendar);
+            if (tx != null) {
+                localDataSource.setBoardFinish(boardId, calendar);
             }
         });
     }

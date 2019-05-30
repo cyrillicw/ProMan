@@ -12,7 +12,7 @@ import java.util.Calendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class TaskViewModel extends ViewModel {
+public class TaskViewModel extends ViewModel implements StartFinishViewModelSupport{
     private LiveData<TaskDBEntity> data;
     private int taskId;
     private Calendar startChanged;

@@ -24,10 +24,11 @@ import com.onudapps.proman.R;
 import com.onudapps.proman.data.db.entities.TaskDBEntity;
 import com.onudapps.proman.data.pojo.Task;
 import com.onudapps.proman.ui.adapters.ParticipantsAdapter;
-import com.onudapps.proman.ui.fragments.TaskDateDialogFragment;
+import com.onudapps.proman.ui.fragments.DateDialogFragment;
+import com.onudapps.proman.viewmodels.StartFinishViewModelSupport;
 import com.onudapps.proman.viewmodels.TaskViewModel;
 
-public class TaskActivity extends AppCompatActivity {
+public class TaskActivity extends AppCompatActivity implements StartFinishViewSupport{
 
     private static final String LOG_TAG = "TaskActivity";
     public static final String taskIdTag = "taskId";
@@ -93,14 +94,14 @@ public class TaskActivity extends AppCompatActivity {
 
     private void startOnClickListener(View v) {
         taskViewModel.setStartChanged(originalTask.getStart());
-        TaskDateDialogFragment taskDateDialogFragment = TaskDateDialogFragment.newInstance(TaskDateDialogFragment.CalendarType.START);
-        taskDateDialogFragment.show(getSupportFragmentManager(), "DATE START");
+        DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(DateDialogFragment.CalendarType.START);
+        dateDialogFragment.show(getSupportFragmentManager(), "DATE START");
     }
 
     private void finishOnClickListener(View v) {
         taskViewModel.setFinishChanged(originalTask.getFinish());
-        TaskDateDialogFragment taskDateDialogFragment = TaskDateDialogFragment.newInstance(TaskDateDialogFragment.CalendarType.FINISH);
-        taskDateDialogFragment.show(getSupportFragmentManager(), "DATE FINISH");
+        DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(DateDialogFragment.CalendarType.FINISH);
+        dateDialogFragment.show(getSupportFragmentManager(), "DATE FINISH");
     }
 
     @Override
@@ -161,7 +162,7 @@ public class TaskActivity extends AppCompatActivity {
 //            for (int i = 0; i < 3; i++) {
 //                ParticipantDBEntity participantDBEntity = new ParticipantDBEntity();
 //                participantDBEntity.setNickName("cyrillicw " + i);
-//                participantDBEntity.setPublicKey("cyrillicw " + i);
+//                participantDBEntity.setAddress("cyrillicw " + i);
 //                participantDBEntities.add(participantDBEntity);
 //            }
 //            task.setTaskId(UUID.randomUUID());
@@ -208,7 +209,8 @@ public class TaskActivity extends AppCompatActivity {
         }
     }
 
-    public TaskViewModel getTaskViewModel() {
+    @Override
+    public StartFinishViewModelSupport getStartFinishViewModel() {
         return taskViewModel;
     }
 

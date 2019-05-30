@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <TextView
+            android:id="@+id/board_start_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/date_start"
+            android:textSize="20sp"
+            android:padding="2dp"
+            android:drawableStart ="@drawable/date"/>
+
+    <TextView
+            android:id="@+id/detailed_task_finish_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/date_finish"
+            android:textSize="20sp"
+            android:padding="2dp"
+            android:drawableStart ="@drawable/date"
+            android:drawablePadding="2dp"/>
+
+    <TextView
+            android:id="@+id/detailed_task_participants_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/participants"
+            android:textSize="20sp"
+            android:padding="2dp"
+            android:drawableStart="@drawable/person"
+            android:drawablePadding="2dp"/>
+
+</LinearLayout>

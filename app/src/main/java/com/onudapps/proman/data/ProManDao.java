@@ -32,22 +32,22 @@ public abstract class ProManDao {
             "WHERE tasks.taskId = :id")
     public abstract Task getTaskWithNoParticipants(UUID id);
 
-    @Query("SELECT p.publicKey, p.nickName " +
-            "FROM participants as p " +
-            "INNER JOIN task_participant_join as tpj ON tpj.participantPublicKey = p.publicKey " +
-            "WHERE tpj.taskId = :id")
-    public abstract List<ParticipantDBEntity> getTaskParticipants(UUID id);
+//    @Query("SELECT p.publicKey, p.nickName " +
+//            "FROM participants as p " +
+//            "INNER JOIN task_participant_join as tpj ON tpj.participantPublicKey = p.publicKey " +
+//            "WHERE tpj.taskId = :id")
+//    public abstract List<ParticipantDBEntity> getTaskParticipants(UUID id);
 
     @Query("SELECT * FROM tasks WHERE tasks.taskId = :taskId")
     public abstract LiveData<TaskDBEntity> getTaskDBEntity(int taskId);
 
-    @Transaction
-    public Task getTask(UUID id) {
-        Task task = getTaskWithNoParticipants(id);
-        List<ParticipantDBEntity> participants = getTaskParticipants(id);
-        task.setParticipants(participants);
-        return task;
-    }
+//    @Transaction
+//    public Task getTask(UUID id) {
+//        Task task = getTaskWithNoParticipants(id);
+//        List<ParticipantDBEntity> participants = getTaskParticipants(id);
+//        task.setParticipants(participants);
+//        return task;
+//    }
 
     @Query("DELETE FROM task_participant_join as tpj WHERE tpj.taskId = :id")
     public abstract void deleteTaskParticipants(UUID id);
@@ -72,7 +72,7 @@ public abstract class ProManDao {
         for (ParticipantDBEntity e: task.getParticipants()) {
             TaskParticipantJoin taskParticipantJoin = new TaskParticipantJoin();
             taskParticipantJoin.setTaskId(task.getTaskId());
-            taskParticipantJoin.setParticipantPublicKey(e.getPublicKey());
+            taskParticipantJoin.setAddress(e.getAddress());
             taskParticipantJoins.add(taskParticipantJoin);
         }
         insertTaskDBEntity(taskDBEntity);
@@ -117,6 +117,8 @@ public abstract class ProManDao {
     @Query("SELECT title FROM boards WHERE boardId = :id")
     public abstract LiveData<String> getBoardTitle(int id);
 
+
+
     @Transaction
     public void updateBoard(BoardDBEntity boardDBEntity, List<Tuple2<GroupDBEntity, List<TaskDBEntity>>> groups) {
         insertBoard(boardDBEntity);
@@ -129,6 +131,12 @@ public abstract class ProManDao {
         lastUpdateEntity.setUpdated(Calendar.getInstance());
         updateLastUpdate(lastUpdateEntity);
     }
+
+    @Query("SELECT p.* " +
+        "FROM participants as p " +
+        "INNER JOIN board_participant_join as bpj ON bpj.address = p.address " +
+        "WHERE bpj.boardId = :boardId")
+    public abstract LiveData<List<ParticipantDBEntity>> getBoardParticipants(int boardId);
 
     @Query("DELETE FROM boards where boardId = :id")
     public abstract void removeBoard(int id);
@@ -144,6 +152,9 @@ public abstract class ProManDao {
 
     @Query("SELECT taskId, title FROM tasks WHERE groupId = :groupId")
     public abstract LiveData<List<TaskCard>> getTaskCards(int groupId);
+
+    @Query("SELECT start, finish FROM boards WHERE boardId = :boardId")
+    public abstract LiveData<StartFinishDates> getBoardStartFinishDates(int boardId);
 
     @Query("SELECT title FROM groups WHERE groupId = :groupId")
     public abstract LiveData<String> getGroupTitle(int groupId);
@@ -171,6 +182,12 @@ public abstract class ProManDao {
 
     @Query("UPDATE tasks SET finish = :calendar WHERE taskId = :taskId")
     public abstract void setTaskFinish(int taskId, Calendar calendar);
+
+    @Query("UPDATE boards SET start = :calendar WHERE boardId = :boardId")
+    public abstract void setBoardStart(int boardId, Calendar calendar);
+
+    @Query("UPDATE boards SET finish = :calendar WHERE boardId = :boardId")
+    public abstract void setBoardFinish(int boardId, Calendar calendar);
 
     @Query("SELECT title, start, finish FROM tasks WHERE boardId = :boardId and start IS NOT NULL and finish IS NOT NULL and start <= finish ORDER BY finish DESC")// and finish != NULL and start != NULL and start <= finish")
     public abstract LiveData<List<TaskCalendarCard>> getTasksCalendarCard(int boardId);

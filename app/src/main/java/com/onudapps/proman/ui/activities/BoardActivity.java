@@ -68,7 +68,7 @@ public class BoardActivity extends AppCompatActivity {
         ImageView update = toolbar.findViewById(R.id.update);
         update.setOnClickListener(this::updateOnClickListener);
         viewPager = findViewById(R.id.board_pager);
-        viewPager.setAdapter(new BoardPagerAdapter(getSupportFragmentManager(), new ArrayList<>()));
+        viewPager.setAdapter(new BoardPagerAdapter(getSupportFragmentManager(), new ArrayList<>(), boardId));
         groupsData = viewModel.getGroupsData();
         groupsData.observe(this, this::onGroupsChangedListener);
         titleData = viewModel.getTitleData();
@@ -80,6 +80,8 @@ public class BoardActivity extends AppCompatActivity {
         groupsMode.setOnClickListener(v -> viewPager.setCurrentItem(0, false));
         statisticsMode = findViewById(R.id.mode_statistics);
         statisticsMode.setOnClickListener(v -> viewPager.setCurrentItem(((BoardPagerAdapter)viewPager.getAdapter()).getStatisticModePosition(), false));
+        ImageView propertiesMode = findViewById(R.id.mode_properties);
+        propertiesMode.setOnClickListener(v -> viewPager.setCurrentItem(((BoardPagerAdapter)viewPager.getAdapter()).getPropertiesModePosition(), false));
     }
 
     public LiveData<List<GroupWithUpdate>> getGroupsData() {
@@ -116,12 +118,12 @@ public class BoardActivity extends AppCompatActivity {
         }
         if (groups.size() != 0 && groups.get(0).getGroupDBEntity() != null) {
             Log.e(LOG_TAG, "NOW");
-            viewSwitcher.setVisibility(View.VISIBLE);
+            statisticsMode.setVisibility(View.VISIBLE);
             ((BoardPagerAdapter) viewPager.getAdapter()).updateData(groups);
             viewPager.invalidate();
         }
         else {
-            viewSwitcher.setVisibility(View.GONE);
+            statisticsMode.setVisibility(View.GONE);
             ((BoardPagerAdapter) viewPager.getAdapter()).updateData(new ArrayList<>());
             viewPager.invalidate();
         }

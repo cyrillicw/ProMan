@@ -24,6 +24,7 @@
     <string name="cancel">Cancel</string>
     <string name="create_board">Create new board</string>
     <string name="create_group">Create new group</string>
+    <string name="add_participant">Add participant</string>
     <string name="enter_board_name">Enter board name</string>
     <string name="motivation">Don\'t waste time. Do it!</string>
     <string name="leave_board">Leave board</string>
@@ -45,4 +46,5 @@
     <string name="gantt_chart">Gantt Chart for current month</string>
     <string name="unavailable_groups_distribution">Groups distribution is unavailable</string>
     <string name="unavailable_gantt">Gantt chart is unavailable</string>
+    <string name="authentication_failure">Authentication failed</string>
 </resources>

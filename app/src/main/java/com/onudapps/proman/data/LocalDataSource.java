@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Room;
 import com.onudapps.proman.data.db.entities.*;
 import com.onudapps.proman.data.pojo.*;
-import org.web3j.tuples.generated.Tuple2;
 
 import java.util.Calendar;
 import java.util.List;
@@ -52,6 +51,10 @@ class LocalDataSource {
         return database.getProManDao().getBoardGroups(boardId);
     }
 
+    public void addBoardParticipant(int boardId, ParticipantDBEntity participantDBEntity) {
+        database.getProManDao().addBoardParticipant(boardId, participantDBEntity);
+    }
+
     public LiveData<List<TaskCard>> getTaskCards(int groupId) {
         return database.getProManDao().getTaskCards(groupId);
     }
@@ -80,8 +83,8 @@ class LocalDataSource {
         return database.getProManDao().getBoardTitle(id);
     }
 
-    public void updateBoard(BoardDBEntity boardDBEntity, List<Tuple2<GroupDBEntity, List<TaskDBEntity>>> groups) {
-        database.getProManDao().updateBoard(boardDBEntity, groups);
+    public void updateBoard(Board board) {
+        database.getProManDao().updateBoard(board);
     }
 
     public LiveData<Calendar> getLastUpdate(LastUpdateEntity.Query queryType, int id) {

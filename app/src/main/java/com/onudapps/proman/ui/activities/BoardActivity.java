@@ -17,14 +17,14 @@ import com.onudapps.proman.R;
 import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
 import com.onudapps.proman.data.pojo.GroupWithUpdate;
 import com.onudapps.proman.ui.adapters.BoardPagerAdapter;
-import com.onudapps.proman.ui.fragments.CreateGroupDialogFragment;
+import com.onudapps.proman.ui.dialog_fragments.CreateDialogFragment;
 import com.onudapps.proman.viewmodels.BoardViewModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class BoardActivity extends AppCompatActivity {
+public class BoardActivity extends AppCompatActivity implements CreateDialogListener{
     private static final String LOG_TAG = "BoardActivity";
 
     public static final String BOARD_KEY = "boardId";
@@ -102,8 +102,8 @@ public class BoardActivity extends AppCompatActivity {
     }
 
     private void createGroupListener(View v) {
-        CreateGroupDialogFragment createGroup = new CreateGroupDialogFragment();
-        createGroup.show(getSupportFragmentManager(), "CREATE GROUP");
+        CreateDialogFragment createGroup = CreateDialogFragment.newInstance(getResources().getString(R.string.create_group));
+        createGroup.show(getSupportFragmentManager(), "Create group");
     }
 
     public BoardViewModel getViewModel() {
@@ -127,6 +127,11 @@ public class BoardActivity extends AppCompatActivity {
             ((BoardPagerAdapter) viewPager.getAdapter()).updateData(new ArrayList<>());
             viewPager.invalidate();
         }
+    }
+
+    @Override
+    public void onCreateCommit(String res) {
+        viewModel.createGroup(res);
     }
 
     @Override

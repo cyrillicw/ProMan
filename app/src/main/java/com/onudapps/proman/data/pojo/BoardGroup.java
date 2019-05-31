@@ -1,33 +1,27 @@
 package com.onudapps.proman.data.pojo;
 
+import com.onudapps.proman.data.db.entities.GroupDBEntity;
+import com.onudapps.proman.data.db.entities.TaskDBEntity;
+
 import java.util.List;
 
 public class BoardGroup {
-    private int id;
-    private String title;
-    private List<Task> tasks;
+    private GroupDBEntity groupDBEntity;
+    private List<TaskDBEntity> tasks;
 
-    public String getTitle() {
-        return title;
+    public GroupDBEntity getGroupDBEntity() {
+        return groupDBEntity;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setGroupDBEntity(GroupDBEntity groupDBEntity) {
+        this.groupDBEntity = groupDBEntity;
     }
 
-    public List<Task> getTasks() {
+    public List<TaskDBEntity> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<Task> tasks) {
+    public void setTasks(List<TaskDBEntity> tasks) {
         this.tasks = tasks;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 }

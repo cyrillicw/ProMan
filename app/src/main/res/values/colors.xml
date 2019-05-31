@@ -3,7 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="backround">#AAAAAA</color>
+    <color name="backround">#FFEFD5</color>
     <color name="toolbar">#6D6DF7</color>
     <color name="toolbar_text">#FFFFFF</color>
     <color name="motivation">#099609</color>

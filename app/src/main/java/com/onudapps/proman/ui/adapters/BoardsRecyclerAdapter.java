@@ -109,11 +109,20 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
         private void drawChart(BoardDBEntity board) {
             Calendar start = board.getStart();
             Calendar finish = board.getFinish();
-            if (start != null && finish != null && !finish.before(start)) {
+            if (start != null && finish != null && start.before(finish)) {
                 barChart.setVisibility(View.VISIBLE);
                 motivation.setVisibility(View.GONE);
                 Calendar current = Calendar.getInstance();
-                int finished = Math.min(100, (int) ((double) (finish.getTimeInMillis() - current.getTimeInMillis()) / (current.getTimeInMillis() - board.getStart().getTimeInMillis()) * 100));
+                int finished;
+                if (finish.before(current)) {
+                    finished = 100;
+                }
+                else if (!start.before(current)) {
+                    finished = 0;
+                }
+                else {
+                    finished = Math.min(100, (int) ((double) (finish.getTimeInMillis() - current.getTimeInMillis()) / (current.getTimeInMillis() - board.getStart().getTimeInMillis()) * 100));
+                }
                 Log.e(LOG_TAG, "finished " + finished);
                 List<BarEntry> barEntries = new ArrayList<>();
                 barEntries.add(new BarEntry(1, finished));
@@ -122,7 +131,13 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
                 Log.e("TITLE", board.getTitle());
                 Log.e("START", start.getTime().toString());
                 Log.e("FINISH", finish.getTime().toString());
-                int color = colors[Math.min(colors.length - 1, (int) (colors.length * (double) finished / 100))];
+                int color;
+                if (finished == 100) {
+                    color = colors[colors.length - 1];
+                }
+                else {
+                    color = colors[Math.min(colors.length - 1, (int) (colors.length * (double) finished / 100))];
+                }
                 barDataSet.setColor(color, 0xFF);
                 BarData barData = new BarData(barDataSet);
                 barChart.setData(barData);
@@ -133,8 +148,11 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
                 barChart.getAxisLeft().setAxisMinimum(0);
                 barChart.getAxisLeft().setAxisMaximum(100);
                 barChart.getXAxis().setDrawGridLines(false);
+                barChart.getXAxis().setDrawLabels(false);
                 barChart.getAxisLeft().setDrawGridLines(false);
+                barChart.getAxisLeft().setDrawLabels(false);
                 barChart.getAxisRight().setDrawGridLines(false);
+                barChart.getAxisRight().setDrawLabels(false);
                 barChart.setTouchEnabled(false);
                 barDataSet.setDrawValues(false);
                 barChart.notifyDataSetChanged();

@@ -8,8 +8,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
-            android:layout_margin="2dp"
-    />
+            android:layout_margin="2dp" />
 
     <EditText
             android:layout_below="@id/create_hint"
@@ -17,9 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
-            android:hint="@string/enter_board_name"
             android:textSize="20sp"
-    />
+            android:imeOptions="flagNoExtractUi" />
 
     <TextView
         android:id="@+id/confirm_button"

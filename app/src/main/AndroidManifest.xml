@@ -47,6 +47,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activities.BoardActivity" />
         </activity>
+        <activity android:name=".ui.activities.StartActivity">
+        </activity>
     </application>
 
 </manifest>

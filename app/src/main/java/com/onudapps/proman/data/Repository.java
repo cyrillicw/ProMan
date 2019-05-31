@@ -3,10 +3,10 @@ package com.onudapps.proman.data;
 import android.content.Context;
 import android.util.Log;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import com.onudapps.proman.data.db.entities.*;
 import com.onudapps.proman.data.pojo.*;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tuples.generated.Tuple4;
 
 import java.math.BigInteger;
@@ -25,6 +25,15 @@ public enum  Repository {
         REPOSITORY.localDataSource = new LocalDataSource(context);
         REPOSITORY.remoteDataSource = new RemoteDataSource();
         REPOSITORY.executorService = Executors.newSingleThreadExecutor();
+    }
+
+    public LiveData<Boolean> signIn(String privateKey) {
+        final MutableLiveData<Boolean> data = new MutableLiveData<>();
+        executorService.execute(() -> {
+//            boolean res = remoteDataSource.signIn(privateKey);
+//            data.postValue(res);
+        });
+        return data;
     }
 
     public LiveData<List<ParticipantDBEntity>> getBoardParticipants(int boardId) {
@@ -94,6 +103,19 @@ public enum  Repository {
             }
             catch (Exception e) {
                 Log.e("REPO", "error" + e.getMessage());
+            }
+        });
+    }
+
+    public void addBoardParticipantsViewModel(int boardId, String address) {
+        executorService.execute(() -> {
+            String nick = remoteDataSource.addBoardParticipant(boardId, address);
+            Log.e("NICK", "NICK " + nick);
+            if (nick != null) {
+                ParticipantDBEntity participantDBEntity = new ParticipantDBEntity();
+                participantDBEntity.setAddress(address);
+                participantDBEntity.setNickName(nick);
+                localDataSource.addBoardParticipant(boardId,  participantDBEntity);
             }
         });
     }
@@ -207,10 +229,10 @@ public enum  Repository {
 
     public void updateBoard(int id) {
         executorService.execute(() -> {
-            Tuple2<BoardDBEntity, List<Tuple2<GroupDBEntity, List<TaskDBEntity>>>> board
+            Board board
                     = remoteDataSource.getBoard(id);
             if (board != null) {
-                localDataSource.updateBoard(board.getValue1(), board.getValue2());
+                localDataSource.updateBoard(board);
             }
         });
     }

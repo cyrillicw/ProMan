@@ -12,19 +12,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import com.onudapps.TaskChange;
 import com.onudapps.proman.R;
 import com.onudapps.proman.data.db.entities.TaskDBEntity;
 import com.onudapps.proman.data.pojo.Task;
-import com.onudapps.proman.ui.adapters.ParticipantsAdapter;
-import com.onudapps.proman.ui.fragments.DateDialogFragment;
 import com.onudapps.proman.viewmodels.StartFinishViewModelSupport;
 import com.onudapps.proman.viewmodels.TaskViewModel;
 
@@ -81,8 +76,8 @@ public class TaskActivity extends AppCompatActivity implements StartFinishViewSu
 //            editedTask.setTaskChange(taskChange);
             title.setText(t.getTitle());
             //refreshDescription();
-            dateStartText.setOnClickListener(this::startOnClickListener);
-            dateFinishText.setOnClickListener(this::finishOnClickListener);
+//            dateStartText.setOnClickListener(this::startOnClickListener);
+//            dateFinishText.setOnClickListener(this::finishOnClickListener);
             //dateStartText.setOnClickListener(new DateDialog(editedTask, CalendarMode.START));
             //dateFinishText.setOnClickListener(new DateDialog(editedTask, CalendarMode.FINISH));
         });
@@ -92,17 +87,19 @@ public class TaskActivity extends AppCompatActivity implements StartFinishViewSu
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
-    private void startOnClickListener(View v) {
-        taskViewModel.setStartChanged(originalTask.getStart());
-        DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(DateDialogFragment.CalendarType.START);
-        dateDialogFragment.show(getSupportFragmentManager(), "DATE START");
-    }
-
-    private void finishOnClickListener(View v) {
-        taskViewModel.setFinishChanged(originalTask.getFinish());
-        DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(DateDialogFragment.CalendarType.FINISH);
-        dateDialogFragment.show(getSupportFragmentManager(), "DATE FINISH");
-    }
+//    private void startOnClickListener(View v) {
+//        taskViewModel.setStartChanged(originalTask.getStart());
+//        DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(DateDialogFragment.CalendarType.START);
+//        dateDialogFragment.setViewModel(taskViewModel);
+//        dateDialogFragment.show(getSupportFragmentManager(), "DATE START");
+//    }
+//
+//    private void finishOnClickListener(View v) {
+//        taskViewModel.setFinishChanged(originalTask.getFinish());
+//        DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(DateDialogFragment.CalendarType.FINISH);
+//        dateDialogFragment.setViewModel(taskViewModel);
+//        dateDialogFragment.show(getSupportFragmentManager(), "DATE FINISH");
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -125,12 +122,12 @@ public class TaskActivity extends AppCompatActivity implements StartFinishViewSu
     }
 
     private void participantsOnClickListener(View v) {
-        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(R.layout.participants).create();
-        alertDialog.show();
-        RecyclerView recyclerView = alertDialog.findViewById(R.id.recycler_participants);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(v.getContext(), RecyclerView.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(new ParticipantsAdapter(editedTask.getParticipants()));
+//        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(R.layout.participants).create();
+//        alertDialog.show();
+//        RecyclerView recyclerView = alertDialog.findViewById(R.id.recycler_participants);
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(v.getContext(), RecyclerView.VERTICAL, false);
+//        recyclerView.setLayoutManager(layoutManager);
+//        recyclerView.setAdapter(new ParticipantsAdapter(editedTask.getParticipants()));
     }
 
     private void uploadClickListener(View v) {

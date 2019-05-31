@@ -1,11 +1,9 @@
 package com.onudapps.proman.ui.activities;
 
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.*;
-import androidx.appcompat.app.AlertDialog;
+import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
@@ -17,13 +15,14 @@ import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
 import com.onudapps.proman.data.Repository;
 import com.onudapps.proman.data.pojo.BoardWithUpdate;
 import com.onudapps.proman.ui.adapters.BoardsRecyclerAdapter;
+import com.onudapps.proman.ui.dialog_fragments.CreateDialogFragment;
 import com.onudapps.proman.viewmodels.BoardCardsViewModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class BoardCardsActivity extends AppCompatActivity {
+public class BoardCardsActivity extends AppCompatActivity implements CreateDialogListener{
     private static final String LOG_TAG = "BOARDCARDS ACTIVITY";
     private static final String APP_NAME = "PROMAN";
 
@@ -79,18 +78,25 @@ public class BoardCardsActivity extends AppCompatActivity {
     }
 
     private void createBoardListener(View v) {
-        final AlertDialog alertDialog = new AlertDialog.Builder(this).setView(R.layout.alert_create).
-                setPositiveButton(R.string.ok, null).create();
-        alertDialog.show();
-        TextView textView = alertDialog.findViewById(R.id.create_hint);
-        textView.setText(R.string.create_board);
-        final EditText boardTitle = alertDialog.findViewById(R.id.created_title);
-        Button positive = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-        positive.setOnClickListener(b -> {
-            String title = boardTitle.getText().toString();
-            Repository.REPOSITORY.createBoard(title);
-            alertDialog.dismiss();
-        });
+        CreateDialogFragment createDialogFragment = CreateDialogFragment.newInstance(getResources().getString(R.string.create_board));
+        createDialogFragment.show(getSupportFragmentManager(), "Create board");
+//        final AlertDialog alertDialog = new AlertDialog.Builder(this).setView(R.layout.alert_create).
+//                setPositiveButton(R.string.ok, null).create();
+//        alertDialog.show();
+//        TextView textView = alertDialog.findViewById(R.id.create_hint);
+//        textView.setText(R.string.create_board);
+//        final EditText boardTitle = alertDialog.findViewById(R.id.created_title);
+//        Button positive = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+//        positive.setOnClickListener(b -> {
+//            String title = boardTitle.getText().toString();
+//
+//            alertDialog.dismiss();
+//        });
+    }
+
+    @Override
+    public void onCreateCommit(String res) {
+        Repository.REPOSITORY.createBoard(res);
     }
 }
 

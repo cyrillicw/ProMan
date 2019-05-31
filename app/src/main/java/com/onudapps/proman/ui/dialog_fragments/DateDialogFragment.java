@@ -1,4 +1,4 @@
-package com.onudapps.proman.ui.fragments;
+package com.onudapps.proman.ui.dialog_fragments;
 
 import android.os.Bundle;
 import android.text.format.DateFormat;
@@ -10,10 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import com.onudapps.proman.R;
-import com.onudapps.proman.ui.activities.StartFinishViewSupport;
-import com.onudapps.proman.ui.activities.TaskActivity;
 import com.onudapps.proman.viewmodels.StartFinishViewModelSupport;
-import com.onudapps.proman.viewmodels.TaskViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -46,12 +43,18 @@ public class DateDialogFragment extends DialogFragment {
     private boolean confirmPressed;
     private StartFinishViewModelSupport viewModel;
 
+    private Calendar calendar;
+
     public static DateDialogFragment newInstance(CalendarType calendarType) {
         Bundle args = new Bundle();
         args.putString(CALENDAR_TYPE_TAG, calendarType.toString());
         DateDialogFragment fragment = new DateDialogFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void setViewModel(StartFinishViewModelSupport viewModel) {
+        this.viewModel = viewModel;
     }
 
     @Nullable
@@ -64,7 +67,6 @@ public class DateDialogFragment extends DialogFragment {
         datetimeLayout = view.findViewById(R.id.datetime_layout);
         selectedDate = view.findViewById(R.id.selected_date);
         selectedTime = view.findViewById(R.id.selected_time);
-        viewModel = ((StartFinishViewSupport)getActivity()).getStartFinishViewModel();
         if (getCalendar() != null) {
             selectedDate.setText(dateFormat.format(getCalendar().getTime()));
             selectedTime.setText(timeFormat.format(getCalendar().getTime()));

@@ -1,4 +1,4 @@
-package com.onudapps.proman.ui.fragments;
+package com.onudapps.proman.ui.dialog_fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

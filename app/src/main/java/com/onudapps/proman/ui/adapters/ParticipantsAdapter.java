@@ -22,6 +22,11 @@ public class ParticipantsAdapter extends RecyclerView.Adapter<ParticipantsAdapte
         holder.bindData(participants.get(position).getNickName());
     }
 
+    public void updateData(List<ParticipantDBEntity> participants) {
+        this.participants = participants;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public ParticipantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

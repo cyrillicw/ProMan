@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData;
 import androidx.room.*;
 import com.onudapps.proman.data.db.entities.*;
 import com.onudapps.proman.data.pojo.*;
-import org.web3j.tuples.generated.Tuple2;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,6 +40,15 @@ public abstract class ProManDao {
     @Query("SELECT * FROM tasks WHERE tasks.taskId = :taskId")
     public abstract LiveData<TaskDBEntity> getTaskDBEntity(int taskId);
 
+    @Transaction
+    public void addBoardParticipant(int boardId, ParticipantDBEntity participantDBEntity) {
+        insertParticipant(participantDBEntity);
+        BoardParticipantJoin join = new BoardParticipantJoin();
+        join.setBoardId(boardId);
+        join.setAddress(participantDBEntity.getAddress());
+        insertBoardParticipantJoin(join);
+    }
+
 //    @Transaction
 //    public Task getTask(UUID id) {
 //        Task task = getTaskWithNoParticipants(id);
@@ -58,8 +66,17 @@ public abstract class ProManDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract void insertParticipants(List<ParticipantDBEntity> participantDBEntities);
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    public abstract void insertParticipant(ParticipantDBEntity participantDBEntity);
+
     @Insert
     public abstract void insertTaskParticipantJoins(List<TaskParticipantJoin> taskParticipantJoins);
+
+    @Insert (onConflict = OnConflictStrategy.IGNORE)
+    public abstract void insertBoardParticipantJoins(List<BoardParticipantJoin> boardParticipantJoins);
+
+    @Insert (onConflict = OnConflictStrategy.IGNORE)
+    public abstract void insertBoardParticipantJoin(BoardParticipantJoin boardParticipantJoin);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract long insertTaskTitle(TaskDBEntity taskDBEntity);
@@ -120,14 +137,24 @@ public abstract class ProManDao {
 
 
     @Transaction
-    public void updateBoard(BoardDBEntity boardDBEntity, List<Tuple2<GroupDBEntity, List<TaskDBEntity>>> groups) {
-        insertBoard(boardDBEntity);
-        for (Tuple2<GroupDBEntity, List<TaskDBEntity>> tuple : groups) {
-            updateBoardGroup(tuple.getValue1(), tuple.getValue2());
+    public void updateBoard(Board board) {
+        int boardId = board.getBoardDBEntity().getBoardId();
+        insertBoard(board.getBoardDBEntity());
+        for (BoardGroup boardGroup : board.getBoardGroups()) {
+            updateBoardGroup(boardGroup.getGroupDBEntity(), boardGroup.getTasks());
         }
+        insertParticipants(board.getParticipants());
+        List<BoardParticipantJoin> boardParticipantJoins = new ArrayList<>();
+        for (ParticipantDBEntity participantDBEntity : board.getParticipants()) {
+            BoardParticipantJoin boardParticipantJoin = new BoardParticipantJoin();
+            boardParticipantJoin.setAddress(participantDBEntity.getAddress());
+            boardParticipantJoin.setBoardId(boardId);
+            boardParticipantJoins.add(boardParticipantJoin);
+        }
+        insertBoardParticipantJoins(boardParticipantJoins);
         LastUpdateEntity lastUpdateEntity = new LastUpdateEntity();
         lastUpdateEntity.setQueryType(LastUpdateEntity.Query.BOARD);
-        lastUpdateEntity.setId(boardDBEntity.getBoardId());
+        lastUpdateEntity.setId(boardId);
         lastUpdateEntity.setUpdated(Calendar.getInstance());
         updateLastUpdate(lastUpdateEntity);
     }

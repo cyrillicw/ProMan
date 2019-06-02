@@ -1,11 +1,20 @@
 package com.onudapps;
 
 import android.app.Application;
+import android.content.SharedPreferences;
+import com.onudapps.proman.data.Repository;
+
+import static com.onudapps.proman.ui.activities.StartActivity.PREFERENCES;
+import static com.onudapps.proman.ui.activities.StartActivity.SIGNED_IN;
 
 public class ProManApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // Repository.initialize(this);
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        boolean signedIn = sharedPreferences.getBoolean(SIGNED_IN, false);
+        if (signedIn) {
+            Repository.initialize(this);
+        }
     }
 }

@@ -6,10 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import com.onudapps.proman.R;
+import com.onudapps.proman.data.pojo.GroupWithUpdate;
 import com.onudapps.proman.data.pojo.TaskCard;
+import com.onudapps.proman.ui.activities.BoardActivity;
 import com.onudapps.proman.ui.activities.TaskActivity;
+import com.onudapps.proman.ui.dialog_fragments.TaskChangeGroupDialogFragment;
 
 import java.util.List;
 
@@ -56,6 +60,18 @@ public class TasksRecyclerAdapter extends RecyclerView.Adapter<TasksRecyclerAdap
                 Intent intent = new Intent(v.getContext(), TaskActivity.class);
                 intent.putExtra(TaskActivity.taskIdTag, tasks.get(position).getTaskId());
                 v.getContext().startActivity(intent);
+            });
+            view.setOnLongClickListener(v -> {
+                BoardActivity boardActivity = (BoardActivity) v.getContext();
+                List<GroupWithUpdate> groups = boardActivity.getGroups();
+                String[] groupsTitles = new String[groups.size()];
+                int[] groupsIds = new int[groups.size()];
+                for (int i = 0; i < groups.size(); i++) {
+                    groupsTitles[i] = groups.get(i).getGroupDBEntity().getTitle();
+                    groupsIds[i] = groups.get(i).getGroupDBEntity().getGroupId();
+                }
+                TaskChangeGroupDialogFragment.newInstance(groupsTitles, groupsIds, tasks.get(position).getTaskId()).show(((AppCompatActivity)v.getContext()).getSupportFragmentManager(), null);
+                return true;
             });
             title.setText(tasks.get(position).getTitle());
         }

@@ -69,6 +69,15 @@ public class RemoteDataSource {
         }
     }
 
+    public TransactionReceipt setTaskGroup(int taskId, int groupId) {
+        try {
+            return smartContract.setTaskGroup(BigInteger.valueOf(taskId), BigInteger.valueOf(groupId)).send();
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+
     public TransactionReceipt createGroup(String title, int boardId) {
 //        smartContract.addBoard(title).sendAsync().thenAccept(tx -> {
 //            Log.e(LOG_TAG, "ok");

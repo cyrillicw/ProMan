@@ -32,6 +32,8 @@ public class SignUpActivity extends AppCompatActivity {
         nickNameEdit = findViewById(R.id.sign_up_nickname);
         Button signUpButton = findViewById(R.id.sign_up);
         signUpButton.setOnClickListener(this::signUpOnClickListener);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(privateKeyEdit, InputMethodManager.SHOW_IMPLICIT);
     }
 
     private void signUpOnClickListener(View v) {

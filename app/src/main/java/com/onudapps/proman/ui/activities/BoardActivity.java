@@ -38,6 +38,7 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
     private BoardViewModel viewModel;
     private LiveData<List<GroupWithUpdate>> groupsData;
     private LiveData<String> titleData;
+    private List<GroupWithUpdate> groups;
 
     private ViewPager viewPager;
     private TextView title;
@@ -96,6 +97,10 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
         return toolbar;
     }
 
+    public List<GroupWithUpdate> getGroups() {
+        return groups;
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -121,12 +126,14 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
             viewModel.forceBoardUpdate();
         }
         if (groups.size() != 0 && groups.get(0).getGroupDBEntity() != null) {
+            this.groups = groups;
             Log.e(LOG_TAG, "NOW");
             statisticsMode.setVisibility(View.VISIBLE);
             ((BoardPagerAdapter) viewPager.getAdapter()).updateData(groups);
             viewPager.invalidate();
         }
         else {
+            this.groups = groups;
             statisticsMode.setVisibility(View.GONE);
             ((BoardPagerAdapter) viewPager.getAdapter()).updateData(new ArrayList<>());
             viewPager.invalidate();

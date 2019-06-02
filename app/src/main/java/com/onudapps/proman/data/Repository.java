@@ -32,6 +32,17 @@ public enum  Repository {
         return localDataSource.getBoardParticipants(boardId);
     }
 
+    public void moveTaskToGroup(int taskId, int groupId) {
+        if (active) {
+            executorService.execute(() -> {
+                TransactionReceipt tx = remoteDataSource.setTaskGroup(taskId, groupId);
+                if (tx != null && active) {
+                    localDataSource.setTaskGroup(taskId, groupId);
+                }
+            });
+        }
+    }
+
     public void updateTaskDescription(int taskId, String description) {
         if (active) {
             executorService.execute(() -> {

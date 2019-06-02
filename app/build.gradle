@@ -15,11 +15,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField("String", "hostAPI", '"http://192.168.1.102:7545"')
-            buildConfigField("String", "contractAddress", '"2DD75c0aB6627f647177e39FF96b4DA47BebDfc0"')
+            buildConfigField("String", "contractAddress", '"515976f52823504afF4f7568cd4BfEAD5f898556"')
         }
         debug {
             buildConfigField("String", "hostAPI", '"http://192.168.1.102:7545"')
-            buildConfigField("String", "contractAddress", '"2DD75c0aB6627f647177e39FF96b4DA47BebDfc0"')
+            buildConfigField("String", "contractAddress", '"515976f52823504afF4f7568cd4BfEAD5f898556"')
         }
     }
     compileOptions {

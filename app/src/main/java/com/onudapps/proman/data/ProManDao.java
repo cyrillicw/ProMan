@@ -212,6 +212,9 @@ public abstract class ProManDao {
         updateLastUpdates(tasksUpdated);
     }
 
+    @Query("UPDATE tasks SET groupId = :groupId WHERE taskId = :taskId")
+    public abstract void setTaskGroup(int taskId, int groupId);
+
     @Query("UPDATE tasks SET description = :description WHERE taskId = :taskId")
     public abstract void setTaskDescription(int taskId, String description);
 

@@ -55,6 +55,10 @@ class LocalDataSource {
         return database.getProManDao().getBoardGroups(boardId);
     }
 
+    public void setTaskGroup(int taskId, int groupId) {
+        database.getProManDao().setTaskGroup(taskId, groupId);
+    }
+
     public void setTaskDescription(int taskId, String description) {
         database.getProManDao().setTaskDescription(taskId, description);
     }

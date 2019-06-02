@@ -20,6 +20,10 @@ class LocalDataSource {
         return database.getProManDao().getTaskDBEntity(taskId);
     }
 
+    public void onSignOut() {
+        database.getProManDao().clearData();
+    }
+
     public LiveData<List<ParticipantDBEntity>> getBoardParticipants(int boardId) {
         return database.getProManDao().getBoardParticipants(boardId);
     }
@@ -49,6 +53,14 @@ class LocalDataSource {
 
     public LiveData<List<GroupWithUpdate>> getBoardGroups(int boardId) {
         return database.getProManDao().getBoardGroups(boardId);
+    }
+
+    public void setTaskDescription(int taskId, String description) {
+        database.getProManDao().setTaskDescription(taskId, description);
+    }
+
+    public void setTaskTitle(int taskId, String title) {
+        database.getProManDao().setTaskTitle(taskId, title);
     }
 
     public void addBoardParticipant(int boardId, ParticipantDBEntity participantDBEntity) {

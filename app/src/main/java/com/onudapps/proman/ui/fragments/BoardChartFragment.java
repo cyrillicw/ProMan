@@ -150,13 +150,13 @@ public class BoardChartFragment extends Fragment {
             gantt.getAxisRight().setAxisMaximum(maxDays);
             //gantt.getAxisLeft().setDrawTopYLabelEntry(false);
             gantt.getAxisLeft().setDrawGridLines(false);
-            List<String> yLabels = new ArrayList<>();
-            for (int i = 0; i <= maxDays; i++) {
-                yLabels.add(Integer.toString(i));
-            }
-            Log.e("GANTT", "WIDTH" + gantt.getWidth());
-            gantt.getAxisLeft().setValueFormatter(new IndexAxisValueFormatter(yLabels));
-            gantt.getAxisRight().setValueFormatter(new IndexAxisValueFormatter(yLabels));
+//            List<String> yLabels = new ArrayList<>();
+//            for (int i = 0; i <= maxDays; i++) {
+//                yLabels.add(Integer.toString(i));
+//            }
+//            Log.e("GANTT", "WIDTH" + gantt.getWidth());
+//            gantt.getAxisLeft().setValueFormatter(new IndexAxisValueFormatter(yLabels));
+//            gantt.getAxisRight().setValueFormatter(new IndexAxisValueFormatter(yLabels));
             gantt.getAxisRight().setLabelCount(maxDays / 2);
             gantt.getAxisLeft().setLabelCount(maxDays / 2);
             gantt.getAxisLeft().setDrawAxisLine(false);

@@ -47,4 +47,10 @@
     <string name="unavailable_groups_distribution">Groups distribution is unavailable</string>
     <string name="unavailable_gantt">Gantt chart is unavailable</string>
     <string name="authentication_failure">Authentication failed</string>
+    <string name="sign_up_failure">Signing up failed</string>
+    <string name="time_is_not_set">Time is not set</string>
+    <string name="date_is_not_set">Date is not set</string>
+    <string name="sign_in_hint">Enter private key</string>
+    <string name="sign_up_private_hint">Enter private key</string>
+    <string name="sign_up_nickname_hint">Enter nickname</string>
 </resources>

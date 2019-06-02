@@ -18,13 +18,15 @@ import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
 import com.onudapps.proman.data.pojo.GroupWithUpdate;
 import com.onudapps.proman.ui.adapters.BoardPagerAdapter;
 import com.onudapps.proman.ui.dialog_fragments.CreateDialogFragment;
+import com.onudapps.proman.ui.listeners.CreateDialogListener;
+import com.onudapps.proman.ui.listeners.SignOutOnClickListener;
 import com.onudapps.proman.viewmodels.BoardViewModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class BoardActivity extends AppCompatActivity implements CreateDialogListener{
+public class BoardActivity extends AppCompatActivity implements CreateDialogListener {
     private static final String LOG_TAG = "BoardActivity";
 
     public static final String BOARD_KEY = "boardId";
@@ -67,6 +69,8 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
         createGroup.setOnClickListener(this::createGroupListener);
         ImageView update = toolbar.findViewById(R.id.update);
         update.setOnClickListener(this::updateOnClickListener);
+        ImageView signOut = toolbar.findViewById(R.id.sign_out);
+        signOut.setOnClickListener(new SignOutOnClickListener());
         viewPager = findViewById(R.id.board_pager);
         viewPager.setAdapter(new BoardPagerAdapter(getSupportFragmentManager(), new ArrayList<>(), boardId));
         groupsData = viewModel.getGroupsData();

@@ -12,7 +12,7 @@ import java.util.Calendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class TaskViewModel extends ViewModel implements StartFinishViewModelSupport{
+public class TaskViewModel extends ViewModel{
     private LiveData<TaskDBEntity> data;
     private int taskId;
     private Calendar startChanged;
@@ -40,28 +40,20 @@ public class TaskViewModel extends ViewModel implements StartFinishViewModelSupp
         Repository.REPOSITORY.setTaskFinish(taskId, calendar);
     }
 
-    public Calendar getStartChanged() {
-        return startChanged;
-    }
-
-    public Calendar getFinishChanged() {
-        return finishChanged;
-    }
-
-    public void setStartChanged(Calendar startChanged) {
-        this.startChanged = startChanged;
-    }
-
-    public void setFinishChanged(Calendar finishChanged) {
-        this.finishChanged = finishChanged;
-    }
-
     public LiveData<TaskDBEntity> getData() {
         if (data == null) {
             data = new MutableLiveData<>();
             loadData();
         }
         return data;
+    }
+
+    public void updateDescription(String description) {
+        Repository.REPOSITORY.updateTaskDescription(taskId, description);
+    }
+
+    public void updateTitle(String title) {
+        Repository.REPOSITORY.updateTaskTitle(taskId, title);
     }
 
     public void loadData() {

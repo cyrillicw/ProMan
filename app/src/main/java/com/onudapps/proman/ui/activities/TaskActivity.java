@@ -1,6 +1,5 @@
 package com.onudapps.proman.ui.activities;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -12,18 +11,23 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
-import com.onudapps.TaskChange;
 import com.onudapps.proman.R;
 import com.onudapps.proman.data.db.entities.TaskDBEntity;
-import com.onudapps.proman.data.pojo.Task;
-import com.onudapps.proman.viewmodels.StartFinishViewModelSupport;
+import com.onudapps.proman.ui.dialog_fragments.DateDialogFragment;
+import com.onudapps.proman.ui.listeners.DateDialogListener;
 import com.onudapps.proman.viewmodels.TaskViewModel;
 
-public class TaskActivity extends AppCompatActivity implements StartFinishViewSupport{
+import java.util.Calendar;
+
+import static com.onudapps.proman.ui.dialog_fragments.DateDialogFragment.FINISH_DIALOG_REQUEST_CODE;
+import static com.onudapps.proman.ui.dialog_fragments.DateDialogFragment.START_DIALOG_REQUEST_CODE;
+
+public class TaskActivity extends AppCompatActivity implements DateDialogListener {
 
     private static final String LOG_TAG = "TaskActivity";
     public static final String taskIdTag = "taskId";
@@ -33,23 +37,26 @@ public class TaskActivity extends AppCompatActivity implements StartFinishViewSu
     private TextView title;
 
     //private Task task;
-    private Task editedTask;
     private ImageView tick;
     private ImageView upload;
     private TextView description;
     private EditText descriptionEdit;
+    private EditMode editMode;
 
     TaskDBEntity originalTask;
-    private TaskChange taskChange;
     private int taskId;
     private TaskViewModel taskViewModel;
 
+    private enum EditMode {
+        TITLE, DESCRIPTION;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
         // insert();
+        editMode = null;
         Intent intent = getIntent();
         taskId = intent.getIntExtra(taskIdTag, -1);
         Log.e("TACTIVITY", "Taskid " + taskId);
@@ -61,7 +68,7 @@ public class TaskActivity extends AppCompatActivity implements StartFinishViewSu
         upload = findViewById(R.id.upload);
         description = findViewById(R.id.detailed_task_description);
         descriptionEdit = findViewById(R.id.detailed_task_description_edit);
-        description.setOnClickListener(this::descriptionClickListener);
+        //description.setOnClickListener(this::descriptionClickListener);
         tick.setOnClickListener(this::tickClickListener);
         upload.setOnClickListener(this::uploadClickListener);
         title = findViewById(R.id.detailed_task_title);
@@ -75,7 +82,8 @@ public class TaskActivity extends AppCompatActivity implements StartFinishViewSu
 //            taskChange = new TaskChange(task);
 //            editedTask.setTaskChange(taskChange);
             title.setText(t.getTitle());
-            //refreshDescription();
+            refreshDescription();
+            description.setOnClickListener(this::descriptionOnClickListener);
 //            dateStartText.setOnClickListener(this::startOnClickListener);
 //            dateFinishText.setOnClickListener(this::finishOnClickListener);
             //dateStartText.setOnClickListener(new DateDialog(editedTask, CalendarMode.START));
@@ -87,19 +95,15 @@ public class TaskActivity extends AppCompatActivity implements StartFinishViewSu
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
-//    private void startOnClickListener(View v) {
-//        taskViewModel.setStartChanged(originalTask.getStart());
-//        DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(DateDialogFragment.CalendarType.START);
-//        dateDialogFragment.setViewModel(taskViewModel);
-//        dateDialogFragment.show(getSupportFragmentManager(), "DATE START");
-//    }
-//
-//    private void finishOnClickListener(View v) {
-//        taskViewModel.setFinishChanged(originalTask.getFinish());
-//        DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(DateDialogFragment.CalendarType.FINISH);
-//        dateDialogFragment.setViewModel(taskViewModel);
-//        dateDialogFragment.show(getSupportFragmentManager(), "DATE FINISH");
-//    }
+    private void startOnClickListener(View v) {
+        DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(START_DIALOG_REQUEST_CODE, originalTask.getStart());
+        dateDialogFragment.show(getSupportFragmentManager(), "DATE START");
+    }
+
+    private void finishOnClickListener(View v) {
+        DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(FINISH_DIALOG_REQUEST_CODE, originalTask.getFinish());
+        dateDialogFragment.show(getSupportFragmentManager(), "DATE FINISH");
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -108,18 +112,42 @@ public class TaskActivity extends AppCompatActivity implements StartFinishViewSu
         return true;
     }
 
+    @Override
+    public void onDateSet(int requestCode, Calendar calendar) {
+        if (requestCode == START_DIALOG_REQUEST_CODE) {
+            taskViewModel.updateStart(calendar);
+        }
+        else {
+            taskViewModel.updateFinish(calendar);
+        }
+        Toast.makeText(this, R.string.update_alert, Toast.LENGTH_LONG).show();
+    }
+
     private void tickClickListener(View v) {
         tick.setVisibility(View.INVISIBLE);
-        Log.e("TICK", "HERE");
-        editedTask.setDescription(descriptionEdit.getText().toString());
-        checkChanges();
-        refreshDescription();
-        descriptionEdit.setVisibility(View.GONE);
-        description.setVisibility(View.VISIBLE);
-        InputMethodManager inputMethodManager =
-                (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(descriptionEdit.getWindowToken(), 0);
+        switch (editMode) {
+            case DESCRIPTION:
+                descriptionEdit.setVisibility(View.GONE);
+                description.setVisibility(View.VISIBLE);
+                InputMethodManager inputMethodManager =
+                    (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(descriptionEdit.getWindowToken(), 0);
+                taskViewModel.updateDescription(descriptionEdit.getText().toString());
+                title.setOnClickListener(this::titleOnClickListener);
+                Toast.makeText(this, R.string.update_alert, Toast.LENGTH_LONG).show();
+        }
+//        Log.e("TICK", "HERE");
+//        editedTask.setDescription(descriptionEdit.getText().toString());
+////        checkChanges();
+//        refreshDescription();
+//        descriptionEdit.setVisibility(View.GONE);
+//        description.setVisibility(View.VISIBLE);
+//        InputMethodManager inputMethodManager =
+//                (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//        inputMethodManager.hideSoftInputFromWindow(descriptionEdit.getWindowToken(), 0);
     }
+
+    private void titleOnClickListener(View v) {}
 
     private void participantsOnClickListener(View v) {
 //        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(R.layout.participants).create();
@@ -177,38 +205,35 @@ public class TaskActivity extends AppCompatActivity implements StartFinishViewSu
 //        });
 //    }
 
-    private void descriptionClickListener(View v) {
-        description.setVisibility(View.INVISIBLE);
+    private void descriptionOnClickListener(View v) {
+        editMode = EditMode.DESCRIPTION;
+        title.setOnClickListener(null);
+        description.setVisibility(View.GONE);
         tick.setVisibility(View.VISIBLE);
-        if (editedTask.getDescription() == null || editedTask.getDescription().length() == 0) {
+        if (originalTask.getDescription() == null || originalTask.getDescription().length() == 0) {
             descriptionEdit.setHint(getResources().getString(R.string.change_description));
         }
         else {
-            descriptionEdit.setText(editedTask.getDescription());
+            descriptionEdit.setText(originalTask.getDescription());
         }
 //        descriptionEdit.requestFocus();
 //        InputMethodManager inputMethodManager =
 //                (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 //        inputMethodManager.showSoftInput(descriptionEdit, InputMethodManager.SHOW_FORCED);
         descriptionEdit.setVisibility(View.VISIBLE);
-        InputMethodManager imm = (InputMethodManager)this.getSystemService(Service.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(descriptionEdit, 0);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(descriptionEdit, InputMethodManager.SHOW_IMPLICIT);
     }
 
     private void refreshDescription() {
-        if (editedTask.getDescription() == null || editedTask.getDescription().length() == 0) {
+        if (originalTask.getDescription() == null || originalTask.getDescription().length() == 0) {
             description.setText(getResources().getString(R.string.change_description));
             description.setTypeface(null, Typeface.ITALIC);
         }
         else {
-            description.setText(editedTask.getDescription());
+            description.setText(originalTask.getDescription());
             description.setTypeface(null, Typeface.NORMAL);
         }
-    }
-
-    @Override
-    public StartFinishViewModelSupport getStartFinishViewModel() {
-        return taskViewModel;
     }
 
     //    private class DateDialog implements View.OnClickListener {
@@ -321,12 +346,12 @@ public class TaskActivity extends AppCompatActivity implements StartFinishViewSu
 //        }
 //    }
 
-    private void checkChanges() {
-        if (taskChange.changesDetected()) {
-            upload.setVisibility(View.VISIBLE);
-        }
-        else {
-            upload.setVisibility(View.INVISIBLE);
-        }
-    }
+//    private void checkChanges() {
+//        if (taskChange.changesDetected()) {
+//            upload.setVisibility(View.VISIBLE);
+//        }
+//        else {
+//            upload.setVisibility(View.INVISIBLE);
+//        }
+//    }
 }

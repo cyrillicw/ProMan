@@ -121,7 +121,7 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
                     finished = 0;
                 }
                 else {
-                    finished = Math.min(100, (int) ((double) (finish.getTimeInMillis() - current.getTimeInMillis()) / (current.getTimeInMillis() - board.getStart().getTimeInMillis()) * 100));
+                    finished = Math.min(100, (int) ((double) (current.getTimeInMillis() - start.getTimeInMillis()) / (finish.getTimeInMillis() - board.getStart().getTimeInMillis()) * 100));
                 }
                 Log.e(LOG_TAG, "finished " + finished);
                 List<BarEntry> barEntries = new ArrayList<>();

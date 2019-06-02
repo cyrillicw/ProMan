@@ -100,6 +100,9 @@ public abstract class ProManDao {
     @Query("DELETE FROM boards")
     public abstract void clearBoards();
 
+    @Query("DELETE FROM last_update")
+    public abstract void clearUpdates();
+
     @Query("SELECT count(*) FROM boards")
     public abstract int getBoardsCount();
 
@@ -114,7 +117,7 @@ public abstract class ProManDao {
 
     @Transaction
     public void updateBoards(List<BoardDBEntity> boardDBEntities) {
-        clearBoards();
+        clearData();
         Log.e(LOG_TAG, "size " + getBoardsCount());
         insertBoards(boardDBEntities);
         LastUpdateEntity lastUpdateEntity = new LastUpdateEntity();
@@ -122,6 +125,11 @@ public abstract class ProManDao {
         lastUpdateEntity.setId(-1);
         lastUpdateEntity .setUpdated(Calendar.getInstance());
         updateLastUpdate(lastUpdateEntity);
+    }
+
+    public void clearData() {
+        clearBoards();
+        clearUpdates();
     }
 
     @Query("SELECT groups.title, count(tasks.taskId) as tasksCount " +
@@ -203,6 +211,12 @@ public abstract class ProManDao {
         }
         updateLastUpdates(tasksUpdated);
     }
+
+    @Query("UPDATE tasks SET description = :description WHERE taskId = :taskId")
+    public abstract void setTaskDescription(int taskId, String description);
+
+    @Query("UPDATE tasks SET title = :title WHERE taskId = :taskId")
+    public abstract void setTaskTitle(int taskId, String title);
 
     @Query("UPDATE tasks SET start = :calendar WHERE taskId = :taskId")
     public abstract void setTaskStart(int taskId, Calendar calendar);

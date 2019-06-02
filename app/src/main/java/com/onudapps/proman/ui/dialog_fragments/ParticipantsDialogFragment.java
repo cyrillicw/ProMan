@@ -1,9 +1,6 @@
 package com.onudapps.proman.ui.dialog_fragments;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +15,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.onudapps.proman.R;
 import com.onudapps.proman.data.db.entities.ParticipantDBEntity;
 import com.onudapps.proman.ui.adapters.ParticipantsAdapter;
+import com.onudapps.proman.ui.listeners.CreateDialogListener;
 import com.onudapps.proman.viewmodels.BoardParticipantsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParticipantsDialogFragment extends DialogFragment {
+public class ParticipantsDialogFragment extends DialogFragment implements CreateDialogListener {
     private static final String BOARD_ID_TAG = "boardId";
     private static final int DIALOG_REQUEST_CODE = 1;
 
@@ -69,11 +67,7 @@ public class ParticipantsDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode == Activity.RESULT_OK && requestCode == DIALOG_REQUEST_CODE) {
-            String address = data.getStringExtra(CreateDialogFragment.RETURN_TAG);
-            Log.e("request add part", address);
-            viewModel.addBoardParticipant(address);
-        }
+    public void onCreateCommit(String res) {
+        viewModel.addBoardParticipant(res);
     }
 }

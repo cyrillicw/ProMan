@@ -3,7 +3,6 @@ package com.onudapps.proman.data;
 import android.content.Context;
 import android.util.Log;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import com.onudapps.proman.data.db.entities.*;
 import com.onudapps.proman.data.pojo.*;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -20,24 +19,47 @@ public enum  Repository {
     private LocalDataSource localDataSource;
     private RemoteDataSource remoteDataSource;
     private ExecutorService executorService;
+    private boolean active;
 
     public static void initialize(Context context) {
         REPOSITORY.localDataSource = new LocalDataSource(context);
-        REPOSITORY.remoteDataSource = new RemoteDataSource();
+        REPOSITORY.remoteDataSource = new RemoteDataSource(context);
         REPOSITORY.executorService = Executors.newSingleThreadExecutor();
-    }
-
-    public LiveData<Boolean> signIn(String privateKey) {
-        final MutableLiveData<Boolean> data = new MutableLiveData<>();
-        executorService.execute(() -> {
-//            boolean res = remoteDataSource.signIn(privateKey);
-//            data.postValue(res);
-        });
-        return data;
+        REPOSITORY.active = true;
     }
 
     public LiveData<List<ParticipantDBEntity>> getBoardParticipants(int boardId) {
         return localDataSource.getBoardParticipants(boardId);
+    }
+
+    public void updateTaskDescription(int taskId, String description) {
+        if (active) {
+            executorService.execute(() -> {
+                TransactionReceipt tx = remoteDataSource.setTaskDescription(taskId, description);
+                if (tx != null && active) {
+                    localDataSource.setTaskDescription(taskId, description);
+                }
+            });
+        }
+    }
+
+    public void onSignOut() {
+        active = false;
+        executorService.execute(() -> {
+            localDataSource.onSignOut();
+        });
+        executorService.shutdown();
+    }
+
+    public void updateTaskTitle(int taskId, String title) {
+        if (active) {
+            executorService.execute(() -> {
+                TransactionReceipt tx = remoteDataSource.setTaskTitle(taskId, title);
+                if (tx != null && active) {
+                    localDataSource.setTaskTitle(taskId, title);
+                }
+            });
+        }
     }
 
     public LiveData<TaskDBEntity> getTaskDBEntity(int taskId) {
@@ -61,32 +83,36 @@ public enum  Repository {
     }
 
     public void createBoard(String title) {
-        executorService.execute(() -> {
-            TransactionReceipt tx = remoteDataSource.createBoard(title);
-            if (tx != null) {
-                Integer id = Integer.parseInt(tx.getLogs().get(0).getData().substring(2), 16);
-                BoardDBEntity boardDBEntity = new BoardDBEntity();
-                boardDBEntity.setBoardId(id);
-                boardDBEntity.setTitle(title);
-                boardDBEntity.setStart(null);
-                boardDBEntity.setFinish(null);
-                localDataSource.insertBoard(boardDBEntity);
-            }
-        });
+        if (active) {
+            executorService.execute(() -> {
+                TransactionReceipt tx = remoteDataSource.createBoard(title);
+                if (tx != null && active) {
+                    Integer id = Integer.parseInt(tx.getLogs().get(0).getData().substring(2), 16);
+                    BoardDBEntity boardDBEntity = new BoardDBEntity();
+                    boardDBEntity.setBoardId(id);
+                    boardDBEntity.setTitle(title);
+                    boardDBEntity.setStart(null);
+                    boardDBEntity.setFinish(null);
+                    localDataSource.insertBoard(boardDBEntity);
+                }
+            });
+        }
     }
 
     public void createGroup(String title, int boardId) {
-        executorService.execute(() -> {
-            TransactionReceipt tx = remoteDataSource.createGroup(title, boardId);
-            if (tx != null) {
-                Integer id = Integer.parseInt(tx.getLogs().get(0).getData().substring(2), 16);
-                GroupDBEntity groupDBEntity = new GroupDBEntity();
-                groupDBEntity.setGroupId(id);
-                groupDBEntity.setBoardId(boardId);
-                groupDBEntity.setTitle(title);
-                localDataSource.insertGroup(groupDBEntity);
-            }
-        });
+        if (active) {
+            executorService.execute(() -> {
+                TransactionReceipt tx = remoteDataSource.createGroup(title, boardId);
+                if (tx != null && active) {
+                    Integer id = Integer.parseInt(tx.getLogs().get(0).getData().substring(2), 16);
+                    GroupDBEntity groupDBEntity = new GroupDBEntity();
+                    groupDBEntity.setGroupId(id);
+                    groupDBEntity.setBoardId(boardId);
+                    groupDBEntity.setTitle(title);
+                    localDataSource.insertGroup(groupDBEntity);
+                }
+            });
+        }
     }
 
     public LiveData<String> getBoardTitle(int id) {
@@ -94,30 +120,35 @@ public enum  Repository {
     }
 
     public void leaveBoard(int id) {
-        executorService.execute(() -> {
-            Log.e("IN DELETE", "ID " + id);
-            try {
-                TransactionReceipt transactionReceipt = remoteDataSource.leaveBoard(id).send();
-                localDataSource.removeBoard(id);
-                Log.e("REPO" , "answer " + transactionReceipt.getLogs().get(0).getData());
-            }
-            catch (Exception e) {
-                Log.e("REPO", "error" + e.getMessage());
-            }
-        });
+        if (active) {
+            executorService.execute(() -> {
+                Log.e("IN DELETE", "ID " + id);
+                try {
+                    TransactionReceipt transactionReceipt = remoteDataSource.leaveBoard(id).send();
+                    if (active) {
+                        localDataSource.removeBoard(id);
+                    }
+                    Log.e("REPO", "answer " + transactionReceipt.getLogs().get(0).getData());
+                } catch (Exception e) {
+                    Log.e("REPO", "error" + e.getMessage());
+                }
+            });
+        }
     }
 
     public void addBoardParticipantsViewModel(int boardId, String address) {
-        executorService.execute(() -> {
-            String nick = remoteDataSource.addBoardParticipant(boardId, address);
-            Log.e("NICK", "NICK " + nick);
-            if (nick != null) {
-                ParticipantDBEntity participantDBEntity = new ParticipantDBEntity();
-                participantDBEntity.setAddress(address);
-                participantDBEntity.setNickName(nick);
-                localDataSource.addBoardParticipant(boardId,  participantDBEntity);
-            }
-        });
+        if (active) {
+            executorService.execute(() -> {
+                String nick = remoteDataSource.addBoardParticipant(boardId, address);
+                Log.e("NICK", "NICK " + nick);
+                if (nick != null && active) {
+                    ParticipantDBEntity participantDBEntity = new ParticipantDBEntity();
+                    participantDBEntity.setAddress(address);
+                    participantDBEntity.setNickName(nick);
+                    localDataSource.addBoardParticipant(boardId, participantDBEntity);
+                }
+            });
+        }
     }
 
     public LiveData<List<TaskCard>> getTaskCards(int groupId) {
@@ -129,12 +160,14 @@ public enum  Repository {
     }
 
     public void updateBoardCards() {
-        executorService.execute(() -> {
-            List<BoardDBEntity> boardDBEntities = remoteDataSource.getBoards();
-            if (boardDBEntities != null) {
-                localDataSource.updateBoardCards(boardDBEntities);
-            }
-        });
+        if (active) {
+            executorService.execute(() -> {
+                List<BoardDBEntity> boardDBEntities = remoteDataSource.getBoards();
+                if (boardDBEntities != null && active) {
+                    localDataSource.updateBoardCards(boardDBEntities);
+                }
+            });
+        }
     }
 
     public LiveData<Calendar> getLastUpdate(LastUpdateEntity.Query queryType, int id) {
@@ -142,39 +175,47 @@ public enum  Repository {
     }
 
     public void setTaskStart(int taskId, Calendar calendar) {
-        executorService.execute(() -> {
-            TransactionReceipt tx = remoteDataSource.setTaskStart(taskId, calendar);
-            if (tx != null) {
+        if (active) {
+            executorService.execute(() -> {
+                TransactionReceipt tx = remoteDataSource.setTaskStart(taskId, calendar);
+                if (tx != null && active) {
                     localDataSource.setTaskStart(taskId, calendar);
-            }
-        });
+                }
+            });
+        }
     }
 
     public void setTaskFinish(int taskId, Calendar calendar) {
-        executorService.execute(() -> {
-            TransactionReceipt tx = remoteDataSource.setTaskFinish(taskId, calendar);
-            if (tx != null) {
+        if (active) {
+            executorService.execute(() -> {
+                TransactionReceipt tx = remoteDataSource.setTaskFinish(taskId, calendar);
+                if (tx != null && active) {
                     localDataSource.setTaskFinish(taskId, calendar);
-            }
-        });
+                }
+            });
+        }
     }
 
     public void setBoardStart(int boardId, Calendar calendar) {
-        executorService.execute(() -> {
-            TransactionReceipt tx = remoteDataSource.setBoardStart(boardId, calendar);
-            if (tx != null) {
-                localDataSource.setBoardStart(boardId, calendar);
-            }
-        });
+        if (active) {
+            executorService.execute(() -> {
+                TransactionReceipt tx = remoteDataSource.setBoardStart(boardId, calendar);
+                if (tx != null && active) {
+                    localDataSource.setBoardStart(boardId, calendar);
+                }
+            });
+        }
     }
 
     public void setBoardFinish(int boardId, Calendar calendar) {
-        executorService.execute(() -> {
-            TransactionReceipt tx = remoteDataSource.setBoardFinish(boardId, calendar);
-            if (tx != null) {
-                localDataSource.setBoardFinish(boardId, calendar);
-            }
-        });
+        if (active) {
+            executorService.execute(() -> {
+                TransactionReceipt tx = remoteDataSource.setBoardFinish(boardId, calendar);
+                if (tx != null && active) {
+                    localDataSource.setBoardFinish(boardId, calendar);
+                }
+            });
+        }
     }
 
 //    private Tuple2<GroupDBEntity, List<TaskDBEntity>> getBoardGroup(int groupId, int boardId) {
@@ -228,13 +269,15 @@ public enum  Repository {
 //    }
 
     public void updateBoard(int id) {
-        executorService.execute(() -> {
-            Board board
-                    = remoteDataSource.getBoard(id);
-            if (board != null) {
-                localDataSource.updateBoard(board);
-            }
-        });
+        if (active) {
+            executorService.execute(() -> {
+                Board board
+                        = remoteDataSource.getBoard(id);
+                if (board != null && active) {
+                    localDataSource.updateBoard(board);
+                }
+            });
+        }
     }
 
     public LiveData<List<GroupStatistic>> getGroupsStatistics(int boardId) {
@@ -242,21 +285,23 @@ public enum  Repository {
     }
 
     public void createTask(int boardId, int groupId, String title) {
-        executorService.execute(() -> {
-            TransactionReceipt tx = remoteDataSource.createTask(groupId, title);
-            if (tx != null) {
-                Integer id = Integer.parseInt(tx.getLogs().get(0).getData().substring(2), 16);
-                TaskDBEntity taskDBEntity = new TaskDBEntity();
-                taskDBEntity.setTaskId(id);
-                taskDBEntity.setBoardId(boardId);
-                taskDBEntity.setGroupId(groupId);
-                taskDBEntity.setTitle(title);
-                taskDBEntity.setDescription("");
-                taskDBEntity.setStart(null);
-                taskDBEntity.setFinish(null);
-                localDataSource.insertTaskDBEntity(taskDBEntity);
+        if (active) {
+            executorService.execute(() -> {
+                TransactionReceipt tx = remoteDataSource.createTask(groupId, title);
+                if (tx != null && active) {
+                    Integer id = Integer.parseInt(tx.getLogs().get(0).getData().substring(2), 16);
+                    TaskDBEntity taskDBEntity = new TaskDBEntity();
+                    taskDBEntity.setTaskId(id);
+                    taskDBEntity.setBoardId(boardId);
+                    taskDBEntity.setGroupId(groupId);
+                    taskDBEntity.setTitle(title);
+                    taskDBEntity.setDescription("");
+                    taskDBEntity.setStart(null);
+                    taskDBEntity.setFinish(null);
+                    localDataSource.insertTaskDBEntity(taskDBEntity);
+                }
+            });
         }
-        });
     }
 
     private BoardDBEntity tupleToBoardDBEntity(int id, Tuple4<String, BigInteger, BigInteger, List<BigInteger>> tuple) {

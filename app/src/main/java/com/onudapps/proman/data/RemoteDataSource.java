@@ -1,6 +1,9 @@
 package com.onudapps.proman.data;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
+import com.onudapps.proman.BuildConfig;
 import com.onudapps.proman.contracts.Smart;
 import com.onudapps.proman.data.db.entities.BoardDBEntity;
 import com.onudapps.proman.data.db.entities.GroupDBEntity;
@@ -24,13 +27,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static com.onudapps.proman.ui.activities.StartActivity.PREFERENCES;
+import static com.onudapps.proman.ui.activities.StartActivity.PRIVATE_KEY;
+
 public class RemoteDataSource {
     private static final String LOG_TAG = "RemoteDataSource";
     private Smart smartContract;
-    public RemoteDataSource() {
-        Web3j web3j = Web3j.build(new HttpService("http://192.168.1.102:7545"));
-        Credentials credentials = Credentials.create("28f3d307e639526a072b94cfa7f484ac84991118fbe7ac59cceb3abf53a58b67");
-        smartContract = Smart.load("a7D1e66caC788EdDcbD0FF8b871B4eb3Bf2821Cb", web3j, credentials, new DefaultGasProvider());
+    public RemoteDataSource(Context context) {
+        Web3j web3j = Web3j.build(new HttpService(BuildConfig.hostAPI));
+        Credentials credentials = Credentials.create(getPrivateKey(context));
+        smartContract = Smart.load(BuildConfig.contractAddress, web3j, credentials, new DefaultGasProvider());
     }
 
 //    public Flowable<TransactionReceipt> addBoard(String title) {
@@ -49,10 +55,12 @@ public class RemoteDataSource {
 //        }
 //    }
 
+    private String getPrivateKey(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        return sharedPreferences.getString(PRIVATE_KEY, null);
+    }
+
     public TransactionReceipt createBoard(String title) {
-//        smartContract.addBoard(title).sendAsync().thenAccept(tx -> {
-//            Log.e(LOG_TAG, "ok");
-//        });
         try {
             return smartContract.addBoard(title).send();
         }
@@ -67,6 +75,24 @@ public class RemoteDataSource {
 //        });
         try {
             return smartContract.addGroup(BigInteger.valueOf(boardId), title).send();
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+
+    public TransactionReceipt setTaskDescription(int taskId, String description) {
+        try {
+            return smartContract.setTaskDescription(BigInteger.valueOf(taskId), description).send();
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+
+    public TransactionReceipt setTaskTitle(int taskId, String title) {
+        try {
+            return smartContract.setTaskTitle(BigInteger.valueOf(taskId), title).send();
         }
         catch (Exception e) {
             return null;
@@ -94,13 +120,37 @@ public class RemoteDataSource {
         }
     }
 
+    public static boolean  signIn(String privateKey) {
+        try {
+            Web3j web3j = Web3j.build(new HttpService(BuildConfig.hostAPI));
+            Credentials credentials = Credentials.create(privateKey);
+            Smart smart = Smart.load(BuildConfig.contractAddress, web3j, credentials, new DefaultGasProvider());
+            return smart.signIn().send();
+        }
+        catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static TransactionReceipt  signUp(String privateKey, String nickname) {
+        try {
+            Web3j web3j = Web3j.build(new HttpService(BuildConfig.hostAPI));
+            Credentials credentials = Credentials.create(privateKey);
+            Smart smart = Smart.load(BuildConfig.contractAddress, web3j, credentials, new DefaultGasProvider());
+            return smart.signUp(nickname).send();
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+
     public TransactionReceipt setBoardStart(int boardId, Calendar calendar) {
         long time = calendar == null ? -1 : calendar.getTimeInMillis();
         try {
             return smartContract.setBoardStart(BigInteger.valueOf(boardId), BigInteger.valueOf(time)).send();
         }
         catch (Exception e) {
-            //Log.e(LOG_TAG, "start set failed " + boardId + " " + e.getMessage());
+            Log.e(LOG_TAG, "start set failed " + boardId + " " + e.getMessage());
             return null;
         }
     }

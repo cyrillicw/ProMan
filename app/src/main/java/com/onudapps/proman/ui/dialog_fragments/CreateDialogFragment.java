@@ -1,23 +1,25 @@
 package com.onudapps.proman.ui.dialog_fragments;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import com.onudapps.proman.R;
-import com.onudapps.proman.ui.activities.CreateDialogListener;
+import com.onudapps.proman.ui.listeners.CreateDialogListener;
 
 public class CreateDialogFragment extends DialogFragment {
     private static final String LOG_TAG = "CreateDialogFragment";
     public static final String RETURN_TAG = "createdString";
     private static final String TITLE_TEXT_TAG = "title";
+
+    private EditText title;
 
     public static CreateDialogFragment newInstance(String title) {
         Bundle args = new Bundle();
@@ -27,27 +29,30 @@ public class CreateDialogFragment extends DialogFragment {
         return fragment;
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.alert_create, container);
-        //viewModel = ViewModelProviders.of(this).get(CreateGroupViewModel.class);
-        TextView textView = view.findViewById(R.id.create_hint);
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        AlertDialog dialog = new AlertDialog.Builder(getContext()).setView(R.layout.alert_create)
+                .setPositiveButton(R.string.ok, null).create();
+        dialog.show();
+        TextView textView = dialog.findViewById(R.id.create_hint);
         textView.setText(getArguments().getString(TITLE_TEXT_TAG));
-        EditText title = view.findViewById(R.id.created_title);
-        TextView ok = view.findViewById(R.id.confirm_button);
-        ok.setOnClickListener(v -> {
-            //((BoardActivity)getActivity()).getViewModel().createGroup(title.getText().toString());
+        title = dialog.findViewById(R.id.created_title);
+        Button ok = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        ok.setOnClickListener(this::okOnClickListener);
+        return dialog;
+    }
+
+
+    private void okOnClickListener(View v) {
+        String res = title.getText().toString();
+        if (!res.equals("")) {
             if (getTargetFragment() != null) {
-                Intent intent = new Intent();
-                intent.putExtra(RETURN_TAG, title.getText().toString());
-                getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
-            }
-            else {
-                ((CreateDialogListener)getActivity()).onCreateCommit(title.getText().toString());
+                ((CreateDialogListener)getTargetFragment()).onCreateCommit(title.getText().toString());
+            } else {
+                ((CreateDialogListener) getActivity()).onCreateCommit(title.getText().toString());
             }
             dismiss();
-        });
-        return view;
+        }
     }
 }

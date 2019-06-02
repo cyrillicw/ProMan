@@ -1,5 +1,6 @@
 package com.onudapps.proman.ui.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -16,13 +17,15 @@ import com.onudapps.proman.data.Repository;
 import com.onudapps.proman.data.pojo.BoardWithUpdate;
 import com.onudapps.proman.ui.adapters.BoardsRecyclerAdapter;
 import com.onudapps.proman.ui.dialog_fragments.CreateDialogFragment;
+import com.onudapps.proman.ui.listeners.CreateDialogListener;
+import com.onudapps.proman.ui.listeners.SignOutOnClickListener;
 import com.onudapps.proman.viewmodels.BoardCardsViewModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class BoardCardsActivity extends AppCompatActivity implements CreateDialogListener{
+public class BoardCardsActivity extends AppCompatActivity implements CreateDialogListener {
     private static final String LOG_TAG = "BOARDCARDS ACTIVITY";
     private static final String APP_NAME = "PROMAN";
 
@@ -46,6 +49,8 @@ public class BoardCardsActivity extends AppCompatActivity implements CreateDialo
         createBoard.setOnClickListener(this::createBoardListener);
         ImageView update = toolbar.findViewById(R.id.update);
         update.setOnClickListener(this::updateOnClickListener);
+        ImageView signOut = toolbar.findViewById(R.id.sign_out);
+        signOut.setOnClickListener(new SignOutOnClickListener());
         recyclerView = findViewById(R.id.recycle_boards);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
@@ -71,6 +76,14 @@ public class BoardCardsActivity extends AppCompatActivity implements CreateDialo
         else {
             ((BoardsRecyclerAdapter) recyclerView.getAdapter()).updateData(new ArrayList<>());
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     private void updateOnClickListener(View v) {

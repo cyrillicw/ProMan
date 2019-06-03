@@ -106,15 +106,18 @@ public class BoardChartFragment extends Fragment {
                     dStart = 1;
                 } else {
                     dStart = currentStart.get(Calendar.DAY_OF_MONTH);
-                    dStart += dayPart(start);
+                    dStart += dayPart(currentStart);
                 }
                 float dFinish;
                 if (currentFinish.after(finish)) {
                     dFinish = maxDays;
                 } else {
                     dFinish = currentFinish.get(Calendar.DAY_OF_MONTH);
-                    dFinish += dayPart(finish);
+                    dFinish += dayPart(currentFinish);
                 }
+                dStart -= 1;
+                dFinish -= 1;
+                //Log.e("STARTS", ": " + dStart + " " + dFinish);
                 barEntries.add(new BarEntry(i, new float[]{dStart, dFinish - dStart}));
                 if (taskCalendarCards.get(i).getTitle().length() <= maxLength) {
                     xAxisLabel.add(taskCalendarCards.get(i).getTitle());
@@ -144,21 +147,22 @@ public class BoardChartFragment extends Fragment {
             gantt.getAxisRight().setDrawGridLines(false);
             gantt.getAxisRight().setDrawAxisLine(false);
             gantt.getAxisLeft().disableGridDashedLine();
-            gantt.getAxisLeft().setAxisMinimum(1);
+            gantt.getAxisLeft().setAxisMinimum(0);
             gantt.getAxisLeft().setAxisMaximum(maxDays);
-            gantt.getAxisRight().setAxisMinimum(1);
+            gantt.getAxisRight().setAxisMinimum(0);
             gantt.getAxisRight().setAxisMaximum(maxDays);
             //gantt.getAxisLeft().setDrawTopYLabelEntry(false);
             gantt.getAxisLeft().setDrawGridLines(false);
-//            List<String> yLabels = new ArrayList<>();
-//            for (int i = 0; i <= maxDays; i++) {
-//                yLabels.add(Integer.toString(i));
-//            }
+            List<String> yLabels = new ArrayList<>();
+            Log.e("MAX", "DAYS " + maxDays);
+            for (int i = 0; i < maxDays; i++) {
+                yLabels.add(Integer.toString(i + 1));
+            }
 //            Log.e("GANTT", "WIDTH" + gantt.getWidth());
-//            gantt.getAxisLeft().setValueFormatter(new IndexAxisValueFormatter(yLabels));
-//            gantt.getAxisRight().setValueFormatter(new IndexAxisValueFormatter(yLabels));
-            gantt.getAxisRight().setLabelCount(maxDays / 2);
-            gantt.getAxisLeft().setLabelCount(maxDays / 2);
+            gantt.getAxisLeft().setValueFormatter(new IndexAxisValueFormatter(yLabels));
+            gantt.getAxisRight().setValueFormatter(new IndexAxisValueFormatter(yLabels));
+            gantt.getAxisRight().setLabelCount(yLabels.size() / 2);
+            gantt.getAxisLeft().setLabelCount(yLabels.size() / 2);
             gantt.getAxisLeft().setDrawAxisLine(false);
             gantt.getXAxis().setDrawGridLines(false);
             gantt.getXAxis().setDrawAxisLine(false);
@@ -218,7 +222,7 @@ public class BoardChartFragment extends Fragment {
     }
 
     private float dayPart(Calendar calendar) {
-        return (float) ((double)(calendar.get(Calendar.HOUR_OF_DAY) * 3600
-                + calendar.get(Calendar.MINUTE) * 60 + calendar.get(Calendar.SECOND)) / (24 * 3600));
+        return (float) ((double)(calendar.get(Calendar.HOUR_OF_DAY) * 60
+                + calendar.get(Calendar.MINUTE)) / (24 * 60));
     }
 }

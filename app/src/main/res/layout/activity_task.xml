@@ -21,17 +21,15 @@
                 android:id="@+id/detailed_task_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Title"
                 android:textSize="30sp"
                 android:layout_centerHorizontal="true"
                 android:textColor="@color/toolbar_text"
                 android:background="@color/toolbar"
                 android:padding="4dp"/>
             <TextView
-                android:id="@+id/detailed_task_board"
+                android:id="@+id/detailed_task_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Board"
                 android:textSize="15sp"
                 android:layout_below="@id/detailed_task_title"
                 android:textColor="@color/toolbar_text"
@@ -40,7 +38,7 @@
                 android:textStyle="italic"/>
 
             <FrameLayout
-                android:layout_below="@id/detailed_task_board"
+                android:layout_below="@id/detailed_task_group"
                 android:id="@+id/detailed_task_description_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

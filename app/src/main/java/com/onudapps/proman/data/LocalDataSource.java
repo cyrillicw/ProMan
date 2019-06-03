@@ -24,13 +24,21 @@ class LocalDataSource {
         database.getProManDao().clearData();
     }
 
+    public void removeBoardParticipant(int boardId, String address) {
+        database.getProManDao().removeBoardParticipant(boardId, address);
+    }
+
     public LiveData<List<ParticipantDBEntity>> getBoardParticipants(int boardId) {
         return database.getProManDao().getBoardParticipants(boardId);
     }
 
-    public void insertTask(Task task) {
-        database.getProManDao().insertTask(task);
+    public LiveData<Task> getTask(int taskId) {
+        return database.getProManDao().getTask(taskId);
     }
+
+//    public void insertTask(Task task) {
+//        database.getProManDao().insertTask(task);
+//    }
 
     public void insertTaskDBEntity(TaskDBEntity taskDBEntity) {
         database.getProManDao().insertTaskDBEntity(taskDBEntity);
@@ -39,6 +47,11 @@ class LocalDataSource {
     public LiveData<List<TaskCalendarCard>> getTasksCalendarData(int boardId) {
         return database.getProManDao().getTasksCalendarCard(boardId);
     }
+
+    public LiveData<List<GroupShortInfo>> getGroupsShortInfo(int boardId) {
+        return database.getProManDao().getGroupsShortInfo(boardId);
+    }
+
     public LiveData<StartFinishDates> getBoardStartFinishDates(int boardId) {
         return database.getProManDao().getBoardStartFinishDates(boardId);
     }

@@ -59,7 +59,7 @@ public class BoardGroupFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_board_group);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(new TasksRecyclerAdapter(new ArrayList<>()));
+        recyclerView.setAdapter(new TasksRecyclerAdapter(boardId, new ArrayList<>()));
         groupViewModel = ViewModelProviders
                 .of(this, new GroupViewModel.GroupModelFactory(groupId, boardId))
                 .get(GroupViewModel.class);

@@ -5,7 +5,6 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
-import com.onudapps.proman.data.pojo.Task;
 
 import java.util.Calendar;
 
@@ -26,17 +25,17 @@ public class TaskDBEntity {
 
     public TaskDBEntity(){}
 
-    public TaskDBEntity(Task task) {
-        taskId = task.getTaskId();
-        title = task.getTitle();
-        description = task.getDescription();
-        start = Calendar.getInstance();
-        start.setTimeInMillis(task.getStart().getTimeInMillis());
-        finish = Calendar.getInstance();
-        finish.setTimeInMillis(task.getFinish().getTimeInMillis());
-        boardId = task.getBoardId();
-        groupId = task.getGroupId();
-    }
+//    public TaskDBEntity(Task task) {
+//        taskId = task.getTaskId();
+//        title = task.getTitle();
+//        description = task.getDescription();
+//        start = Calendar.getInstance();
+//        start.setTimeInMillis(task.getStart().getTimeInMillis());
+//        finish = Calendar.getInstance();
+//        finish.setTimeInMillis(task.getFinish().getTimeInMillis());
+//        boardId = task.getBoardId();
+//        groupId = task.getGroupId();
+//    }
 
     public Integer getTaskId() {
         return taskId;

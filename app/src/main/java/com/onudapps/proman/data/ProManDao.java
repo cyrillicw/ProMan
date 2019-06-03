@@ -24,12 +24,12 @@ public abstract class ProManDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract void insert(ParticipantDBEntity participantDBEntity);
 
-    @Query("SELECT tasks.taskId as taskId, tasks.title as title, tasks.description as description, tasks.start as start, tasks.finish as finish, boards.title as boardTitle, groups.title as groupTitle, tasks.boardId as boardId, tasks.groupId as groupId " +
-            "FROM tasks " +
-            "INNER JOIN boards ON tasks.boardId = boards.boardId " +
-            "INNER JOIN groups ON tasks.groupId = groups.groupId " +
-            "WHERE tasks.taskId = :id")
-    public abstract Task getTaskWithNoParticipants(UUID id);
+//    @Query("SELECT tasks.taskId as taskId, tasks.title as title, tasks.description as description, tasks.start as start, tasks.finish as finish, boards.title as boardTitle, groups.title as groupTitle, tasks.boardId as boardId, tasks.groupId as groupId " +
+//            "FROM tasks " +
+//            "INNER JOIN boards ON tasks.boardId = boards.boardId " +
+//            "INNER JOIN groups ON tasks.groupId = groups.groupId " +
+//            "WHERE tasks.taskId = :id")
+//    public abstract Task getTaskWithNoParticipants(UUID id);
 
 //    @Query("SELECT p.publicKey, p.nickName " +
 //            "FROM participants as p " +
@@ -40,6 +40,11 @@ public abstract class ProManDao {
     @Query("SELECT * FROM tasks WHERE tasks.taskId = :taskId")
     public abstract LiveData<TaskDBEntity> getTaskDBEntity(int taskId);
 
+    @Query("SELECT tasks.*, groups.title as groupTitle " +
+            "FROM tasks LEFT JOIN groups ON tasks.groupId = groups.groupId " +
+            "WHERE tasks.taskId = :taskId")
+    public abstract LiveData<Task> getTask(int taskId);
+
     @Transaction
     public void addBoardParticipant(int boardId, ParticipantDBEntity participantDBEntity) {
         insertParticipant(participantDBEntity);
@@ -49,13 +54,8 @@ public abstract class ProManDao {
         insertBoardParticipantJoin(join);
     }
 
-//    @Transaction
-//    public Task getTask(UUID id) {
-//        Task task = getTaskWithNoParticipants(id);
-//        List<ParticipantDBEntity> participants = getTaskParticipants(id);
-//        task.setParticipants(participants);
-//        return task;
-//    }
+    @Query("SELECT groupId, title as groupTitle FROM groups WHERE boardId = :boardId")
+    public abstract LiveData<List<GroupShortInfo>> getGroupsShortInfo(int boardId);
 
     @Query("DELETE FROM task_participant_join as tpj WHERE tpj.taskId = :id")
     public abstract void deleteTaskParticipants(UUID id);
@@ -81,21 +81,24 @@ public abstract class ProManDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract long insertTaskTitle(TaskDBEntity taskDBEntity);
 
+    @Query("DELETE FROM board_participant_join " +
+            "WHERE boardId = :boardId and address = :address")
+    public abstract void removeBoardParticipant(int boardId, String address);
 
-    @Transaction
-    public void insertTask(Task task) {
-        TaskDBEntity taskDBEntity = new TaskDBEntity(task);
-        List<TaskParticipantJoin> taskParticipantJoins = new ArrayList<>();
-        for (ParticipantDBEntity e: task.getParticipants()) {
-            TaskParticipantJoin taskParticipantJoin = new TaskParticipantJoin();
-            taskParticipantJoin.setTaskId(task.getTaskId());
-            taskParticipantJoin.setAddress(e.getAddress());
-            taskParticipantJoins.add(taskParticipantJoin);
-        }
-        insertTaskDBEntity(taskDBEntity);
-        insertParticipants(task.getParticipants());
-        insertTaskParticipantJoins(taskParticipantJoins);
-    }
+//    @Transaction
+//    public void insertTask(Task task) {
+//        TaskDBEntity taskDBEntity = new TaskDBEntity(task);
+//        List<TaskParticipantJoin> taskParticipantJoins = new ArrayList<>();
+//        for (ParticipantDBEntity e: task.getParticipants()) {
+//            TaskParticipantJoin taskParticipantJoin = new TaskParticipantJoin();
+//            taskParticipantJoin.setTaskId(task.getTaskId());
+//            taskParticipantJoin.setAddress(e.getAddress());
+//            taskParticipantJoins.add(taskParticipantJoin);
+//        }
+//        insertTaskDBEntity(taskDBEntity);
+//        insertParticipants(task.getParticipants());
+//        insertTaskParticipantJoins(taskParticipantJoins);
+//    }
 
     @Query("DELETE FROM boards")
     public abstract void clearBoards();

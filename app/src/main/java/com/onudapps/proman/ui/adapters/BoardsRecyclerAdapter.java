@@ -1,6 +1,5 @@
 package com.onudapps.proman.ui.adapters;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
@@ -18,7 +18,7 @@ import com.onudapps.proman.R;
 import com.onudapps.proman.data.db.entities.BoardDBEntity;
 import com.onudapps.proman.data.pojo.BoardWithUpdate;
 import com.onudapps.proman.ui.activities.BoardActivity;
-import com.onudapps.proman.viewmodels.BoardCardsViewModel;
+import com.onudapps.proman.ui.dialog_fragments.BoardsMenuDialogFragment;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,11 +28,9 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
     private static final String LOG_TAG = "BoardsRecyclerAdapter";
 
     private List<BoardWithUpdate> boards;
-    private BoardCardsViewModel viewModel;
 
-    public BoardsRecyclerAdapter(List<BoardWithUpdate> boards, BoardCardsViewModel viewModel) {
+    public BoardsRecyclerAdapter(List<BoardWithUpdate> boards) {
         this.boards = boards;
-        this.viewModel = viewModel;
     }
 
     public void updateData(List<BoardWithUpdate> boards) {
@@ -94,14 +92,7 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
                 }
             });
             view.setOnLongClickListener(v -> {
-                String[] options = {v.getResources().getString(R.string.leave_board),
-                        v.getResources().getString(R.string.delete_board)};
-                AlertDialog alertDialog = new AlertDialog.Builder(v.getContext()).setItems(options, (d, w) -> {
-                    if (w == 0) {
-                        viewModel.leaveBoard(board.getBoardId());
-                    }
-                }).create();
-                alertDialog.show();
+                BoardsMenuDialogFragment.newInstance(board.getBoardId()).show(((AppCompatActivity)v.getContext()).getSupportFragmentManager(), null);
                 return true;
             });
         }

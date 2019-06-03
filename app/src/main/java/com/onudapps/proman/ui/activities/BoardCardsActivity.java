@@ -54,7 +54,7 @@ public class BoardCardsActivity extends AppCompatActivity implements CreateDialo
         recyclerView = findViewById(R.id.recycle_boards);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(new BoardsRecyclerAdapter(new ArrayList<>(), viewModel));
+        recyclerView.setAdapter(new BoardsRecyclerAdapter(new ArrayList<>()));
         boardsData = viewModel.getBoardsData();
         boardsData.observe(this, this::onBoardsDataChangeListener);
     }

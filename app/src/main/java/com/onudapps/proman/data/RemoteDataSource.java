@@ -1,7 +1,5 @@
 package com.onudapps.proman.data;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 import com.onudapps.proman.BuildConfig;
 import com.onudapps.proman.contracts.Smart;
@@ -27,15 +25,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static com.onudapps.proman.ui.activities.StartActivity.PREFERENCES;
-import static com.onudapps.proman.ui.activities.StartActivity.PRIVATE_KEY;
-
 public class RemoteDataSource {
     private static final String LOG_TAG = "RemoteDataSource";
     private Smart smartContract;
-    public RemoteDataSource(Context context) {
+    public RemoteDataSource(Credentials credentials) {
         Web3j web3j = Web3j.build(new HttpService(BuildConfig.hostAPI));
-        Credentials credentials = Credentials.create(getPrivateKey(context));
         smartContract = Smart.load(BuildConfig.contractAddress, web3j, credentials, new DefaultGasProvider());
     }
 
@@ -55,9 +49,14 @@ public class RemoteDataSource {
 //        }
 //    }
 
-    private String getPrivateKey(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        return sharedPreferences.getString(PRIVATE_KEY, null);
+    public TransactionReceipt removeBoardParticipant(int boardId, String address) {
+        try {
+            return smartContract.removeBoardParticipant(BigInteger.valueOf(boardId), address).send();
+        }
+        catch (Exception e) {
+            Log.e(LOG_TAG, "Removing board's participant failed");
+            return null;
+        }
     }
 
     public TransactionReceipt createBoard(String title) {

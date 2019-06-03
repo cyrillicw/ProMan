@@ -48,7 +48,8 @@ public class ParticipantsDialogFragment extends DialogFragment implements Create
                 .get(BoardParticipantsViewModel.class);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false);
         participantsRecycler.setLayoutManager(layoutManager);
-        participantsRecycler.setAdapter(new ParticipantsAdapter(new ArrayList<>()));
+        ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(boardId, new ArrayList<>());
+        participantsRecycler.setAdapter(participantsAdapter);
         LiveData<List<ParticipantDBEntity>> participantsData = viewModel.getParticipantsData();
         participantsData.observe(this, this::onParticipantsDataChanged);
         FloatingActionButton addParticipants = view.findViewById(R.id.add_participants_button);

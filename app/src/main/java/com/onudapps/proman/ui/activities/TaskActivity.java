@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -18,11 +17,15 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import com.onudapps.proman.R;
 import com.onudapps.proman.data.db.entities.TaskDBEntity;
+import com.onudapps.proman.data.pojo.GroupShortInfo;
+import com.onudapps.proman.data.pojo.Task;
 import com.onudapps.proman.ui.dialog_fragments.DateDialogFragment;
+import com.onudapps.proman.ui.dialog_fragments.TaskChangeGroupDialogFragment;
 import com.onudapps.proman.ui.listeners.DateDialogListener;
 import com.onudapps.proman.viewmodels.TaskViewModel;
 
 import java.util.Calendar;
+import java.util.List;
 
 import static com.onudapps.proman.ui.dialog_fragments.DateDialogFragment.FINISH_DIALOG_REQUEST_CODE;
 import static com.onudapps.proman.ui.dialog_fragments.DateDialogFragment.START_DIALOG_REQUEST_CODE;
@@ -30,7 +33,8 @@ import static com.onudapps.proman.ui.dialog_fragments.DateDialogFragment.START_D
 public class TaskActivity extends AppCompatActivity implements DateDialogListener {
 
     private static final String LOG_TAG = "TaskActivity";
-    public static final String taskIdTag = "taskId";
+    public static final String TASK_ID_TAG = "taskId";
+    public static final String BOARD_ID_TAG = "boardId";
     private enum CalendarMode {
         START, FINISH;
     }
@@ -41,11 +45,17 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     private ImageView upload;
     private TextView description;
     private EditText descriptionEdit;
-    private EditMode editMode;
+    private TextView group;
+    private TextView dateStartText;
+    private TextView dateFinishText;
 
-    TaskDBEntity originalTask;
+    private EditMode editMode;
+    private TaskDBEntity task;
     private int taskId;
+    private int boardId;
     private TaskViewModel taskViewModel;
+    private String[] groupsTitles;
+    private int[] groupsIds;
 
     private enum EditMode {
         TITLE, DESCRIPTION;
@@ -58,12 +68,11 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         // insert();
         editMode = null;
         Intent intent = getIntent();
-        taskId = intent.getIntExtra(taskIdTag, -1);
-        Log.e("TACTIVITY", "Taskid " + taskId);
+        boardId = intent.getIntExtra(BOARD_ID_TAG, -1);
+        taskId = intent.getIntExtra(TASK_ID_TAG, -1);
         taskViewModel = ViewModelProviders
-                .of(this, new TaskViewModel.TaskModelFactory(taskId))
+                .of(this, new TaskViewModel.TaskModelFactory(taskId, boardId))
                 .get(TaskViewModel.class);
-        LiveData<TaskDBEntity> data = taskViewModel.getData();
         tick = findViewById(R.id.tick);
         upload = findViewById(R.id.upload);
         description = findViewById(R.id.detailed_task_description);
@@ -72,36 +81,59 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         tick.setOnClickListener(this::tickClickListener);
         upload.setOnClickListener(this::uploadClickListener);
         title = findViewById(R.id.detailed_task_title);
-        TextView dateStartText = findViewById(R.id.detailed_task_start_text);
-        TextView dateFinishText = findViewById(R.id.detailed_task_finish_text);
+        group = findViewById(R.id.detailed_task_group);
+        dateStartText = findViewById(R.id.detailed_task_start_text);
+        dateFinishText = findViewById(R.id.detailed_task_finish_text);
         TextView participantsText = findViewById(R.id.detailed_task_participants_text);
         participantsText.setOnClickListener(this::participantsOnClickListener);
-        data.observe(this, t -> {
-            originalTask = t;
-//            editedTask = new Task(task);
-//            taskChange = new TaskChange(task);
-//            editedTask.setTaskChange(taskChange);
-            title.setText(t.getTitle());
-            refreshDescription();
-            description.setOnClickListener(this::descriptionOnClickListener);
-//            dateStartText.setOnClickListener(this::startOnClickListener);
-//            dateFinishText.setOnClickListener(this::finishOnClickListener);
-            //dateStartText.setOnClickListener(new DateDialog(editedTask, CalendarMode.START));
-            //dateFinishText.setOnClickListener(new DateDialog(editedTask, CalendarMode.FINISH));
-        });
+        LiveData<Task> taskData = taskViewModel.getTaskData();
+        LiveData<List<GroupShortInfo>> groupsData = taskViewModel.getGroupsData();
+        taskData.observe(this, this::taskDataListener);
+        groupsData.observe(this, this::groupsDataListener);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
+    private void groupsDataListener(List<GroupShortInfo> groups) {
+        groupsTitles = new String[groups.size()];
+        groupsIds = new int[groups.size()];
+        for (int i = 0; i < groups.size(); i++) {
+            groupsTitles[i] = groups.get(i).getGroupTitle();
+            groupsIds[i] = groups.get(i).getGroupId();
+        }
+        group.setOnClickListener(this::groupOnClickListener);
+    }
+
+    private void groupOnClickListener(View v) {
+        TaskChangeGroupDialogFragment.newInstance(groupsTitles, groupsIds, taskId)
+                .show(getSupportFragmentManager(), null);
+    }
+
+    private void taskDataListener(Task t) {
+        task = t.getTaskDBEntity();
+//            editedTask = new Task(task);
+//            taskChange = new TaskChange(task);
+//            editedTask.setTaskChange(taskChange);
+        TaskDBEntity taskDBEntity = t.getTaskDBEntity();
+        title.setText(task.getTitle());
+        refreshDescription();
+        description.setOnClickListener(this::descriptionOnClickListener);
+//            dateStartText.setOnClickListener(this::startOnClickListener);
+//            dateFinishText.setOnClickListener(this::finishOnClickListener);
+        dateStartText.setOnClickListener(this::startOnClickListener);
+        dateFinishText.setOnClickListener(this::finishOnClickListener);
+        group.setText(t.getGroupTitle());
+    }
+
     private void startOnClickListener(View v) {
-        DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(START_DIALOG_REQUEST_CODE, originalTask.getStart());
+        DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(START_DIALOG_REQUEST_CODE, task.getStart());
         dateDialogFragment.show(getSupportFragmentManager(), "DATE START");
     }
 
     private void finishOnClickListener(View v) {
-        DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(FINISH_DIALOG_REQUEST_CODE, originalTask.getFinish());
+        DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(FINISH_DIALOG_REQUEST_CODE, task.getFinish());
         dateDialogFragment.show(getSupportFragmentManager(), "DATE FINISH");
     }
 
@@ -210,11 +242,11 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         title.setOnClickListener(null);
         description.setVisibility(View.GONE);
         tick.setVisibility(View.VISIBLE);
-        if (originalTask.getDescription() == null || originalTask.getDescription().length() == 0) {
+        if (task.getDescription() == null || task.getDescription().length() == 0) {
             descriptionEdit.setHint(getResources().getString(R.string.change_description));
         }
         else {
-            descriptionEdit.setText(originalTask.getDescription());
+            descriptionEdit.setText(task.getDescription());
         }
 //        descriptionEdit.requestFocus();
 //        InputMethodManager inputMethodManager =
@@ -226,12 +258,12 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     }
 
     private void refreshDescription() {
-        if (originalTask.getDescription() == null || originalTask.getDescription().length() == 0) {
+        if (task.getDescription() == null || task.getDescription().length() == 0) {
             description.setText(getResources().getString(R.string.change_description));
             description.setTypeface(null, Typeface.ITALIC);
         }
         else {
-            description.setText(originalTask.getDescription());
+            description.setText(task.getDescription());
             description.setTypeface(null, Typeface.NORMAL);
         }
     }

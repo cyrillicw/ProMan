@@ -17,10 +17,14 @@ import com.onudapps.proman.ui.dialog_fragments.TaskChangeGroupDialogFragment;
 
 import java.util.List;
 
+import static com.onudapps.proman.ui.activities.TaskActivity.BOARD_ID_TAG;
+
 public class TasksRecyclerAdapter extends RecyclerView.Adapter<TasksRecyclerAdapter.TaskViewHolder> {
     private List<TaskCard> tasks;
+    private int boardId;
 
-    public TasksRecyclerAdapter(List<TaskCard> tasks) {
+    public TasksRecyclerAdapter(int boardId, List<TaskCard> tasks) {
+        this.boardId = boardId;
         this.tasks = tasks;
     }
 
@@ -58,7 +62,8 @@ public class TasksRecyclerAdapter extends RecyclerView.Adapter<TasksRecyclerAdap
         private void bindData(int position) {
             view.setOnClickListener(v -> {
                 Intent intent = new Intent(v.getContext(), TaskActivity.class);
-                intent.putExtra(TaskActivity.taskIdTag, tasks.get(position).getTaskId());
+                intent.putExtra(TaskActivity.TASK_ID_TAG, tasks.get(position).getTaskId());
+                intent.putExtra(BOARD_ID_TAG, boardId);
                 v.getContext().startActivity(intent);
             });
             view.setOnLongClickListener(v -> {

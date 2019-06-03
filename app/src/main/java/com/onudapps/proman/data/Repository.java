@@ -1,10 +1,12 @@
 package com.onudapps.proman.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import androidx.lifecycle.LiveData;
 import com.onudapps.proman.data.db.entities.*;
 import com.onudapps.proman.data.pojo.*;
+import org.web3j.crypto.Credentials;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple4;
 
@@ -14,16 +16,24 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.onudapps.proman.ui.activities.StartActivity.PREFERENCES;
+import static com.onudapps.proman.ui.activities.StartActivity.PRIVATE_KEY;
+
 public enum  Repository {
     REPOSITORY;
     private LocalDataSource localDataSource;
     private RemoteDataSource remoteDataSource;
+    private String address;
     private ExecutorService executorService;
     private boolean active;
 
     public static void initialize(Context context) {
         REPOSITORY.localDataSource = new LocalDataSource(context);
-        REPOSITORY.remoteDataSource = new RemoteDataSource(context);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        String privateKey = sharedPreferences.getString(PRIVATE_KEY, null);
+        Credentials credentials = Credentials.create(privateKey);
+        Repository.REPOSITORY.address = credentials.getAddress();
+        REPOSITORY.remoteDataSource = new RemoteDataSource(credentials);
         REPOSITORY.executorService = Executors.newSingleThreadExecutor();
         REPOSITORY.active = true;
     }
@@ -32,12 +42,31 @@ public enum  Repository {
         return localDataSource.getBoardParticipants(boardId);
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
     public void moveTaskToGroup(int taskId, int groupId) {
         if (active) {
             executorService.execute(() -> {
                 TransactionReceipt tx = remoteDataSource.setTaskGroup(taskId, groupId);
                 if (tx != null && active) {
                     localDataSource.setTaskGroup(taskId, groupId);
+                }
+            });
+        }
+    }
+
+    public void removeBoardParticipant(int boardId, String address) {
+        if (active) {
+            executorService.execute(() -> {
+                TransactionReceipt tx = remoteDataSource.removeBoardParticipant(boardId, address);
+                if (tx != null && active) {
+                    localDataSource.removeBoardParticipant(boardId, address);
                 }
             });
         }
@@ -91,6 +120,14 @@ public enum  Repository {
 
     public LiveData<List<GroupWithUpdate>> getBoardGroups(int boardId) {
         return localDataSource.getBoardGroups(boardId);
+    }
+
+    public LiveData<Task> getTask(int taskId) {
+        return localDataSource.getTask(taskId);
+    }
+
+    public LiveData<List<GroupShortInfo>> getGroupsShortInfo(int boardId) {
+        return localDataSource.getGroupsShortInfo(boardId);
     }
 
     public void createBoard(String title) {

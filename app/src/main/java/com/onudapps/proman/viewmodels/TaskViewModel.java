@@ -2,28 +2,24 @@ package com.onudapps.proman.viewmodels;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import com.onudapps.proman.data.Repository;
-import com.onudapps.proman.data.db.entities.TaskDBEntity;
+import com.onudapps.proman.data.pojo.GroupShortInfo;
+import com.onudapps.proman.data.pojo.Task;
 
 import java.util.Calendar;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.List;
 
 public class TaskViewModel extends ViewModel{
-    private LiveData<TaskDBEntity> data;
+    private LiveData<Task> taskData;
+    private LiveData<List<GroupShortInfo>> groupsData;
     private int taskId;
-    private Calendar startChanged;
-    private Calendar finishChanged;
-    private ExecutorService executorService;
+    private int boardId;
 
-    public TaskViewModel(int taskId) {
+    public TaskViewModel(int taskId, int boardId) {
         this.taskId = taskId;
-        executorService = Executors.newSingleThreadExecutor();
-        startChanged = Calendar.getInstance();
-        finishChanged = Calendar.getInstance();
+        this.boardId = boardId;
     }
 
     public void updateStart(Calendar calendar) {
@@ -40,12 +36,18 @@ public class TaskViewModel extends ViewModel{
         Repository.REPOSITORY.setTaskFinish(taskId, calendar);
     }
 
-    public LiveData<TaskDBEntity> getData() {
-        if (data == null) {
-            data = new MutableLiveData<>();
-            loadData();
+    public LiveData<Task> getTaskData() {
+        if (taskData == null) {
+            taskData = Repository.REPOSITORY.getTask(taskId);
         }
-        return data;
+        return taskData;
+    }
+
+    public LiveData<List<GroupShortInfo>> getGroupsData() {
+        if (groupsData == null) {
+            groupsData = Repository.REPOSITORY.getGroupsShortInfo(boardId);
+        }
+        return groupsData;
     }
 
     public void updateDescription(String description) {
@@ -56,24 +58,22 @@ public class TaskViewModel extends ViewModel{
         Repository.REPOSITORY.updateTaskTitle(taskId, title);
     }
 
-    public void loadData() {
-        data = Repository.REPOSITORY.getTaskDBEntity(taskId);
-    }
-
     public static class TaskModelFactory extends ViewModelProvider.NewInstanceFactory {
 
-        private final int id;
+        private final int taskId;
+        private final int boardId;
 
-        public TaskModelFactory(int id) {
+        public TaskModelFactory(int taskId, int boardId) {
             super();
-            this.id = id;
+            this.taskId = taskId;
+            this.boardId = boardId;
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
             if (modelClass == TaskViewModel.class) {
-                return (T) new TaskViewModel(id);
+                return (T) new TaskViewModel(taskId, boardId);
             }
             return null;
         }

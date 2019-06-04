@@ -7,10 +7,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
@@ -42,12 +39,15 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
 
     //private Task task;
     private ImageView tick;
+    private ImageView cross;
     private ImageView upload;
     private TextView description;
     private EditText descriptionEdit;
     private TextView group;
     private TextView dateStartText;
     private TextView dateFinishText;
+    private RelativeLayout editToolbarLayout;
+    private RelativeLayout defaultToolbarLayout;
 
     private EditMode editMode;
     private TaskDBEntity task;
@@ -78,7 +78,10 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         description = findViewById(R.id.detailed_task_description);
         descriptionEdit = findViewById(R.id.detailed_task_description_edit);
         //description.setOnClickListener(this::descriptionClickListener);
+        defaultToolbarLayout = findViewById(R.id.default_toolbar_layout);
+        editToolbarLayout = findViewById(R.id.edit_toolbar_layout);
         tick.setOnClickListener(this::tickClickListener);
+        //cross.setOnClickListener(this::crossOnClickListener);
         upload.setOnClickListener(this::uploadClickListener);
         title = findViewById(R.id.detailed_task_title);
         group = findViewById(R.id.detailed_task_group);
@@ -156,7 +159,8 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     }
 
     private void tickClickListener(View v) {
-        tick.setVisibility(View.INVISIBLE);
+        defaultToolbarLayout.setVisibility(View.VISIBLE);
+        editToolbarLayout.setVisibility(View.INVISIBLE);
         switch (editMode) {
             case DESCRIPTION:
                 descriptionEdit.setVisibility(View.GONE);
@@ -177,6 +181,10 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
 //        InputMethodManager inputMethodManager =
 //                (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 //        inputMethodManager.hideSoftInputFromWindow(descriptionEdit.getWindowToken(), 0);
+    }
+
+    private void crossOnClickListener(View v) {
+
     }
 
     private void titleOnClickListener(View v) {}
@@ -253,6 +261,7 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
 //                (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 //        inputMethodManager.showSoftInput(descriptionEdit, InputMethodManager.SHOW_FORCED);
         descriptionEdit.setVisibility(View.VISIBLE);
+        descriptionEdit.requestFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(descriptionEdit, InputMethodManager.SHOW_IMPLICIT);
     }

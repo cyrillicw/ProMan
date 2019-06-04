@@ -27,10 +27,12 @@ import java.util.List;
 
 public class RemoteDataSource {
     private static final String LOG_TAG = "RemoteDataSource";
+    private static final String HOST_API = "http://192.168.25.80:7545";
+    private static final String CONTRACT_ADDRESS = "46075F403714830dE452540Be1FcA4181d76BA33";
     private Smart smartContract;
     public RemoteDataSource(Credentials credentials) {
-        Web3j web3j = Web3j.build(new HttpService(BuildConfig.hostAPI));
-        smartContract = Smart.load(BuildConfig.contractAddress, web3j, credentials, new DefaultGasProvider());
+        Web3j web3j = Web3j.build(new HttpService(HOST_API));
+        smartContract = Smart.load(CONTRACT_ADDRESS, web3j, credentials, new DefaultGasProvider());
     }
 
 //    public Flowable<TransactionReceipt> addBoard(String title) {
@@ -130,9 +132,9 @@ public class RemoteDataSource {
 
     public static boolean  signIn(String privateKey) {
         try {
-            Web3j web3j = Web3j.build(new HttpService(BuildConfig.hostAPI));
+            Web3j web3j = Web3j.build(new HttpService(HOST_API));
             Credentials credentials = Credentials.create(privateKey);
-            Smart smart = Smart.load(BuildConfig.contractAddress, web3j, credentials, new DefaultGasProvider());
+            Smart smart = Smart.load(CONTRACT_ADDRESS, web3j, credentials, new DefaultGasProvider());
             return smart.signIn().send();
         }
         catch (Exception e) {
@@ -142,9 +144,9 @@ public class RemoteDataSource {
 
     public static TransactionReceipt  signUp(String privateKey, String nickname) {
         try {
-            Web3j web3j = Web3j.build(new HttpService(BuildConfig.hostAPI));
+            Web3j web3j = Web3j.build(new HttpService(HOST_API));
             Credentials credentials = Credentials.create(privateKey);
-            Smart smart = Smart.load(BuildConfig.contractAddress, web3j, credentials, new DefaultGasProvider());
+            Smart smart = Smart.load(CONTRACT_ADDRESS, web3j, credentials, new DefaultGasProvider());
             return smart.signUp(nickname).send();
         }
         catch (Exception e) {

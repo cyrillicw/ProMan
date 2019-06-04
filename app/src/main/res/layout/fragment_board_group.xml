@@ -55,7 +55,8 @@
                 android:id="@+id/add_task_edit"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="8" />
+                android:layout_weight="8"
+                android:imeOptions="flagNoExtractUi"/>
 
             <ImageView
                 android:id="@+id/cross"

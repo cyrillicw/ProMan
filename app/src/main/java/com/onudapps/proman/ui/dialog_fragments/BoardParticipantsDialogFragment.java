@@ -21,17 +21,17 @@ import com.onudapps.proman.viewmodels.BoardParticipantsViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParticipantsDialogFragment extends DialogFragment implements CreateDialogListener {
+public class BoardParticipantsDialogFragment extends DialogFragment implements CreateDialogListener {
     private static final String BOARD_ID_TAG = "boardId";
     private static final int DIALOG_REQUEST_CODE = 1;
 
     private int boardId;
     private BoardParticipantsViewModel viewModel;
 
-    public static ParticipantsDialogFragment newInstance(int boardId) {
+    public static BoardParticipantsDialogFragment newInstance(int boardId) {
         Bundle args = new Bundle();
         args.putInt(BOARD_ID_TAG, boardId);
-        ParticipantsDialogFragment f = new ParticipantsDialogFragment();
+        BoardParticipantsDialogFragment f = new BoardParticipantsDialogFragment();
         f.setArguments(args);
         return f;
     }

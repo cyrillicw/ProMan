@@ -45,6 +45,9 @@ public abstract class ProManDao {
             "WHERE tasks.taskId = :taskId")
     public abstract LiveData<Task> getTask(int taskId);
 
+    @Query("SELECT boardId FROM tasks WHERE taskId = :taskId")
+    protected abstract int getBoardId(int taskId);
+
     @Transaction
     public void addBoardParticipant(int boardId, ParticipantDBEntity participantDBEntity) {
         insertParticipant(participantDBEntity);
@@ -52,6 +55,20 @@ public abstract class ProManDao {
         join.setBoardId(boardId);
         join.setAddress(participantDBEntity.getAddress());
         insertBoardParticipantJoin(join);
+    }
+
+    @Transaction
+    public void addTaskParticipant(int taskId, ParticipantDBEntity participantDBEntity) {
+        insertParticipant(participantDBEntity);
+        TaskParticipantJoin taskParticipantJoin = new TaskParticipantJoin();
+        taskParticipantJoin.setTaskId(taskId);
+        taskParticipantJoin.setAddress(participantDBEntity.getAddress());
+        insertTaskParticipantJoin(taskParticipantJoin);
+        BoardParticipantJoin boardParticipantJoin = new BoardParticipantJoin();
+        int boardId = getBoardId(taskId);
+        boardParticipantJoin.setBoardId(boardId);
+        boardParticipantJoin.setAddress(participantDBEntity.getAddress());
+        insertBoardParticipantJoin(boardParticipantJoin);
     }
 
     @Query("SELECT groupId, title as groupTitle FROM groups WHERE boardId = :boardId")
@@ -71,6 +88,9 @@ public abstract class ProManDao {
 
     @Insert
     public abstract void insertTaskParticipantJoins(List<TaskParticipantJoin> taskParticipantJoins);
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    public abstract void insertTaskParticipantJoin(TaskParticipantJoin taskParticipantJoin);
 
     @Insert (onConflict = OnConflictStrategy.IGNORE)
     public abstract void insertBoardParticipantJoins(List<BoardParticipantJoin> boardParticipantJoins);
@@ -214,6 +234,12 @@ public abstract class ProManDao {
         }
         updateLastUpdates(tasksUpdated);
     }
+
+    @Query("SELECT p.* " +
+            "FROM participants as p " +
+            "INNER JOIN task_participant_join as tpj ON tpj.address = p.address " +
+            "WHERE tpj.taskId = :taskId")
+    public abstract LiveData<List<ParticipantDBEntity>> getTaskParticipants(int taskId);
 
     @Query("UPDATE tasks SET groupId = :groupId WHERE taskId = :taskId")
     public abstract void setTaskGroup(int taskId, int groupId);

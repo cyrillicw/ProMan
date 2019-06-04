@@ -9,39 +9,39 @@ import com.onudapps.proman.data.db.entities.ParticipantDBEntity;
 
 import java.util.List;
 
-public class BoardParticipantsViewModel extends ViewModel{
-    private int boardId;
+public class TaskParticipantsViewModel extends ViewModel{
+    private int taskId;
     private LiveData<List<ParticipantDBEntity>> participantsData;
 
-    private BoardParticipantsViewModel(int boardId) {
-        this.boardId = boardId;
+    private TaskParticipantsViewModel(int taskId) {
+        this.taskId = taskId;
     }
 
     public LiveData<List<ParticipantDBEntity>> getParticipantsData() {
         if (participantsData == null) {
-            participantsData = Repository.REPOSITORY.getBoardParticipants(boardId);
+            participantsData = Repository.REPOSITORY.getTaskParticipants(taskId);
         }
         return participantsData;
     }
 
-    public void addBoardParticipant(String address) {
-        Repository.REPOSITORY.addBoardParticipant(boardId, address);
+    public void addTaskParticipant(String address) {
+        Repository.REPOSITORY.addTaskParticipant(taskId, address);
     }
 
-    public static class BoardParticipantsModelFactory extends ViewModelProvider.NewInstanceFactory {
+    public static class TaskParticipantsModelFactory extends ViewModelProvider.NewInstanceFactory {
 
-        private final int boardId;
+        private final int taskId;
 
-        public BoardParticipantsModelFactory(int boardId) {
+        public TaskParticipantsModelFactory(int taskId) {
             super();
-            this.boardId = boardId;
+            this.taskId = taskId;
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            if (modelClass == BoardParticipantsViewModel.class) {
-                return (T) new BoardParticipantsViewModel(boardId);
+            if (modelClass == TaskParticipantsViewModel.class) {
+                return (T) new TaskParticipantsViewModel(taskId);
             }
             return null;
         }

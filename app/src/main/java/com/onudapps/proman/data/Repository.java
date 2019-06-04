@@ -72,6 +72,17 @@ public enum  Repository {
         }
     }
 
+    public void removeTaskParticipant(int taskId, String address) {
+        if (active) {
+            executorService.execute(() -> {
+                TransactionReceipt tx = remoteDataSource.removeTaskParticipant(taskId, address);
+                if (tx != null && active) {
+                    localDataSource.removeTaskParticipant(taskId, address);
+                }
+            });
+        }
+    }
+
     public void updateTaskDescription(int taskId, String description) {
         if (active) {
             executorService.execute(() -> {
@@ -104,6 +115,10 @@ public enum  Repository {
 
     public LiveData<TaskDBEntity> getTaskDBEntity(int taskId) {
         return localDataSource.getTaskDBEntity(taskId);
+    }
+
+    public LiveData<List<ParticipantDBEntity>> getTaskParticipants(int taskId) {
+        return localDataSource.getTaskParticipants(taskId);
     }
 
     public LiveData<List<BoardWithUpdate>> getBoardCards() {
@@ -184,7 +199,7 @@ public enum  Repository {
         }
     }
 
-    public void addBoardParticipantsViewModel(int boardId, String address) {
+    public void addBoardParticipant(int boardId, String address) {
         if (active) {
             executorService.execute(() -> {
                 String nick = remoteDataSource.addBoardParticipant(boardId, address);
@@ -198,6 +213,22 @@ public enum  Repository {
             });
         }
     }
+
+    public void addTaskParticipant(int taskId, String address) {
+        if (active) {
+            executorService.execute(() -> {
+                String nick = remoteDataSource.addTaskParticipant(taskId, address);
+                if (nick != null && active) {
+                    ParticipantDBEntity participantDBEntity = new ParticipantDBEntity();
+                    participantDBEntity.setAddress(address);
+                    participantDBEntity.setNickName(nick);
+                    localDataSource.addTaskParticipant(taskId, participantDBEntity);
+                }
+            });
+        }
+    }
+
+    public r
 
     public LiveData<List<TaskCard>> getTaskCards(int groupId) {
         return localDataSource.getTaskCards(groupId);

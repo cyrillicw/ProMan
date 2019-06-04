@@ -102,14 +102,14 @@ public class BoardGroupFragment extends Fragment {
         groupViewModel.setEditMode(true);
         addTask.setVisibility(View.GONE);
         editLayout.setVisibility(View.VISIBLE);
+        addTaskEdit.requestFocus();
+        InputMethodManager imm = (InputMethodManager) addTaskEdit.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(addTaskEdit, InputMethodManager.SHOW_IMPLICIT);
     }
 
     private void onAddTaskClickListener(View v) {
         enableEditMode();
         // recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-        addTaskEdit.requestFocus();
-        InputMethodManager imm = (InputMethodManager) addTaskEdit.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(addTaskEdit, InputMethodManager.SHOW_IMPLICIT);
     }
 
     private void tickOnClickListener(View v) {
@@ -125,6 +125,8 @@ public class BoardGroupFragment extends Fragment {
     @Override
     public void onStop() {
         groupViewModel.setText(addTaskEdit.getText().toString());
+        InputMethodManager imm = (InputMethodManager) addTaskEdit.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(addTaskEdit.getWindowToken(), 0);
         super.onStop();
     }
 

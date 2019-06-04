@@ -32,8 +32,16 @@ class LocalDataSource {
         return database.getProManDao().getBoardParticipants(boardId);
     }
 
+    public LiveData<List<ParticipantDBEntity>> getTaskParticipants(int taskId) {
+        return database.getProManDao().getTaskParticipants(taskId);
+    }
+
     public LiveData<Task> getTask(int taskId) {
         return database.getProManDao().getTask(taskId);
+    }
+
+    void addTaskParticipant(int taskId, ParticipantDBEntity participantDBEntity) {
+        database.getProManDao().addTaskParticipant(taskId, participantDBEntity);
     }
 
 //    public void insertTask(Task task) {

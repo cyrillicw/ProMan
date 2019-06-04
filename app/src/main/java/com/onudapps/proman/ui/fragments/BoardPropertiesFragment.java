@@ -15,7 +15,7 @@ import com.onudapps.proman.R;
 import com.onudapps.proman.data.pojo.StartFinishDates;
 import com.onudapps.proman.ui.listeners.DateDialogListener;
 import com.onudapps.proman.ui.dialog_fragments.DateDialogFragment;
-import com.onudapps.proman.ui.dialog_fragments.ParticipantsDialogFragment;
+import com.onudapps.proman.ui.dialog_fragments.BoardParticipantsDialogFragment;
 import com.onudapps.proman.viewmodels.BoardPropertiesViewModel;
 
 import java.util.Calendar;
@@ -70,8 +70,8 @@ public class BoardPropertiesFragment extends Fragment implements DateDialogListe
     }
 
     private void participantsOnClickListener(View v) {
-        ParticipantsDialogFragment participantsDialogFragment = ParticipantsDialogFragment.newInstance(boardId);
-        participantsDialogFragment.show(getActivity().getSupportFragmentManager(), "participants");
+        BoardParticipantsDialogFragment boardParticipantsDialogFragment = BoardParticipantsDialogFragment.newInstance(boardId);
+        boardParticipantsDialogFragment.show(getActivity().getSupportFragmentManager(), "participants");
     }
 
     private void onDateDataChangedListener(StartFinishDates startFinishDates) {

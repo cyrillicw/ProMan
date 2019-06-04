@@ -83,6 +83,10 @@ public enum  Repository {
         }
     }
 
+    public LiveData<List<TaskCard>> getCurrentUserTaskCards() {
+        return localDataSource.getUserTaskCards(address);
+    }
+
     public void updateTaskDescription(int taskId, String description) {
         if (active) {
             executorService.execute(() -> {
@@ -227,8 +231,6 @@ public enum  Repository {
             });
         }
     }
-
-    public r
 
     public LiveData<List<TaskCard>> getTaskCards(int groupId) {
         return localDataSource.getTaskCards(groupId);

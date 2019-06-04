@@ -55,6 +55,7 @@ public class BoardGroupFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         groupId = getArguments().getInt("groupId");
         boardId = getArguments().getInt("boardId");
+        Log.e("ON CREATE", "ON");
         View view = inflater.inflate(R.layout.fragment_board_group, container, false);
         recyclerView = view.findViewById(R.id.recycler_board_group);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false);
@@ -125,9 +126,22 @@ public class BoardGroupFragment extends Fragment {
     @Override
     public void onStop() {
         groupViewModel.setText(addTaskEdit.getText().toString());
-        InputMethodManager imm = (InputMethodManager) addTaskEdit.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(addTaskEdit.getWindowToken(), 0);
         super.onStop();
+    }
+
+    @Override
+    public void onPause() {
+//        InputMethodManager imm = (InputMethodManager) addTaskEdit.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//        imm.hideSoftInputFromWindow(addTaskEdit.getWindowToken(), 0);
+        super.onPause();
+    }
+
+    @Override
+    public void setMenuVisibility(boolean menuVisible) {
+        if (!menuVisible && addTaskEdit != null) {
+            InputMethodManager imm = (InputMethodManager) addTaskEdit.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(addTaskEdit.getWindowToken(), 0);
+        }
     }
 
     @Override

@@ -1,13 +1,12 @@
 package com.onudapps.proman.data.pojo;
 
 import com.onudapps.proman.data.db.entities.GroupDBEntity;
-import com.onudapps.proman.data.db.entities.TaskDBEntity;
 
 import java.util.List;
 
 public class BoardGroup {
     private GroupDBEntity groupDBEntity;
-    private List<TaskDBEntity> tasks;
+    private List<TaskDBEntityWithParticipants> tasks;
 
     public GroupDBEntity getGroupDBEntity() {
         return groupDBEntity;
@@ -17,11 +16,11 @@ public class BoardGroup {
         this.groupDBEntity = groupDBEntity;
     }
 
-    public List<TaskDBEntity> getTasks() {
+    public List<TaskDBEntityWithParticipants> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<TaskDBEntity> tasks) {
+    public void setTasks(List<TaskDBEntityWithParticipants> tasks) {
         this.tasks = tasks;
     }
 }

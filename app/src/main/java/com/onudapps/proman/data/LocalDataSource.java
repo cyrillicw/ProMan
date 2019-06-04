@@ -64,6 +64,10 @@ class LocalDataSource {
         return database.getProManDao().getBoardStartFinishDates(boardId);
     }
 
+    public void removeTaskParticipant(int taskId, String address) {
+        database.getProManDao().removeTaskParticipant(taskId, address);
+    }
+
     public LiveData<List<BoardWithUpdate>> getBoardCards() {
         return database.getProManDao().getBoardCards();
     }
@@ -74,6 +78,10 @@ class LocalDataSource {
 
     public LiveData<List<GroupWithUpdate>> getBoardGroups(int boardId) {
         return database.getProManDao().getBoardGroups(boardId);
+    }
+
+    LiveData<List<TaskCard>> getUserTaskCards(String address) {
+        return database.getProManDao().getUserTaskCards(address);
     }
 
     public void setTaskGroup(int taskId, int groupId) {

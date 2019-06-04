@@ -89,10 +89,11 @@ public class BoardChartFragment extends Fragment {
         start.set(Calendar.SECOND, 0);
         Calendar finish = Calendar.getInstance();
         int maxDays = finish.getActualMaximum(Calendar.DAY_OF_MONTH);
-        finish.set(Calendar.DAY_OF_MONTH, maxDays);
-        finish.set(Calendar.HOUR_OF_DAY, 23);
-        finish.set(Calendar.MINUTE, 59);
-        finish.set(Calendar.SECOND, 59);
+        finish.add(Calendar.MONTH, 1);
+        finish.set(Calendar.DAY_OF_MONTH, 1);
+        finish.set(Calendar.HOUR_OF_DAY, 0);
+        finish.set(Calendar.MINUTE, 0);
+        finish.set(Calendar.SECOND, 0);
         float[] f = {5, 2};
         final ArrayList<String> xAxisLabel = new ArrayList<>();
         List<BarEntry> barEntries = new ArrayList<>();
@@ -109,8 +110,8 @@ public class BoardChartFragment extends Fragment {
                     dStart += dayPart(currentStart);
                 }
                 float dFinish;
-                if (currentFinish.after(finish)) {
-                    dFinish = maxDays;
+                if (!finish.after(currentFinish)) {
+                    dFinish = maxDays + 1;
                 } else {
                     dFinish = currentFinish.get(Calendar.DAY_OF_MONTH);
                     dFinish += dayPart(currentFinish);

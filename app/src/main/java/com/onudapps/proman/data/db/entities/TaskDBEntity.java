@@ -92,4 +92,5 @@ public class TaskDBEntity {
     public void setGroupId(Integer groupId) {
         this.groupId = groupId;
     }
+
 }

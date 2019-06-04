@@ -1,7 +1,6 @@
 package com.onudapps.proman.data;
 
 import android.util.Log;
-import com.onudapps.proman.BuildConfig;
 import com.onudapps.proman.contracts.Smart;
 import com.onudapps.proman.data.db.entities.BoardDBEntity;
 import com.onudapps.proman.data.db.entities.GroupDBEntity;
@@ -9,6 +8,7 @@ import com.onudapps.proman.data.db.entities.ParticipantDBEntity;
 import com.onudapps.proman.data.db.entities.TaskDBEntity;
 import com.onudapps.proman.data.pojo.Board;
 import com.onudapps.proman.data.pojo.BoardGroup;
+import com.onudapps.proman.data.pojo.TaskDBEntityWithParticipants;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.RemoteCall;
@@ -16,7 +16,6 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tuples.generated.Tuple3;
-import org.web3j.tuples.generated.Tuple4;
 import org.web3j.tuples.generated.Tuple5;
 import org.web3j.tx.gas.DefaultGasProvider;
 
@@ -27,8 +26,8 @@ import java.util.List;
 
 public class RemoteDataSource {
     private static final String LOG_TAG = "RemoteDataSource";
-    private static final String HOST_API = "http://192.168.25.80:7545";
-    private static final String CONTRACT_ADDRESS = "46075F403714830dE452540Be1FcA4181d76BA33";
+    private static final String HOST_API = "http://192.168.1.102:7545";
+    private static final String CONTRACT_ADDRESS = "7282D25082640Cc404E32E2b01C3F627d84d4744";
     private Smart smartContract;
     public RemoteDataSource(Credentials credentials) {
         Web3j web3j = Web3j.build(new HttpService(HOST_API));
@@ -203,10 +202,11 @@ public class RemoteDataSource {
                 groupDBEntity.setGroupId(groupId.intValue());
                 groupDBEntity.setBoardId(boardId);
                 groupDBEntity.setTitle(groupTuple.getValue1());
-                List<TaskDBEntity> taskDBEntities = new ArrayList<>();
+                List<TaskDBEntityWithParticipants> taskDBEntities = new ArrayList<>();
+                Log.e(LOG_TAG, "Tasks size " + groupTuple.getValue2().size());
                 for (BigInteger taskId : groupTuple.getValue2()) {
                     TaskDBEntity taskDBEntity = new TaskDBEntity();
-                    Tuple4<String, String, BigInteger, BigInteger> taskTuple = smartContract.getTask(taskId).send();
+                    Tuple5<String, String, BigInteger, BigInteger, List<String>> taskTuple = smartContract.getTask(taskId).send();
                     taskDBEntity.setTaskId(taskId.intValue());
                     taskDBEntity.setTitle(taskTuple.getValue1());
                     taskDBEntity.setDescription(taskTuple.getValue2());
@@ -214,7 +214,10 @@ public class RemoteDataSource {
                     taskDBEntity.setFinish(Repository.REPOSITORY.numToCalendar(taskTuple.getValue4()));
                     taskDBEntity.setGroupId(groupId.intValue());
                     taskDBEntity.setBoardId(boardId);
-                    taskDBEntities.add(taskDBEntity);
+                    TaskDBEntityWithParticipants taskDBEntityWithParticipants = new TaskDBEntityWithParticipants();
+                    taskDBEntityWithParticipants.setTaskDBEntity(taskDBEntity);
+                    taskDBEntityWithParticipants.setParticipants(taskTuple.getValue5());
+                    taskDBEntities.add(taskDBEntityWithParticipants);
                 }
                 BoardGroup boardGroup = new BoardGroup();
                 boardGroup.setGroupDBEntity(groupDBEntity);
@@ -254,8 +257,33 @@ public class RemoteDataSource {
         }
     }
 
+    public String addTaskParticipant(int taskId, String address) {
+        try {
+            TransactionReceipt tx = smartContract.addTaskParticipant(BigInteger.valueOf(taskId), address).send();
+            List<Smart.TaskParticipantAddedEventResponse> nicks = smartContract.getTaskParticipantAddedEvents(tx);
+            if (nicks.size() > 0 && !nicks.get(0).nick.equals("")) {
+                return nicks.get(0).nick;
+            }
+            return null;
+        }
+        catch (Exception e) {
+            Log.e(LOG_TAG, "Failed adding task participant");
+            return null;
+        }
+    }
+
     public Smart getSmartContract() {
         return smartContract;
+    }
+
+    public TransactionReceipt removeTaskParticipant(int taskId, String address) {
+        try {
+            return smartContract.removeTaskUser(BigInteger.valueOf(taskId), address).send();
+        }
+        catch (Exception e) {
+            Log.e(LOG_TAG, "Failed removing task participant");
+            return null;
+        }
     }
 
     //Tuple3<String, List<BigInteger>, List<String>> res =

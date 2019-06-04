@@ -9,7 +9,6 @@ import com.onudapps.proman.data.pojo.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.UUID;
 
 @Dao
 public abstract class ProManDao {
@@ -74,8 +73,8 @@ public abstract class ProManDao {
     @Query("SELECT groupId, title as groupTitle FROM groups WHERE boardId = :boardId")
     public abstract LiveData<List<GroupShortInfo>> getGroupsShortInfo(int boardId);
 
-    @Query("DELETE FROM task_participant_join as tpj WHERE tpj.taskId = :id")
-    public abstract void deleteTaskParticipants(UUID id);
+    @Query("DELETE FROM task_participant_join as tpj WHERE tpj.taskId = :taskId AND tpj.address = :address")
+    public abstract void removeTaskParticipant(int taskId, String address);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertTaskDBEntity(TaskDBEntity taskDBEntity);
@@ -103,7 +102,7 @@ public abstract class ProManDao {
 
     @Query("DELETE FROM board_participant_join " +
             "WHERE boardId = :boardId and address = :address")
-    public abstract void removeBoardParticipant(int boardId, String address);
+    public abstract void removeBoardEntityParticipant(int boardId, String address);
 
 //    @Transaction
 //    public void insertTask(Task task) {
@@ -119,6 +118,15 @@ public abstract class ProManDao {
 //        insertParticipants(task.getParticipants());
 //        insertTaskParticipantJoins(taskParticipantJoins);
 //    }
+
+    @Query("DELETE FROM task_participant_join " +
+            "WHERE taskId in (SELECT taskId FROM tasks WHERE boardId = :boardId) AND address = :address")
+    public abstract void removeTaskParticipantJoinsOfBoard(int boardId, String address);
+
+    public void removeBoardParticipant(int boardId, String address) {
+        removeBoardEntityParticipant(boardId, address);
+        removeTaskParticipantJoinsOfBoard(boardId, address);
+    }
 
     @Query("DELETE FROM boards")
     public abstract void clearBoards();
@@ -165,15 +173,16 @@ public abstract class ProManDao {
     @Query("SELECT title FROM boards WHERE boardId = :id")
     public abstract LiveData<String> getBoardTitle(int id);
 
-
+    @Query("SELECT tasks.taskId, tasks.title " +
+            "FROM tasks INNER JOIN task_participant_join as tpj ON tasks.taskId = tpj.taskId" +
+            "WHERE tpj.address = :address")
+    public abstract LiveData<List<TaskCard>> getUserTaskCards(String address);
 
     @Transaction
     public void updateBoard(Board board) {
         int boardId = board.getBoardDBEntity().getBoardId();
+        removeBoard(boardId);
         insertBoard(board.getBoardDBEntity());
-        for (BoardGroup boardGroup : board.getBoardGroups()) {
-            updateBoardGroup(boardGroup.getGroupDBEntity(), boardGroup.getTasks());
-        }
         insertParticipants(board.getParticipants());
         List<BoardParticipantJoin> boardParticipantJoins = new ArrayList<>();
         for (ParticipantDBEntity participantDBEntity : board.getParticipants()) {
@@ -181,6 +190,9 @@ public abstract class ProManDao {
             boardParticipantJoin.setAddress(participantDBEntity.getAddress());
             boardParticipantJoin.setBoardId(boardId);
             boardParticipantJoins.add(boardParticipantJoin);
+        }
+        for (BoardGroup boardGroup : board.getBoardGroups()) {
+            updateBoardGroup(boardGroup.getGroupDBEntity(), boardGroup.getTasks());
         }
         insertBoardParticipantJoins(boardParticipantJoins);
         LastUpdateEntity lastUpdateEntity = new LastUpdateEntity();
@@ -220,15 +232,27 @@ public abstract class ProManDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertTaskDBEntities(List<TaskDBEntity> taskDBEntities);
 
-    public void updateBoardGroup(GroupDBEntity groupDBEntity, List<TaskDBEntity> taskDBEntities) {
+    public void updateBoardGroup(GroupDBEntity groupDBEntity, List<TaskDBEntityWithParticipants> tasks) {
         insertGroup(groupDBEntity);
+        List<TaskDBEntity> taskDBEntities = new ArrayList<>();
+        List<TaskParticipantJoin> tasksParticipants = new ArrayList<>();
+        for (TaskDBEntityWithParticipants t : tasks) {
+            taskDBEntities.add(t.getTaskDBEntity());
+            for (String participant : t.getParticipants()) {
+                TaskParticipantJoin taskParticipantJoin = new TaskParticipantJoin();
+                taskParticipantJoin.setTaskId(t.getTaskDBEntity().getTaskId());
+                taskParticipantJoin.setAddress(participant);
+                tasksParticipants.add(taskParticipantJoin);
+            }
+        }
         insertTaskDBEntities(taskDBEntities);
+        insertTaskParticipantJoins(tasksParticipants);
         Calendar calendar = Calendar.getInstance();
         List<LastUpdateEntity> tasksUpdated = new ArrayList<>();
-        for (int i = 0; i < taskDBEntities.size(); i++) {
+        for (int i = 0; i < tasks.size(); i++) {
             LastUpdateEntity taskUpdateEntity = new LastUpdateEntity();
             taskUpdateEntity.setQueryType(LastUpdateEntity.Query.TASK);
-            taskUpdateEntity.setId(taskDBEntities.get(i).getTaskId());
+            taskUpdateEntity.setId(tasks.get(i).getTaskDBEntity().getTaskId());
             taskUpdateEntity.setUpdated(calendar);
             tasksUpdated.add(taskUpdateEntity);
         }

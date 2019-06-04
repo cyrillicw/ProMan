@@ -18,6 +18,7 @@ import com.onudapps.proman.data.pojo.GroupShortInfo;
 import com.onudapps.proman.data.pojo.Task;
 import com.onudapps.proman.ui.dialog_fragments.DateDialogFragment;
 import com.onudapps.proman.ui.dialog_fragments.TaskChangeGroupDialogFragment;
+import com.onudapps.proman.ui.dialog_fragments.TaskParticipantsDialogFragment;
 import com.onudapps.proman.ui.listeners.DateDialogListener;
 import com.onudapps.proman.viewmodels.TaskViewModel;
 
@@ -190,12 +191,7 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     private void titleOnClickListener(View v) {}
 
     private void participantsOnClickListener(View v) {
-//        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(R.layout.participants).create();
-//        alertDialog.show();
-//        RecyclerView recyclerView = alertDialog.findViewById(R.id.recycler_participants);
-//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(v.getContext(), RecyclerView.VERTICAL, false);
-//        recyclerView.setLayoutManager(layoutManager);
-//        recyclerView.setAdapter(new ParticipantsAdapter(editedTask.getParticipants()));
+        TaskParticipantsDialogFragment.newInstance(taskId).show(getSupportFragmentManager(), null);
     }
 
     private void uploadClickListener(View v) {

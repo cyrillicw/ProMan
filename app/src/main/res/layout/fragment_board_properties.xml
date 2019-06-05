@@ -13,7 +13,7 @@
         app:cardCornerRadius="4dp">
         <TextView
             android:id="@+id/board_start_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/date_start"
             android:textSize="20sp"
@@ -28,7 +28,7 @@
         app:cardCornerRadius="4dp">
         <TextView
                 android:id="@+id/board_finish_text"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/date_finish"
                 android:textSize="20sp"
@@ -44,7 +44,7 @@
         app:cardCornerRadius="4dp">
         <TextView
             android:id="@+id/board_participants_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/participants"
             android:textSize="20sp"

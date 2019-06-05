@@ -1,5 +1,6 @@
 package com.onudapps.proman.ui.adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +62,8 @@ public class ParticipantsAdapter
 
         void bindData(ParticipantDBEntity participantDBEntity) {
             address = participantDBEntity.getAddress();
+            Log.e("ADAPTER PART", address);
+            Log.e("ADAPTER PART", Repository.REPOSITORY.getAddress());
             if (address.equals(Repository.REPOSITORY.getAddress())) {
                 removeParticipant.setVisibility(View.INVISIBLE);
             }

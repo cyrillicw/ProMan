@@ -52,4 +52,5 @@
     <string name="sign_up_private_hint">Enter private key</string>
     <string name="sign_up_nickname_hint">Enter nickname</string>
     <string name="move_to_group_title">Move to&#8230;</string>
+    <string name="current_user_tasks_title">Your tasks</string>
 </resources>

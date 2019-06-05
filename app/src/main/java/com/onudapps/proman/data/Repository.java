@@ -32,10 +32,11 @@ public enum  Repository {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
         String privateKey = sharedPreferences.getString(PRIVATE_KEY, null);
         Credentials credentials = Credentials.create(privateKey);
-        Repository.REPOSITORY.address = credentials.getAddress();
+        REPOSITORY.address = credentials.getAddress().toLowerCase();
         REPOSITORY.remoteDataSource = new RemoteDataSource(credentials);
         REPOSITORY.executorService = Executors.newSingleThreadExecutor();
         REPOSITORY.active = true;
+        Log.e("REPO", "Address " + REPOSITORY.address);
     }
 
     public LiveData<List<ParticipantDBEntity>> getBoardParticipants(int boardId) {
@@ -83,8 +84,8 @@ public enum  Repository {
         }
     }
 
-    public LiveData<List<TaskCard>> getCurrentUserTaskCards() {
-        return localDataSource.getUserTaskCards(address);
+    public LiveData<List<TaskCard>> getCurrentUserTaskCards(int boardId) {
+        return localDataSource.getUserTaskCards(boardId, address);
     }
 
     public void updateTaskDescription(int taskId, String description) {
@@ -203,7 +204,7 @@ public enum  Repository {
         }
     }
 
-    public void addBoardParticipant(int boardId, String address) {
+    public void addBoardParticipant(final int boardId, final String address) {
         if (active) {
             executorService.execute(() -> {
                 String nick = remoteDataSource.addBoardParticipant(boardId, address);
@@ -218,7 +219,7 @@ public enum  Repository {
         }
     }
 
-    public void addTaskParticipant(int taskId, String address) {
+    public void addTaskParticipant(final int taskId, final String address) {
         if (active) {
             executorService.execute(() -> {
                 String nick = remoteDataSource.addTaskParticipant(taskId, address);

@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/backround">
 
-    <TextView
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        app:cardCornerRadius="4dp">
+        <TextView
             android:id="@+id/board_start_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -12,18 +19,30 @@
             android:textSize="20sp"
             android:padding="2dp"
             android:drawableStart ="@drawable/date"/>
+    </androidx.cardview.widget.CardView>
 
-    <TextView
-            android:id="@+id/board_finish_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/date_finish"
-            android:textSize="20sp"
-            android:padding="2dp"
-            android:drawableStart ="@drawable/date"
-            android:drawablePadding="2dp"/>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        app:cardCornerRadius="4dp">
+        <TextView
+                android:id="@+id/board_finish_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/date_finish"
+                android:textSize="20sp"
+                android:padding="2dp"
+                android:drawableStart ="@drawable/date"
+                android:drawablePadding="2dp"/>
+    </androidx.cardview.widget.CardView>
 
-    <TextView
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        app:cardCornerRadius="4dp">
+        <TextView
             android:id="@+id/board_participants_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,5 +51,6 @@
             android:padding="2dp"
             android:drawableStart="@drawable/person"
             android:drawablePadding="2dp"/>
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>

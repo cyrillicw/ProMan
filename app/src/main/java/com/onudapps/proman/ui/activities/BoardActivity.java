@@ -1,6 +1,8 @@
 package com.onudapps.proman.ui.activities;
 
 import android.content.Intent;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
@@ -45,6 +47,8 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
     private Toolbar toolbar;
     private ImageView groupsMode;
     private ImageView statisticsMode;
+    private ImageView userTasksMode;
+    private ImageView propertiesMode;
     private LinearLayout viewSwitcher;
 
     @Override
@@ -72,8 +76,14 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
         update.setOnClickListener(this::updateOnClickListener);
         ImageView signOut = toolbar.findViewById(R.id.sign_out);
         signOut.setOnClickListener(new SignOutOnClickListener());
+        groupsMode = findViewById(R.id.mode_groups);
+        statisticsMode = findViewById(R.id.mode_statistics);
+        propertiesMode = findViewById(R.id.mode_properties);
+        userTasksMode = findViewById(R.id.mode_user);
         viewPager = findViewById(R.id.board_pager);
         viewPager.setAdapter(new BoardPagerAdapter(getSupportFragmentManager(), new ArrayList<>(), boardId));
+        setModesHighlight(0);
+        viewPager.addOnPageChangeListener(new BoardPageChangedListener());
         groupsData = viewModel.getGroupsData();
         groupsData.observe(this, this::onGroupsChangedListener);
         titleData = viewModel.getTitleData();
@@ -81,12 +91,43 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
 //        title.setOnClickListener(v -> {
 //            new BoardEditDialogFragment().show(getSupportFragmentManager(), "CREATE BOARD");
 //        });
-        groupsMode = findViewById(R.id.mode_groups);
         groupsMode.setOnClickListener(v -> viewPager.setCurrentItem(0, false));
-        statisticsMode = findViewById(R.id.mode_statistics);
         statisticsMode.setOnClickListener(v -> viewPager.setCurrentItem(((BoardPagerAdapter)viewPager.getAdapter()).getStatisticModePosition(), false));
-        ImageView propertiesMode = findViewById(R.id.mode_properties);
         propertiesMode.setOnClickListener(v -> viewPager.setCurrentItem(((BoardPagerAdapter)viewPager.getAdapter()).getPropertiesModePosition(), false));
+        userTasksMode.setOnClickListener(v -> viewPager.setCurrentItem(((BoardPagerAdapter)viewPager.getAdapter()).getUserModePosition(), false));
+    }
+
+    public static void setLocked(ImageView v) {
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);  //0 means grayscale
+        ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
+        v.setColorFilter(cf);
+        v.setImageAlpha(128);   // 128 = 0.5
+    }
+
+    public static void setUnlocked(ImageView v) {
+        v.setColorFilter(null);
+        v.setImageAlpha(255);
+    }
+
+    private void setModesHighlight(int position) {
+        BoardPagerAdapter.BoardPagerMode mode = ((BoardPagerAdapter)viewPager.getAdapter()).getMode(position);
+        setLocked(groupsMode);
+        setLocked(propertiesMode);
+        setLocked(statisticsMode);
+        setLocked(userTasksMode);
+        if (mode == BoardPagerAdapter.BoardPagerMode.GROUPS) {
+            setUnlocked(groupsMode);
+        }
+        else if (mode == BoardPagerAdapter.BoardPagerMode.PROPERTIES) {
+            setUnlocked(propertiesMode);
+        }
+        else if (mode == BoardPagerAdapter.BoardPagerMode.STATISTICS) {
+            setUnlocked(statisticsMode);
+        }
+        else {
+            setUnlocked(userTasksMode);
+        }
     }
 
     public LiveData<List<GroupWithUpdate>> getGroupsData() {
@@ -129,12 +170,14 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
             this.groups = groups;
             Log.e(LOG_TAG, "NOW");
             statisticsMode.setVisibility(View.VISIBLE);
+            userTasksMode.setVisibility(View.VISIBLE);
             ((BoardPagerAdapter) viewPager.getAdapter()).updateData(groups);
             viewPager.invalidate();
         }
         else {
             this.groups = groups;
             statisticsMode.setVisibility(View.GONE);
+            userTasksMode.setVisibility(View.GONE);
             ((BoardPagerAdapter) viewPager.getAdapter()).updateData(new ArrayList<>());
             viewPager.invalidate();
         }
@@ -150,5 +193,23 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
         super.onSaveInstanceState(outState, outPersistentState);
         Log.e(LOG_TAG, "ON SAVED INSTANCE");
         outState.putInt(BOARD_KEY, boardId);
+    }
+
+    private class BoardPageChangedListener implements ViewPager.OnPageChangeListener {
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            setModesHighlight(position);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
     }
 }

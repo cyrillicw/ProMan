@@ -69,6 +69,6 @@ public class BoardParticipantsDialogFragment extends DialogFragment implements C
 
     @Override
     public void onCreateCommit(String res) {
-        viewModel.addBoardParticipant(res);
+        viewModel.addBoardParticipant(res.toLowerCase());
     }
 }

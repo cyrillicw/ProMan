@@ -174,9 +174,9 @@ public abstract class ProManDao {
     public abstract LiveData<String> getBoardTitle(int id);
 
     @Query("SELECT tasks.taskId, tasks.title " +
-            "FROM tasks INNER JOIN task_participant_join as tpj ON tasks.taskId = tpj.taskId" +
-            "WHERE tpj.address = :address")
-    public abstract LiveData<List<TaskCard>> getUserTaskCards(String address);
+            "FROM tasks INNER JOIN task_participant_join as tpj ON tasks.taskId = tpj.taskId " +
+            "WHERE tpj.address = :address AND tasks.boardId = :boardId")
+    public abstract LiveData<List<TaskCard>> getUserTaskCards(int boardId, String address);
 
     @Transaction
     public void updateBoard(Board board) {

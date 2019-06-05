@@ -1,18 +1,19 @@
 package com.onudapps.proman.ui.adapters;
 
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import com.onudapps.proman.data.pojo.GroupWithUpdate;
-import com.onudapps.proman.ui.fragments.BoardChartFragment;
-import com.onudapps.proman.ui.fragments.BoardGroupFragment;
-import com.onudapps.proman.ui.fragments.BoardPropertiesFragment;
-import com.onudapps.proman.ui.fragments.EmptyBoardFragment;
+import com.onudapps.proman.ui.fragments.*;
 
 import java.util.List;
 
 public class BoardPagerAdapter extends FragmentStatePagerAdapter {
+    public enum BoardPagerMode {
+        GROUPS, STATISTICS, PROPERTIES, USER;
+    }
     private List<GroupWithUpdate> groupDBEntities;
     private int boardId;
     //private List<Fragment> fragments;
@@ -43,30 +44,77 @@ public class BoardPagerAdapter extends FragmentStatePagerAdapter {
         return groupDBEntities.size() + 1;
     }
 
+    public int getUserModePosition() {
+        return groupDBEntities.size() + 2;
+    }
+
     public void updateData(List<GroupWithUpdate> groupDBEntities) {
         this.groupDBEntities = groupDBEntities;
         //prepareFragments();
         notifyDataSetChanged();
     }
 
+    public BoardPagerMode getMode(int position) {
+        if (groupDBEntities.size() == 0) {
+            if (position == 0) {
+                return BoardPagerMode.GROUPS;
+            }
+            else {
+                return BoardPagerMode.PROPERTIES;
+            }
+        }
+        else {
+            if (position < groupDBEntities.size()) {
+                return BoardPagerMode.GROUPS;
+            }
+            if (position == groupDBEntities.size()) {
+                return BoardPagerMode.STATISTICS;
+            }
+            if (position == groupDBEntities.size() + 1) {
+                return BoardPagerMode.PROPERTIES;
+            }
+            else {
+                return BoardPagerMode.USER;
+            }
+        }
+    }
+
     @Override
     public Fragment getItem(int position) {
-        if (position == getCount() - 1) {
-            return BoardPropertiesFragment.newInstance(boardId);
-        }
         if (groupDBEntities.size() == 0) {
-            return new EmptyBoardFragment();
+            if (position == 0) {
+                return new EmptyBoardFragment();
+            }
+            else {
+                return BoardPropertiesFragment.newInstance(boardId);
+            }
         }
-        if (position < groupDBEntities.size()) {
-            return BoardGroupFragment.newInstance(groupDBEntities.get(position)
-                    .getGroupDBEntity().getGroupId(), boardId);
+        else {
+            Log.e("PAGER", "POS " + position);
+            if (position < groupDBEntities.size()) {
+                return BoardGroupFragment.newInstance(groupDBEntities.get(position)
+                        .getGroupDBEntity().getGroupId(), boardId);
+            }
+            if (position == groupDBEntities.size()) {
+                return BoardChartFragment.newInstance(boardId);
+            }
+            if (position == groupDBEntities.size() + 1) {
+                return BoardPropertiesFragment.newInstance(boardId);
+            }
+            else {
+                return CurrentUserTasksFragment.newInstance(boardId);
+            }
         }
-        return BoardChartFragment.newInstance(boardId);
     }
 
     @Override
     public int getCount() {
-        return groupDBEntities.size() + 2;
+        if (groupDBEntities.size() == 0) {
+            return 2;
+        }
+        else {
+            return groupDBEntities.size() + 3;
+        }
     }
 
     @Override

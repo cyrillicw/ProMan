@@ -16,7 +16,6 @@ import com.onudapps.proman.R;
 import com.onudapps.proman.data.db.entities.ParticipantDBEntity;
 import com.onudapps.proman.ui.adapters.ParticipantsAdapter;
 import com.onudapps.proman.ui.listeners.CreateDialogListener;
-import com.onudapps.proman.viewmodels.BoardParticipantsViewModel;
 import com.onudapps.proman.viewmodels.TaskParticipantsViewModel;
 
 import java.util.ArrayList;
@@ -70,6 +69,6 @@ public class TaskParticipantsDialogFragment extends DialogFragment implements Cr
 
     @Override
     public void onCreateCommit(String res) {
-        viewModel.addTaskParticipant(res);
+        viewModel.addTaskParticipant(res.toLowerCase());
     }
 }

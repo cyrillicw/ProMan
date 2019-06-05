@@ -80,8 +80,8 @@ class LocalDataSource {
         return database.getProManDao().getBoardGroups(boardId);
     }
 
-    LiveData<List<TaskCard>> getUserTaskCards(String address) {
-        return database.getProManDao().getUserTaskCards(address);
+    LiveData<List<TaskCard>> getUserTaskCards(int boardId, String address) {
+        return database.getProManDao().getUserTaskCards(boardId, address);
     }
 
     public void setTaskGroup(int taskId, int groupId) {

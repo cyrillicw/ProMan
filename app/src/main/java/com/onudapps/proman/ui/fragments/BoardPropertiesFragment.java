@@ -13,9 +13,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import com.onudapps.proman.R;
 import com.onudapps.proman.data.pojo.StartFinishDates;
-import com.onudapps.proman.ui.listeners.DateDialogListener;
-import com.onudapps.proman.ui.dialog_fragments.DateDialogFragment;
 import com.onudapps.proman.ui.dialog_fragments.BoardParticipantsDialogFragment;
+import com.onudapps.proman.ui.dialog_fragments.DateDialogFragment;
+import com.onudapps.proman.ui.listeners.DateDialogListener;
 import com.onudapps.proman.viewmodels.BoardPropertiesViewModel;
 
 import java.util.Calendar;
@@ -96,7 +96,7 @@ public class BoardPropertiesFragment extends Fragment implements DateDialogListe
         Toast.makeText(getContext(), R.string.update_alert, Toast.LENGTH_LONG).show();
     }
 
-//    @Override
+    //    @Override
 //    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 //        if (resultCode == Activity.RESULT_OK) {
 //            if (requestCode == START_DIALOG_REQUEST_CODE || requestCode == FINISH_DIALOG_REQUEST_CODE) {

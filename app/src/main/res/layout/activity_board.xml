@@ -89,6 +89,13 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
                 android:src="@drawable/properties"/>
+        <ImageView
+            android:id="@+id/mode_user"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:src="@drawable/person_circle"/>
     </LinearLayout>
 
     <androidx.viewpager.widget.ViewPager

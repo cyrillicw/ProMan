@@ -2,14 +2,18 @@ package com.onudapps.proman.ui.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import com.onudapps.proman.R;
@@ -27,6 +31,7 @@ import java.util.List;
 
 import static com.onudapps.proman.ui.dialog_fragments.DateDialogFragment.FINISH_DIALOG_REQUEST_CODE;
 import static com.onudapps.proman.ui.dialog_fragments.DateDialogFragment.START_DIALOG_REQUEST_CODE;
+import static com.onudapps.proman.viewmodels.TaskViewModel.EditMode.*;
 
 public class TaskActivity extends AppCompatActivity implements DateDialogListener {
 
@@ -36,13 +41,12 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     private enum CalendarMode {
         START, FINISH;
     }
-    private TextView title;
 
     //private Task task;
     private ImageView tick;
     private ImageView cross;
     private ImageView upload;
-    private TextView description;
+    private EditText titleEdit;
     private EditText descriptionEdit;
     private TextView group;
     private TextView dateStartText;
@@ -50,24 +54,21 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     private RelativeLayout editToolbarLayout;
     private RelativeLayout defaultToolbarLayout;
 
-    private EditMode editMode;
     private TaskDBEntity task;
     private int taskId;
     private int boardId;
     private TaskViewModel taskViewModel;
     private String[] groupsTitles;
     private int[] groupsIds;
+    private InputMethodManager imm;
 
-    private enum EditMode {
-        TITLE, DESCRIPTION;
-    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
         // insert();
-        editMode = null;
         Intent intent = getIntent();
         boardId = intent.getIntExtra(BOARD_ID_TAG, -1);
         taskId = intent.getIntExtra(TASK_ID_TAG, -1);
@@ -75,16 +76,17 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
                 .of(this, new TaskViewModel.TaskModelFactory(taskId, boardId))
                 .get(TaskViewModel.class);
         tick = findViewById(R.id.tick);
-        upload = findViewById(R.id.upload);
-        description = findViewById(R.id.detailed_task_description);
+        cross = findViewById(R.id.cross);
         descriptionEdit = findViewById(R.id.detailed_task_description_edit);
-        //description.setOnClickListener(this::descriptionClickListener);
+        descriptionEdit.setOnClickListener(this::descriptionOnClickListener);
+        imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         defaultToolbarLayout = findViewById(R.id.default_toolbar_layout);
         editToolbarLayout = findViewById(R.id.edit_toolbar_layout);
-        tick.setOnClickListener(this::tickClickListener);
-        //cross.setOnClickListener(this::crossOnClickListener);
-        upload.setOnClickListener(this::uploadClickListener);
-        title = findViewById(R.id.detailed_task_title);
+        tick.setOnClickListener(this::tickOnClickListener);
+        cross.setOnClickListener(this::crossOnClickListener);
+        titleEdit = findViewById(R.id.detailed_task_title_edit);
+        titleEdit.setOnClickListener(this::titleOnClickListener);
+        titleEdit.setInputType(InputType.TYPE_NULL);
         group = findViewById(R.id.detailed_task_group);
         dateStartText = findViewById(R.id.detailed_task_start_text);
         dateFinishText = findViewById(R.id.detailed_task_finish_text);
@@ -98,6 +100,8 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ImageView update = toolbar.findViewById(R.id.update);
+        update.setOnClickListener(this::updateOnClickListener);
     }
 
     private void groupsDataListener(List<GroupShortInfo> groups) {
@@ -110,20 +114,25 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         group.setOnClickListener(this::groupOnClickListener);
     }
 
+    private void updateOnClickListener(View v) {
+        taskViewModel.forceTaskUpdate();
+    }
+
     private void groupOnClickListener(View v) {
         TaskChangeGroupDialogFragment.newInstance(groupsTitles, groupsIds, taskId)
                 .show(getSupportFragmentManager(), null);
     }
 
     private void taskDataListener(Task t) {
+        Calendar threshold = Calendar.getInstance();
+        threshold.add(Calendar.HOUR_OF_DAY, -1);
+        if (t.getUpdated() == null || t.getUpdated().before(threshold)) {
+            taskViewModel.forceTaskUpdate();
+        }
         task = t.getTaskDBEntity();
-//            editedTask = new Task(task);
-//            taskChange = new TaskChange(task);
-//            editedTask.setTaskChange(taskChange);
-        TaskDBEntity taskDBEntity = t.getTaskDBEntity();
-        title.setText(task.getTitle());
+        refreshTitle();
         refreshDescription();
-        description.setOnClickListener(this::descriptionOnClickListener);
+        descriptionEdit.setOnClickListener(this::descriptionOnClickListener);
 //            dateStartText.setOnClickListener(this::startOnClickListener);
 //            dateFinishText.setOnClickListener(this::finishOnClickListener);
         dateStartText.setOnClickListener(this::startOnClickListener);
@@ -159,20 +168,34 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         Toast.makeText(this, R.string.update_alert, Toast.LENGTH_LONG).show();
     }
 
-    private void tickClickListener(View v) {
-        defaultToolbarLayout.setVisibility(View.VISIBLE);
-        editToolbarLayout.setVisibility(View.INVISIBLE);
+    private void tickOnClickListener(View v) {
+        TaskViewModel.EditMode editMode = taskViewModel.getEditMode();
+        String s;
         switch (editMode) {
             case DESCRIPTION:
-                descriptionEdit.setVisibility(View.GONE);
-                description.setVisibility(View.VISIBLE);
-                InputMethodManager inputMethodManager =
-                    (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(descriptionEdit.getWindowToken(), 0);
-                taskViewModel.updateDescription(descriptionEdit.getText().toString());
-                title.setOnClickListener(this::titleOnClickListener);
-                Toast.makeText(this, R.string.update_alert, Toast.LENGTH_LONG).show();
+                s = descriptionEdit.getText().toString();
+                taskViewModel.setEditMode(DEFAULT);
+                refreshDescription();
+                imm.hideSoftInputFromWindow(descriptionEdit.getWindowToken(), 0);
+                taskViewModel.updateDescription(s);
+                titleEdit.setOnClickListener(this::titleOnClickListener);
+                break;
+            case TITLE:
+                s = titleEdit.getText().toString();
+                if (s.length() == 0) {
+                    return;
+                }
+                taskViewModel.setEditMode(DEFAULT);
+                refreshTitle();
+                imm.hideSoftInputFromWindow(titleEdit.getWindowToken(), 0);
+                taskViewModel.updateTitle(s);
+                descriptionEdit.setOnClickListener(this::descriptionOnClickListener);
+                break;
         }
+        defaultToolbarLayout.setVisibility(View.VISIBLE);
+        editToolbarLayout.setVisibility(View.INVISIBLE);
+        taskViewModel.setEditMode(DEFAULT);
+        Toast.makeText(this, R.string.update_alert, Toast.LENGTH_LONG).show();
 //        Log.e("TICK", "HERE");
 //        editedTask.setDescription(descriptionEdit.getText().toString());
 ////        checkChanges();
@@ -185,10 +208,38 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     }
 
     private void crossOnClickListener(View v) {
-
+        TaskViewModel.EditMode editMode = taskViewModel.getEditMode();
+        defaultToolbarLayout.setVisibility(View.VISIBLE);
+        editToolbarLayout.setVisibility(View.INVISIBLE);
+        switch (editMode) {
+            case DESCRIPTION:
+                taskViewModel.setEditMode(DEFAULT);
+                refreshDescription();
+                imm.hideSoftInputFromWindow(descriptionEdit.getWindowToken(), 0);
+                break;
+            case TITLE:
+                taskViewModel.setEditMode(DEFAULT);
+                refreshTitle();
+                imm.hideSoftInputFromWindow(descriptionEdit.getWindowToken(), 0);
+        }
+        taskViewModel.setEditMode(DEFAULT);
     }
 
-    private void titleOnClickListener(View v) {}
+    private void enableTitleEditMode() {
+        editToolbarLayout.setVisibility(View.VISIBLE);
+        defaultToolbarLayout.setVisibility(View.INVISIBLE);
+        titleEdit.setInputType(InputType.TYPE_CLASS_TEXT);
+        DrawableCompat.setTint(titleEdit.getBackground(),
+                ContextCompat.getColor(this, R.color.toolbar_text));
+        titleEdit.setSelection(titleEdit.getText().length());
+    }
+
+    private void enableDescriptionEditMode() {
+        editToolbarLayout.setVisibility(View.VISIBLE);
+        defaultToolbarLayout.setVisibility(View.INVISIBLE);
+        descriptionEdit.setInputType(InputType.TYPE_CLASS_TEXT);
+        descriptionEdit.setSelection(descriptionEdit.getText().length());
+    }
 
     private void participantsOnClickListener(View v) {
         TaskParticipantsDialogFragment.newInstance(taskId).show(getSupportFragmentManager(), null);
@@ -198,9 +249,27 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
 
     }
 
+//    @Override
+//    protected void onStart() {
+//
+//        super.onStart();
+//    }
+//
+//    @Override
+//    protected void onStop() {
+//        TaskViewModel.EditMode editMode = taskViewModel.getEditMode();
+//        switch (editMode) {
+//            case DESCRIPTION:
+//                taskViewModel.setEditText(descriptionEdit.getText().toString());
+//                break;
+//            case TITLE:
+//                taskViewModel.setEditText(titleEdit.getText().toString());
+//                break;
+//        }
+//        super.onStop();
+//    }
 
-
-//    private void  insert() {
+    //    private void  insert() {
 //        ProManDatabase database = Room.databaseBuilder(this, ProManDatabase.class, "ProManDatabase").build();
 //        ProManDao proManDao = database.getProManDao();
 //        ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -242,34 +311,64 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
 //    }
 
     private void descriptionOnClickListener(View v) {
-        editMode = EditMode.DESCRIPTION;
-        title.setOnClickListener(null);
-        description.setVisibility(View.GONE);
-        tick.setVisibility(View.VISIBLE);
-        if (task.getDescription() == null || task.getDescription().length() == 0) {
-            descriptionEdit.setHint(getResources().getString(R.string.change_description));
+        if (taskViewModel.getEditMode() == DEFAULT) {
+            taskViewModel.setEditMode(DESCRIPTION);
+            enableDescriptionEditMode();
+            descriptionEdit.requestFocus();
+            imm.showSoftInput(descriptionEdit, InputMethodManager.SHOW_IMPLICIT);
         }
-        else {
-            descriptionEdit.setText(task.getDescription());
+    }
+
+    private void titleOnClickListener(View v) {
+        if (taskViewModel.getEditMode() == DEFAULT) {
+            taskViewModel.setEditMode(TITLE);
+            enableTitleEditMode();
+            titleEdit.requestFocus();
+            imm.showSoftInput(titleEdit, InputMethodManager.SHOW_IMPLICIT);
         }
-//        descriptionEdit.requestFocus();
-//        InputMethodManager inputMethodManager =
-//                (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-//        inputMethodManager.showSoftInput(descriptionEdit, InputMethodManager.SHOW_FORCED);
-        descriptionEdit.setVisibility(View.VISIBLE);
-        descriptionEdit.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(descriptionEdit, InputMethodManager.SHOW_IMPLICIT);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+
+        super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    protected void onStart() {
+        TaskViewModel.EditMode editMode = taskViewModel.getEditMode();
+        switch (editMode) {
+            case DESCRIPTION:
+                enableDescriptionEditMode();
+                descriptionEdit.requestFocus();
+                imm.showSoftInput(descriptionEdit, InputMethodManager.SHOW_IMPLICIT);
+                break;
+            case TITLE:
+                enableTitleEditMode();
+                descriptionEdit.requestFocus();
+                imm.showSoftInput(descriptionEdit, InputMethodManager.SHOW_IMPLICIT);
+                break;
+        }
+        super.onStart();
     }
 
     private void refreshDescription() {
-        if (task.getDescription() == null || task.getDescription().length() == 0) {
-            description.setText(getResources().getString(R.string.change_description));
-            description.setTypeface(null, Typeface.ITALIC);
+        if (taskViewModel.getEditMode() != DESCRIPTION) {
+            String s = task.getDescription();
+            if (s == null || s.length() == 0) {
+                descriptionEdit.setHint(R.string.change_description);
+            } else {
+                descriptionEdit.setText(task.getDescription());
+            }
         }
-        else {
-            description.setText(task.getDescription());
-            description.setTypeface(null, Typeface.NORMAL);
+    }
+
+    private void refreshTitle() {
+        if (taskViewModel.getEditMode() != TITLE) {
+            titleEdit.setText(task.getTitle());
+            titleEdit.setInputType(InputType.TYPE_NULL);
+            DrawableCompat.setTint(titleEdit.getBackground(),
+                    ContextCompat.getColor(this, R.color.toolbar));
         }
     }
 

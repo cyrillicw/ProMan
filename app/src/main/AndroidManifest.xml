@@ -37,7 +37,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activities.BoardCardsActivity" />
         </activity>
-        <activity android:name=".ui.activities.TaskActivity">
+        <activity android:name=".ui.activities.TaskActivity"
+            android:windowSoftInputMode="stateUnchanged">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activities.BoardActivity" />
@@ -50,5 +51,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

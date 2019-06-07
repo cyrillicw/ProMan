@@ -16,7 +16,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 import com.onudapps.proman.R;
-import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
 import com.onudapps.proman.data.pojo.GroupWithUpdate;
 import com.onudapps.proman.ui.adapters.BoardPagerAdapter;
 import com.onudapps.proman.ui.dialog_fragments.CreateDialogFragment;
@@ -33,8 +32,6 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
 
     public static final String BOARD_KEY = "boardId";
     private static final int OK = 200;
-    private ProManSmartContractDeclaration contract;
-    private String privateKey;
 
     private int boardId;
     private BoardViewModel viewModel;

@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 import androidx.lifecycle.LiveData;
+import androidx.work.PeriodicWorkRequest;
 import com.onudapps.proman.data.db.entities.*;
 import com.onudapps.proman.data.pojo.*;
+import com.onudapps.proman.workers.BoardCardsUpdateWorker;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple4;
@@ -15,6 +17,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static com.onudapps.proman.ui.activities.StartActivity.PREFERENCES;
 import static com.onudapps.proman.ui.activities.StartActivity.PRIVATE_KEY;
@@ -94,6 +97,18 @@ public enum  Repository {
                 TransactionReceipt tx = remoteDataSource.setTaskDescription(taskId, description);
                 if (tx != null && active) {
                     localDataSource.setTaskDescription(taskId, description);
+                }
+            });
+        }
+    }
+
+    public void updateTask(int taskId) {
+        if (active) {
+            executorService.execute(() -> {
+                TaskDBEntityWithParticipants taskDBEntityWithParticipants =
+                        remoteDataSource.getTask(taskId);
+                if (taskDBEntityWithParticipants != null && active) {
+                    localDataSource.insertTaskWithParticipants(taskDBEntityWithParticipants);
                 }
             });
         }
@@ -405,6 +420,13 @@ public enum  Repository {
             calendar.setTimeInMillis(date);
             return calendar;
         }
+    }
+
+    public void scheduleBoardCardsUpdate() {
+        PeriodicWorkRequest periodicWorkRequest =
+                new PeriodicWorkRequest.Builder(BoardCardsUpdateWorker.class,
+                        1, TimeUnit.HOURS).build();
+        // Work
     }
 
 //    public Task getTaskFromServer(UUID id) {

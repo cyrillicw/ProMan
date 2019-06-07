@@ -12,14 +12,20 @@ import java.util.Calendar;
 import java.util.List;
 
 public class TaskViewModel extends ViewModel{
+    public enum EditMode {
+        DEFAULT, TITLE, DESCRIPTION;
+    }
     private LiveData<Task> taskData;
     private LiveData<List<GroupShortInfo>> groupsData;
     private int taskId;
     private int boardId;
+    private EditMode editMode;
 
     public TaskViewModel(int taskId, int boardId) {
         this.taskId = taskId;
         this.boardId = boardId;
+        editMode = EditMode.DEFAULT;
+
     }
 
     public void updateStart(Calendar calendar) {
@@ -43,11 +49,23 @@ public class TaskViewModel extends ViewModel{
         return taskData;
     }
 
+    public void forceTaskUpdate() {
+        Repository.REPOSITORY.updateTask(taskId);
+    }
+
     public LiveData<List<GroupShortInfo>> getGroupsData() {
         if (groupsData == null) {
             groupsData = Repository.REPOSITORY.getGroupsShortInfo(boardId);
         }
         return groupsData;
+    }
+
+    public EditMode getEditMode() {
+        return editMode;
+    }
+
+    public void setEditMode(EditMode editMode) {
+        this.editMode = editMode;
     }
 
     public void updateDescription(String description) {

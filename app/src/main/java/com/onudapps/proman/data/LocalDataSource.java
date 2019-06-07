@@ -52,6 +52,10 @@ class LocalDataSource {
         database.getProManDao().insertTaskDBEntity(taskDBEntity);
     }
 
+    public void insertTaskWithParticipants(TaskDBEntityWithParticipants entity) {
+        database.getProManDao().insertTaskWithParticipants(entity);
+    }
+
     public LiveData<List<TaskCalendarCard>> getTasksCalendarData(int boardId) {
         return database.getProManDao().getTasksCalendarCard(boardId);
     }

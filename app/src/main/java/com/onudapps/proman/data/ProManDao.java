@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static com.onudapps.proman.data.db.entities.LastUpdateEntity.Query.TASK;
+
 @Dao
 public abstract class ProManDao {
     private static final String LOG_TAG = "ProManDao";
@@ -39,8 +41,10 @@ public abstract class ProManDao {
     @Query("SELECT * FROM tasks WHERE tasks.taskId = :taskId")
     public abstract LiveData<TaskDBEntity> getTaskDBEntity(int taskId);
 
-    @Query("SELECT tasks.*, groups.title as groupTitle " +
-            "FROM tasks LEFT JOIN groups ON tasks.groupId = groups.groupId " +
+    @Query("SELECT tasks.*, groups.title as groupTitle, last_update.updated " +
+            "FROM tasks " +
+            "INNER JOIN groups ON tasks.groupId = groups.groupId " +
+            "INNER JOIN last_update ON tasks.taskId = last_update.id AND last_update.queryType = 'TASK' " +
             "WHERE tasks.taskId = :taskId")
     public abstract LiveData<Task> getTask(int taskId);
 
@@ -54,6 +58,31 @@ public abstract class ProManDao {
         join.setBoardId(boardId);
         join.setAddress(participantDBEntity.getAddress());
         insertBoardParticipantJoin(join);
+    }
+
+    public void insertTaskWithParticipants(TaskDBEntityWithParticipants entity) {
+        TaskDBEntity taskDBEntity = entity.getTaskDBEntity();
+        insertTaskDBEntity(taskDBEntity);
+        List<ParticipantDBEntity> participantDBEntities = entity.getParticipants();
+        insertParticipants(participantDBEntities);
+        List<TaskParticipantJoin> taskParticipantJoins = new ArrayList<>();
+        List<BoardParticipantJoin> boardParticipantJoins = new ArrayList<>();
+        int taskId = taskDBEntity.getTaskId();
+        int boardId = taskDBEntity.getBoardId();
+        for (ParticipantDBEntity participantDBEntity : participantDBEntities) {
+            TaskParticipantJoin taskParticipantJoin = new TaskParticipantJoin();
+            BoardParticipantJoin boardParticipantJoin = new BoardParticipantJoin();
+            taskParticipantJoin.setTaskId(taskId);
+            taskParticipantJoin.setAddress(participantDBEntity.getAddress());
+            boardParticipantJoin.setBoardId(boardId);
+            boardParticipantJoin.setAddress(participantDBEntity.getAddress());
+        }
+        Calendar calendar = Calendar.getInstance();
+        LastUpdateEntity lastUpdateEntity = new LastUpdateEntity();
+        lastUpdateEntity.setUpdated(calendar);
+        lastUpdateEntity.setId(taskId);
+        lastUpdateEntity.setQueryType(TASK);
+        updateLastUpdate(lastUpdateEntity);
     }
 
     @Transaction
@@ -194,12 +223,24 @@ public abstract class ProManDao {
         for (BoardGroup boardGroup : board.getBoardGroups()) {
             updateBoardGroup(boardGroup.getGroupDBEntity(), boardGroup.getTasks());
         }
+        Calendar calendar = Calendar.getInstance();
         insertBoardParticipantJoins(boardParticipantJoins);
         LastUpdateEntity lastUpdateEntity = new LastUpdateEntity();
         lastUpdateEntity.setQueryType(LastUpdateEntity.Query.BOARD);
         lastUpdateEntity.setId(boardId);
-        lastUpdateEntity.setUpdated(Calendar.getInstance());
+        lastUpdateEntity.setUpdated(calendar);
+        List<LastUpdateEntity> taskUpdates = new ArrayList<>();
+        for (BoardGroup boardGroup : board.getBoardGroups()) {
+            for (TaskDBEntityWithParticipantsAddresses task : boardGroup.getTasks()) {
+                LastUpdateEntity taskUpdate = new LastUpdateEntity();
+                taskUpdate.setQueryType(TASK);
+                taskUpdate.setUpdated(calendar);
+                taskUpdate.setId(task.getTaskDBEntity().getTaskId());
+                taskUpdates.add(taskUpdate);
+            }
+        }
         updateLastUpdate(lastUpdateEntity);
+        updateLastUpdates(taskUpdates);
     }
 
     @Query("SELECT p.* " +
@@ -220,7 +261,7 @@ public abstract class ProManDao {
     @Query("SELECT groups.*, last_update.updated FROM last_update LEFT JOIN groups ON groups.boardId = last_update.id WHERE last_update.queryType = 'BOARD' and last_update.id = :boardId")
     public abstract LiveData<List<GroupWithUpdate>> getBoardGroups(int boardId);
 
-    @Query("SELECT taskId, title FROM tasks WHERE groupId = :groupId")
+    @Query("SELECT taskId, title FROM tasks  WHERE groupId = :groupId")
     public abstract LiveData<List<TaskCard>> getTaskCards(int groupId);
 
     @Query("SELECT start, finish FROM boards WHERE boardId = :boardId")
@@ -232,11 +273,11 @@ public abstract class ProManDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertTaskDBEntities(List<TaskDBEntity> taskDBEntities);
 
-    public void updateBoardGroup(GroupDBEntity groupDBEntity, List<TaskDBEntityWithParticipants> tasks) {
+    public void updateBoardGroup(GroupDBEntity groupDBEntity, List<TaskDBEntityWithParticipantsAddresses> tasks) {
         insertGroup(groupDBEntity);
         List<TaskDBEntity> taskDBEntities = new ArrayList<>();
         List<TaskParticipantJoin> tasksParticipants = new ArrayList<>();
-        for (TaskDBEntityWithParticipants t : tasks) {
+        for (TaskDBEntityWithParticipantsAddresses t : tasks) {
             taskDBEntities.add(t.getTaskDBEntity());
             for (String participant : t.getParticipants()) {
                 TaskParticipantJoin taskParticipantJoin = new TaskParticipantJoin();
@@ -251,7 +292,7 @@ public abstract class ProManDao {
         List<LastUpdateEntity> tasksUpdated = new ArrayList<>();
         for (int i = 0; i < tasks.size(); i++) {
             LastUpdateEntity taskUpdateEntity = new LastUpdateEntity();
-            taskUpdateEntity.setQueryType(LastUpdateEntity.Query.TASK);
+            taskUpdateEntity.setQueryType(TASK);
             taskUpdateEntity.setId(tasks.get(i).getTaskDBEntity().getTaskId());
             taskUpdateEntity.setUpdated(calendar);
             tasksUpdated.add(taskUpdateEntity);

@@ -6,7 +6,7 @@ import java.util.List;
 
 public class BoardGroup {
     private GroupDBEntity groupDBEntity;
-    private List<TaskDBEntityWithParticipants> tasks;
+    private List<TaskDBEntityWithParticipantsAddresses> tasks;
 
     public GroupDBEntity getGroupDBEntity() {
         return groupDBEntity;
@@ -16,11 +16,11 @@ public class BoardGroup {
         this.groupDBEntity = groupDBEntity;
     }
 
-    public List<TaskDBEntityWithParticipants> getTasks() {
+    public List<TaskDBEntityWithParticipantsAddresses> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<TaskDBEntityWithParticipants> tasks) {
+    public void setTasks(List<TaskDBEntityWithParticipantsAddresses> tasks) {
         this.tasks = tasks;
     }
 }

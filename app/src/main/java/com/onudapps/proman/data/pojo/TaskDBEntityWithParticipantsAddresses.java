@@ -1,13 +1,12 @@
 package com.onudapps.proman.data.pojo;
 
-import com.onudapps.proman.data.db.entities.ParticipantDBEntity;
 import com.onudapps.proman.data.db.entities.TaskDBEntity;
 
 import java.util.List;
 
-public class TaskDBEntityWithParticipants {
+public class TaskDBEntityWithParticipantsAddresses {
     private TaskDBEntity taskDBEntity;
-    private List<ParticipantDBEntity> participants;
+    private List<String> participants;
 
     public TaskDBEntity getTaskDBEntity() {
         return taskDBEntity;
@@ -17,11 +16,11 @@ public class TaskDBEntityWithParticipants {
         this.taskDBEntity = taskDBEntity;
     }
 
-    public List<ParticipantDBEntity> getParticipants() {
+    public List<String> getParticipants() {
         return participants;
     }
 
-    public void setParticipants(List<ParticipantDBEntity> participants) {
+    public void setParticipants(List<String> participants) {
         this.participants = participants;
     }
 }

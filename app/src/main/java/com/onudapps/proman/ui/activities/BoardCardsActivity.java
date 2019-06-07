@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.onudapps.proman.R;
-import com.onudapps.proman.contracts.ProManSmartContractDeclaration;
 import com.onudapps.proman.data.Repository;
 import com.onudapps.proman.data.pojo.BoardWithUpdate;
 import com.onudapps.proman.ui.adapters.BoardsRecyclerAdapter;
@@ -30,8 +29,6 @@ public class BoardCardsActivity extends AppCompatActivity implements CreateDialo
     private static final String APP_NAME = "PROMAN";
 
     private RecyclerView recyclerView;
-    private ProManSmartContractDeclaration contract;
-    private boolean dialogOpened = true;
     private BoardCardsViewModel viewModel;
     private LiveData<List<BoardWithUpdate>> boardsData;
 

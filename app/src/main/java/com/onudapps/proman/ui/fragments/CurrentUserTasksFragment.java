@@ -1,7 +1,6 @@
 package com.onudapps.proman.ui.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +35,6 @@ public class CurrentUserTasksFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_board_group, container, false);
-        Log.e("IN USER", "CURRENT");
         int boardId = getArguments().getInt(BOARD_ID_TAG);
         TextView title = view.findViewById(R.id.group_title);
         title.setText(R.string.current_user_tasks_title);

@@ -1,9 +1,8 @@
-package com.onudapps.proman.data;
+package com.onudapps.proman.data.db;
 
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
-import com.onudapps.proman.data.db.ProManTypeConverters;
 import com.onudapps.proman.data.db.entities.*;
 
 @Database(entities = {TaskDBEntity.class, GroupDBEntity.class, ParticipantDBEntity.class, BoardDBEntity.class,

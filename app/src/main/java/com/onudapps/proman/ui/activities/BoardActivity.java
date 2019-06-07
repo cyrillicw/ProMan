@@ -165,7 +165,6 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
         }
         if (groups.size() != 0 && groups.get(0).getGroupDBEntity() != null) {
             this.groups = groups;
-            Log.e(LOG_TAG, "NOW");
             statisticsMode.setVisibility(View.VISIBLE);
             userTasksMode.setVisibility(View.VISIBLE);
             ((BoardPagerAdapter) viewPager.getAdapter()).updateData(groups);
@@ -188,7 +187,6 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
-        Log.e(LOG_TAG, "ON SAVED INSTANCE");
         outState.putInt(BOARD_KEY, boardId);
     }
 

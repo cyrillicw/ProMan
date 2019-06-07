@@ -2,12 +2,9 @@ package com.onudapps.proman.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import androidx.lifecycle.LiveData;
-import androidx.work.PeriodicWorkRequest;
 import com.onudapps.proman.data.db.entities.*;
 import com.onudapps.proman.data.pojo.*;
-import com.onudapps.proman.workers.BoardCardsUpdateWorker;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple4;
@@ -17,7 +14,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static com.onudapps.proman.ui.activities.StartActivity.PREFERENCES;
 import static com.onudapps.proman.ui.activities.StartActivity.PRIVATE_KEY;
@@ -39,7 +35,6 @@ public enum  Repository {
         REPOSITORY.remoteDataSource = new RemoteDataSource(credentials);
         REPOSITORY.executorService = Executors.newSingleThreadExecutor();
         REPOSITORY.active = true;
-        Log.e("REPO", "Address " + REPOSITORY.address);
     }
 
     public LiveData<List<ParticipantDBEntity>> getBoardParticipants(int boardId) {
@@ -133,10 +128,6 @@ public enum  Repository {
         }
     }
 
-    public LiveData<TaskDBEntity> getTaskDBEntity(int taskId) {
-        return localDataSource.getTaskDBEntity(taskId);
-    }
-
     public LiveData<List<ParticipantDBEntity>> getTaskParticipants(int taskId) {
         return localDataSource.getTaskParticipants(taskId);
     }
@@ -205,15 +196,9 @@ public enum  Repository {
     public void leaveBoard(int id) {
         if (active) {
             executorService.execute(() -> {
-                Log.e("IN DELETE", "ID " + id);
-                try {
-                    TransactionReceipt transactionReceipt = remoteDataSource.leaveBoard(id).send();
-                    if (active) {
-                        localDataSource.removeBoard(id);
-                    }
-                    Log.e("REPO", "answer " + transactionReceipt.getLogs().get(0).getData());
-                } catch (Exception e) {
-                    Log.e("REPO", "error" + e.getMessage());
+                TransactionReceipt transactionReceipt = remoteDataSource.leaveBoard(id);
+                if (transactionReceipt != null && active) {
+                    localDataSource.removeBoard(id);
                 }
             });
         }
@@ -223,7 +208,6 @@ public enum  Repository {
         if (active) {
             executorService.execute(() -> {
                 String nick = remoteDataSource.addBoardParticipant(boardId, address);
-                Log.e("NICK", "NICK " + nick);
                 if (nick != null && active) {
                     ParticipantDBEntity participantDBEntity = new ParticipantDBEntity();
                     participantDBEntity.setAddress(address);
@@ -265,10 +249,6 @@ public enum  Repository {
                 }
             });
         }
-    }
-
-    public LiveData<Calendar> getLastUpdate(LastUpdateEntity.Query queryType, int id) {
-        return localDataSource.getLastUpdate(queryType, id);
     }
 
     public void setTaskStart(int taskId, Calendar calendar) {
@@ -314,56 +294,6 @@ public enum  Repository {
             });
         }
     }
-
-//    private Tuple2<GroupDBEntity, List<TaskDBEntity>> getBoardGroup(int groupId, int boardId) {
-//        Tuple6<String, List<BigInteger>, List<String>, List<String>, List<BigInteger>, List<BigInteger>> tuple =
-//                remoteDataSource.getGroup(groupId);
-//        String title = tuple.getValue1();
-//        List<BigInteger> tasksId = tuple.getValue2();
-//        List<String> tasksTitle = tuple.getValue3();
-//        List<String> tasksDescription = tuple.getValue4();
-//        List<BigInteger> tasksStart = tuple.getValue5();
-//        List<BigInteger> tasksFinish = tuple.getValue6();
-//        List<TaskDBEntity> taskDBEntities = new ArrayList<>();
-//        for (int i = 0; i < tasksTitle.size(); i++) {
-//            TaskDBEntity taskDBEntity = new TaskDBEntity();
-//            taskDBEntity.setTaskId(tasksId.get(i).intValue());
-//            taskDBEntity.setTitle(tasksTitle.get(i));
-//            taskDBEntity.setDescription(tasksDescription.get(i));
-//            Calendar start = numToCalendar(tasksStart.get(i));
-//            Calendar finish = numToCalendar(tasksFinish.get(i));
-//            taskDBEntity.setStart(start);
-//            taskDBEntity.setFinish(finish);
-//            taskDBEntity.setBoardId(boardId);
-//            taskDBEntity.setGroupId(groupId);
-//            taskDBEntities.add(taskDBEntity);
-//        }
-//        GroupDBEntity groupDBEntity = new GroupDBEntity();
-//        groupDBEntity.setTitle(title);
-//        groupDBEntity.setBoardId(boardId);
-//        groupDBEntity.setGroupId(groupId);
-//        return new Tuple2<>(groupDBEntity, taskDBEntities);
-////        GroupDBEntity groupDBEntity = new GroupDBEntity();
-////        groupDBEntity.setTitle("F");
-////        groupDBEntity.setBoardId(boardId);
-////        groupDBEntity.setGroupId(groupId);
-////        List<TaskDBEntity> taskDBEntities = new ArrayList<>();
-////        for (int i = 0; i < 8; i++) {
-////            TaskDBEntity taskDBEntity = new TaskDBEntity();
-////            taskDBEntity.setTitle("TASKАААААFFFFFFFFFFFFFFFААААА " + i);
-////            Calendar start = Calendar.getInstance();
-////            start.add(Calendar.DAY_OF_MONTH, -i - 1);
-////            Calendar finish = Calendar.getInstance();
-////            finish.add(Calendar.DAY_OF_MONTH, i + 1);
-////            taskDBEntity.setTaskId((int)(Math.random() * 100000));
-////            taskDBEntity.setStart(start);
-////            taskDBEntity.setFinish(finish);
-////            taskDBEntity.setGroupId(groupId);
-////            taskDBEntity.setBoardId(boardId);
-////            taskDBEntities.add(taskDBEntity);
-////        }
-//        return new Tuple2<>(groupDBEntity, taskDBEntities);
-//    }
 
     public void updateBoard(int id) {
         if (active) {
@@ -421,23 +351,4 @@ public enum  Repository {
             return calendar;
         }
     }
-
-    public void scheduleBoardCardsUpdate() {
-        PeriodicWorkRequest periodicWorkRequest =
-                new PeriodicWorkRequest.Builder(BoardCardsUpdateWorker.class,
-                        1, TimeUnit.HOURS).build();
-        // Work
-    }
-
-//    public Task getTaskFromServer(UUID id) {
-//        Task task = remoteDataSource.getTask(id);
-//        if (task != null) {
-//            localDataSource.insertTask(task);
-//        }
-//        return task;
-//    }
-
-//    public void updateTask(Task task) {
-//        localDataSource.update
-//    }
 }

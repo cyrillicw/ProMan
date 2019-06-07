@@ -55,4 +55,10 @@ public class CreateDialogFragment extends DialogFragment {
             dismiss();
         }
     }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        //getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        super.onActivityCreated(savedInstanceState);
+    }
 }

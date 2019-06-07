@@ -12,4 +12,5 @@
     <color name="manage">#099609</color>
     <color name="chart">#6D6DF7</color>
     <color name="blank">#FFFFFF</color>
+    <color name="transparent">@android:color/transparent</color>
 </resources>

@@ -1,7 +1,6 @@
 package com.onudapps.proman.ui.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,7 +80,6 @@ public class BoardChartFragment extends Fragment {
     }
 
     private void onTaskCalendarChangeListener(List<TaskCalendarCard> taskCalendarCards) {
-        Log.e("CHART GANTT", "HERE");
         Calendar start = Calendar.getInstance();
         start.set(Calendar.DAY_OF_MONTH, 1);
         start.set(Calendar.HOUR_OF_DAY, 0);
@@ -118,7 +116,6 @@ public class BoardChartFragment extends Fragment {
                 }
                 dStart -= 1;
                 dFinish -= 1;
-                //Log.e("STARTS", ": " + dStart + " " + dFinish);
                 barEntries.add(new BarEntry(i, new float[]{dStart, dFinish - dStart}));
                 if (taskCalendarCards.get(i).getTitle().length() <= maxLength) {
                     xAxisLabel.add(taskCalendarCards.get(i).getTitle());
@@ -155,11 +152,9 @@ public class BoardChartFragment extends Fragment {
             //gantt.getAxisLeft().setDrawTopYLabelEntry(false);
             gantt.getAxisLeft().setDrawGridLines(false);
             List<String> yLabels = new ArrayList<>();
-            Log.e("MAX", "DAYS " + maxDays);
             for (int i = 0; i < maxDays; i++) {
                 yLabels.add(Integer.toString(i + 1));
             }
-//            Log.e("GANTT", "WIDTH" + gantt.getWidth());
             gantt.getAxisLeft().setValueFormatter(new IndexAxisValueFormatter(yLabels));
             gantt.getAxisRight().setValueFormatter(new IndexAxisValueFormatter(yLabels));
             gantt.getAxisRight().setLabelCount(yLabels.size() / 2);
@@ -170,7 +165,6 @@ public class BoardChartFragment extends Fragment {
             gantt.getXAxis().disableGridDashedLine();
             gantt.setData(barData);
             XAxis xAxis = gantt.getXAxis();
-            Log.e("CHART", "xSize " + xAxisLabel.size());
             xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisLabel));
             xAxis.setLabelCount(xAxisLabel.size());
             gantt.setTouchEnabled(false);
@@ -187,15 +181,9 @@ public class BoardChartFragment extends Fragment {
             unavailableGantt.setVisibility(View.VISIBLE);
             availableGantt.setVisibility(View.GONE);
         }
-
-//        HorizontalBarChart horizontalBarChart = new HorizontalBarChart()
-//        RangeBar rangeBar = new RangeBar("J");
-//        Range
-//        rangeBar.
     }
 
     private void onGroupsChangedListener(List<GroupStatistic> groupStatistics) {
-        Log.e("CHART", "STAT GROUP");
         List<PieEntry> yValues = new ArrayList<>();
         int tasksCount = 0;
         for (GroupStatistic groupStatistic : groupStatistics) {
@@ -219,7 +207,6 @@ public class BoardChartFragment extends Fragment {
             availableGroupsDistribution.setVisibility(View.GONE);
             unavailableGroupsDistribution.setVisibility(View.VISIBLE);
         }
-        // groupsDistribution.setLayoutParams(new FrameLayout.LayoutParams(width, width));
     }
 
     private float dayPart(Calendar calendar) {

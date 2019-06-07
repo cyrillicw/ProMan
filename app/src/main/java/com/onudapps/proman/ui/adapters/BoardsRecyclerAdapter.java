@@ -114,14 +114,10 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
                 else {
                     finished = Math.min(100, (int) ((double) (current.getTimeInMillis() - start.getTimeInMillis()) / (finish.getTimeInMillis() - board.getStart().getTimeInMillis()) * 100));
                 }
-                Log.e(LOG_TAG, "finished " + finished);
                 List<BarEntry> barEntries = new ArrayList<>();
                 barEntries.add(new BarEntry(1, finished));
                 BarDataSet barDataSet = new BarDataSet(barEntries, "E");
                 barDataSet.setValueTextSize(30);
-                Log.e("TITLE", board.getTitle());
-                Log.e("START", start.getTime().toString());
-                Log.e("FINISH", finish.getTime().toString());
                 int color;
                 if (finished == 100) {
                     color = colors[colors.length - 1];

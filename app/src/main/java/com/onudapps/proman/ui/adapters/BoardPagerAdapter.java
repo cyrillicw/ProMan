@@ -90,7 +90,6 @@ public class BoardPagerAdapter extends FragmentStatePagerAdapter {
             }
         }
         else {
-            Log.e("PAGER", "POS " + position);
             if (position < groupDBEntities.size()) {
                 return BoardGroupFragment.newInstance(groupDBEntities.get(position)
                         .getGroupDBEntity().getGroupId(), boardId);

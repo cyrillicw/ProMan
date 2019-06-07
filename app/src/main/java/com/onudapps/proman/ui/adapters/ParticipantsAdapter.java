@@ -62,8 +62,6 @@ public class ParticipantsAdapter
 
         void bindData(ParticipantDBEntity participantDBEntity) {
             address = participantDBEntity.getAddress();
-            Log.e("ADAPTER PART", address);
-            Log.e("ADAPTER PART", Repository.REPOSITORY.getAddress());
             if (address.equals(Repository.REPOSITORY.getAddress())) {
                 removeParticipant.setVisibility(View.INVISIBLE);
             }

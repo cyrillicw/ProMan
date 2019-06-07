@@ -1,6 +1,5 @@
-package com.onudapps.proman.data;
+package com.onudapps.proman.data.db;
 
-import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.room.*;
 import com.onudapps.proman.data.db.entities.*;
@@ -178,7 +177,6 @@ public abstract class ProManDao {
     @Transaction
     public void updateBoards(List<BoardDBEntity> boardDBEntities) {
         clearData();
-        Log.e(LOG_TAG, "size " + getBoardsCount());
         insertBoards(boardDBEntities);
         LastUpdateEntity lastUpdateEntity = new LastUpdateEntity();
         lastUpdateEntity.setQueryType(LastUpdateEntity.Query.BOARDS);

@@ -1,7 +1,7 @@
 package com.onudapps.proman.data;
 
 import android.util.Log;
-import com.onudapps.proman.contracts.Smart;
+import com.onudapps.proman.contracts.ProManSmartContract;
 import com.onudapps.proman.data.db.entities.BoardDBEntity;
 import com.onudapps.proman.data.db.entities.GroupDBEntity;
 import com.onudapps.proman.data.db.entities.ParticipantDBEntity;
@@ -12,7 +12,6 @@ import com.onudapps.proman.data.pojo.TaskDBEntityWithParticipants;
 import com.onudapps.proman.data.pojo.TaskDBEntityWithParticipantsAddresses;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.RemoteCall;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tuples.generated.Tuple2;
@@ -30,35 +29,41 @@ public class RemoteDataSource {
     private static final String LOG_TAG = "RemoteDataSource";
     private static final String HOST_API = "http://192.168.1.102:7545";
     private static final String CONTRACT_ADDRESS = "fBf07DAe90F50A062a7b76899a5488BEF5b645c6";
-    private Smart smartContract;
-    public RemoteDataSource(Credentials credentials) {
+    private ProManSmartContract proManSmartContract;
+    RemoteDataSource(Credentials credentials) {
         Web3j web3j = Web3j.build(new HttpService(HOST_API));
-        smartContract = Smart.load(CONTRACT_ADDRESS, web3j, credentials, new DefaultGasProvider());
+        proManSmartContract = ProManSmartContract.load(CONTRACT_ADDRESS, web3j, credentials, new DefaultGasProvider());
     }
 
-    public TransactionReceipt removeBoardParticipant(int boardId, String address) {
+    TransactionReceipt removeBoardParticipant(int boardId, String address) {
         try {
-            return smartContract.removeBoardParticipant(BigInteger.valueOf(boardId), address).send();
+            TransactionReceipt tx =
+                    proManSmartContract.removeBoardParticipant(BigInteger.valueOf(boardId), address).send();
+            Log.e(LOG_TAG, "Succeeded removing board participant");
+            return tx;
         }
         catch (Exception e) {
-            Log.e(LOG_TAG, "Removing board's participant failed");
+            Log.e(LOG_TAG, "Failed removing board participant");
             return null;
         }
     }
 
-    public TransactionReceipt createBoard(String title) {
+    TransactionReceipt createBoard(String title) {
         try {
-            return smartContract.addBoard(title).send();
+            TransactionReceipt tx = proManSmartContract.addBoard(title).send();
+            Log.e(LOG_TAG, "Succeeded creating board");
+            return tx;
         }
         catch (Exception e) {
+            Log.e(LOG_TAG, "Failed creating board");
             return null;
         }
     }
 
-    public TaskDBEntityWithParticipants getTask(int taskId) {
+    TaskDBEntityWithParticipants getTask(int taskId) {
         try {
             Tuple7<String, String, BigInteger, BigInteger, BigInteger, BigInteger, List<String>> tuple
-                    = smartContract.getTask(BigInteger.valueOf(taskId)).send();
+                    = proManSmartContract.getTask(BigInteger.valueOf(taskId)).send();
             TaskDBEntity taskDBEntity = new TaskDBEntity();
             taskDBEntity.setTaskId(taskId);
             taskDBEntity.setTitle(tuple.getValue1());
@@ -71,6 +76,7 @@ public class RemoteDataSource {
             TaskDBEntityWithParticipants taskDBEntityWithParticipants = new TaskDBEntityWithParticipants();
             taskDBEntityWithParticipants.setTaskDBEntity(taskDBEntity);
             taskDBEntityWithParticipants.setParticipants(participantDBEntities);
+            Log.e(LOG_TAG, "Succeeded loading task");
             return taskDBEntityWithParticipants;
         }
         catch (Exception e) {
@@ -83,7 +89,7 @@ public class RemoteDataSource {
         List<ParticipantDBEntity> participantDBEntities = new ArrayList<>();
         for (String s: addresses) {
             ParticipantDBEntity participantDBEntity = new ParticipantDBEntity();
-            String nick = smartContract.getUserNick(s).send();
+            String nick = proManSmartContract.getUserNick(s).send();
             participantDBEntity.setAddress(s);
             participantDBEntity.setNickName(nick);
             participantDBEntities.add(participantDBEntity);
@@ -91,125 +97,155 @@ public class RemoteDataSource {
         return participantDBEntities;
     }
 
-    public TransactionReceipt setTaskGroup(int taskId, int groupId) {
+    TransactionReceipt setTaskGroup(int taskId, int groupId) {
         try {
-            return smartContract.setTaskGroup(BigInteger.valueOf(taskId), BigInteger.valueOf(groupId)).send();
+            TransactionReceipt tx =
+                    proManSmartContract.setTaskGroup(BigInteger.valueOf(taskId), BigInteger.valueOf(groupId)).send();
+            Log.e(LOG_TAG, "Succeeded updating task group");
+            return tx;
         }
         catch (Exception e) {
+            Log.e(LOG_TAG, "Failed updating task group");
             return null;
         }
     }
 
-    public TransactionReceipt createGroup(String title, int boardId) {
-//        smartContract.addBoard(title).sendAsync().thenAccept(tx -> {
-//            Log.e(LOG_TAG, "ok");
-//        });
+    TransactionReceipt createGroup(String title, int boardId) {
         try {
-            return smartContract.addGroup(BigInteger.valueOf(boardId), title).send();
+            TransactionReceipt tx =
+                    proManSmartContract.addGroup(BigInteger.valueOf(boardId), title).send();
+            Log.e(LOG_TAG, "Succeeded creating group");
+            return tx;
         }
         catch (Exception e) {
+            Log.e(LOG_TAG, "Failed creating group");
             return null;
         }
     }
 
-    public TransactionReceipt setTaskDescription(int taskId, String description) {
+    TransactionReceipt setTaskDescription(int taskId, String description) {
         try {
-            return smartContract.setTaskDescription(BigInteger.valueOf(taskId), description).send();
+            TransactionReceipt tx =
+                    proManSmartContract.setTaskDescription(BigInteger.valueOf(taskId), description).send();
+            Log.e(LOG_TAG, "Succeeded setting task description");
+            return tx;
         }
         catch (Exception e) {
+            Log.e(LOG_TAG, "Failed setting task description");
             return null;
         }
     }
 
-    public TransactionReceipt setTaskTitle(int taskId, String title) {
+    TransactionReceipt setTaskTitle(int taskId, String title) {
         try {
-            return smartContract.setTaskTitle(BigInteger.valueOf(taskId), title).send();
+            TransactionReceipt tx =
+                    proManSmartContract.setTaskTitle(BigInteger.valueOf(taskId), title).send();
+            Log.e(LOG_TAG, "Succeeded setting task title");
+            return tx;
         }
         catch (Exception e) {
+            Log.e(LOG_TAG, "Failed setting task title");
             return null;
         }
     }
 
-    public TransactionReceipt setTaskStart(int taskId, Calendar calendar) {
+    TransactionReceipt setTaskStart(int taskId, Calendar calendar) {
         long time = calendar == null ? -1 : calendar.getTimeInMillis();
         try {
-            return smartContract.setTaskStart(BigInteger.valueOf(taskId), BigInteger.valueOf(time)).send();
+            TransactionReceipt tx =
+                    proManSmartContract.setTaskStart(BigInteger.valueOf(taskId), BigInteger.valueOf(time)).send();
+            Log.e(LOG_TAG, "Succeeded setting task start");
+            return tx;
         }
         catch (Exception e) {
-            Log.e(LOG_TAG, "start set failed " + taskId + " " + e.getMessage());
+            Log.e(LOG_TAG, "Failed setting task start");
             return null;
         }
     }
 
-    public TransactionReceipt setTaskFinish(int taskId, Calendar calendar) {
+    TransactionReceipt setTaskFinish(int taskId, Calendar calendar) {
         long time = calendar == null ? -1 : calendar.getTimeInMillis();
         try {
-            return smartContract.setTaskFinish(BigInteger.valueOf(taskId), BigInteger.valueOf(time)).send();
+            TransactionReceipt tx =
+                    proManSmartContract.setTaskFinish(BigInteger.valueOf(taskId), BigInteger.valueOf(time)).send();
+            Log.e(LOG_TAG, "Succeeded setting task finish");
+            return tx;
         }
         catch (Exception e) {
+            Log.e(LOG_TAG, "Failed setting task finish");
             return null;
         }
     }
 
-    public static boolean  signIn(String privateKey) {
+    public static boolean signIn(String privateKey) {
         try {
             Web3j web3j = Web3j.build(new HttpService(HOST_API));
             Credentials credentials = Credentials.create(privateKey);
-            Smart smart = Smart.load(CONTRACT_ADDRESS, web3j, credentials, new DefaultGasProvider());
-            return smart.signIn().send();
+            ProManSmartContract proManSmartContract = ProManSmartContract.load(CONTRACT_ADDRESS, web3j, credentials, new DefaultGasProvider());
+            return proManSmartContract.signIn().send();
         }
         catch (Exception e) {
             return false;
         }
     }
 
-    public static TransactionReceipt  signUp(String privateKey, String nickname) {
+    public static TransactionReceipt signUp(String privateKey, String nickname) {
         try {
             Web3j web3j = Web3j.build(new HttpService(HOST_API));
             Credentials credentials = Credentials.create(privateKey);
-            Smart smart = Smart.load(CONTRACT_ADDRESS, web3j, credentials, new DefaultGasProvider());
-            return smart.signUp(nickname).send();
+            ProManSmartContract proManSmartContract = ProManSmartContract.load(CONTRACT_ADDRESS, web3j, credentials, new DefaultGasProvider());
+            return proManSmartContract.signUp(nickname).send();
         }
         catch (Exception e) {
             return null;
         }
     }
 
-    public TransactionReceipt setBoardStart(int boardId, Calendar calendar) {
+    TransactionReceipt setBoardStart(int boardId, Calendar calendar) {
         long time = calendar == null ? -1 : calendar.getTimeInMillis();
         try {
-            return smartContract.setBoardStart(BigInteger.valueOf(boardId), BigInteger.valueOf(time)).send();
+            TransactionReceipt tx =
+                    proManSmartContract.setBoardStart(BigInteger.valueOf(boardId), BigInteger.valueOf(time)).send();
+            Log.e(LOG_TAG, "Succeeded setting board start");
+            return tx;
         }
         catch (Exception e) {
-            Log.e(LOG_TAG, "start set failed " + boardId + " " + e.getMessage());
+            Log.e(LOG_TAG, "Failed setting board start");
             return null;
         }
     }
 
-    public TransactionReceipt setBoardFinish(int boardId, Calendar calendar) {
+    TransactionReceipt setBoardFinish(int boardId, Calendar calendar) {
         long time = calendar == null ? -1 : calendar.getTimeInMillis();
         try {
-            return smartContract.setBoardFinish(BigInteger.valueOf(boardId), BigInteger.valueOf(time)).send();
+            TransactionReceipt tx =
+                    proManSmartContract.setBoardFinish(BigInteger.valueOf(boardId), BigInteger.valueOf(time)).send();
+            Log.e(LOG_TAG, "Succeeded setting board finish");
+            return tx;
         }
         catch (Exception e) {
-            //Log.e(LOG_TAG, "start set failed " + boardId + " " + e.getMessage());
+            Log.e(LOG_TAG, "Failed setting board finish");
             return null;
         }
     }
 
-    public TransactionReceipt createTask(int groupId, String title) {
+    TransactionReceipt createTask(int groupId, String title) {
         try {
-            return smartContract.addTask(BigInteger.valueOf(groupId), title).send();
+            TransactionReceipt tx =
+                    proManSmartContract.addTask(BigInteger.valueOf(groupId), title).send();
+            Log.e(LOG_TAG, "Succeeded creating task");
+            return tx;
         }
         catch (Exception e) {
+            Log.e(LOG_TAG, "Failed creating task");
             return null;
         }
     }
 
-    public Board getBoard(int boardId) {
+    Board getBoard(int boardId) {
         try {
             Tuple5<String, BigInteger, BigInteger, List<BigInteger>, List<String>> tuple
-                    = smartContract.getBoard(BigInteger.valueOf(boardId)).send();
+                    = proManSmartContract.getBoard(BigInteger.valueOf(boardId)).send();
             Board board = new Board();
             BoardDBEntity boardDBEntity = new BoardDBEntity();
             boardDBEntity.setBoardId(boardId);
@@ -219,7 +255,7 @@ public class RemoteDataSource {
             board.setBoardDBEntity(boardDBEntity);
             List<BoardGroup> groupsWithTasks = new ArrayList<>();
             for (BigInteger groupId : tuple.getValue4()) {
-                Tuple2<String, List<BigInteger>> groupTuple = smartContract.getGroup(groupId).send();
+                Tuple2<String, List<BigInteger>> groupTuple = proManSmartContract.getGroup(groupId).send();
                 GroupDBEntity groupDBEntity = new GroupDBEntity();
                 groupDBEntity.setGroupId(groupId.intValue());
                 groupDBEntity.setBoardId(boardId);
@@ -228,7 +264,7 @@ public class RemoteDataSource {
                 Log.e(LOG_TAG, "Tasks size " + groupTuple.getValue2().size());
                 for (BigInteger taskId : groupTuple.getValue2()) {
                     TaskDBEntity taskDBEntity = new TaskDBEntity();
-                    Tuple7<String, String, BigInteger, BigInteger, BigInteger, BigInteger, List<String>> taskTuple = smartContract.getTask(taskId).send();
+                    Tuple7<String, String, BigInteger, BigInteger, BigInteger, BigInteger, List<String>> taskTuple = proManSmartContract.getTask(taskId).send();
                     taskDBEntity.setTaskId(taskId.intValue());
                     taskDBEntity.setTitle(taskTuple.getValue1());
                     taskDBEntity.setDescription(taskTuple.getValue2());
@@ -249,36 +285,41 @@ public class RemoteDataSource {
             board.setBoardGroups(groupsWithTasks);
             List<ParticipantDBEntity> participantDBEntities = getParticipants(tuple.getValue5());
             board.setParticipants(participantDBEntities);
+            Log.e(LOG_TAG, "Succeeded loading board");
             return board;
         }
         catch (Exception e) {
-            Log.e(LOG_TAG, "FAILED LOADING BOARD");
+            Log.e(LOG_TAG, "Failed loading board");
             return null;
         }
     }
 
-    public String addBoardParticipant(int boardId, String address) {
+    String addBoardParticipant(int boardId, String address) {
         try {
-            TransactionReceipt tx = smartContract.addBoardParticipant(BigInteger.valueOf(boardId), address).send();
-            List<Smart.BoardParticipantAddedEventResponse> nicks = smartContract.getBoardParticipantAddedEvents(tx);
+            TransactionReceipt tx = proManSmartContract.addBoardParticipant(BigInteger.valueOf(boardId), address).send();
+            List<ProManSmartContract.BoardParticipantAddedEventResponse> nicks = proManSmartContract.getBoardParticipantAddedEvents(tx);
             if (nicks.size() > 0 && !nicks.get(0).nick.equals("")) {
+                Log.e(LOG_TAG, "Succeeded adding board participant");
                 return nicks.get(0).nick;
             }
+            Log.e(LOG_TAG, "Failed adding board participant");
             return null;
         }
         catch (Exception e) {
-            Log.e(LOG_TAG, "error " + e.getMessage());
+            Log.e(LOG_TAG, "Failed adding board participant");
             return null;
         }
     }
 
-    public String addTaskParticipant(int taskId, String address) {
+    String addTaskParticipant(int taskId, String address) {
         try {
-            TransactionReceipt tx = smartContract.addTaskParticipant(BigInteger.valueOf(taskId), address).send();
-            List<Smart.TaskParticipantAddedEventResponse> nicks = smartContract.getTaskParticipantAddedEvents(tx);
+            TransactionReceipt tx = proManSmartContract.addTaskParticipant(BigInteger.valueOf(taskId), address).send();
+            List<ProManSmartContract.TaskParticipantAddedEventResponse> nicks = proManSmartContract.getTaskParticipantAddedEvents(tx);
             if (nicks.size() > 0 && !nicks.get(0).nick.equals("")) {
+                Log.e(LOG_TAG, "Succeeded adding task participant");
                 return nicks.get(0).nick;
             }
+            Log.e(LOG_TAG, "Failed adding task participant");
             return null;
         }
         catch (Exception e) {
@@ -287,13 +328,10 @@ public class RemoteDataSource {
         }
     }
 
-    public Smart getSmartContract() {
-        return smartContract;
-    }
-
-    public TransactionReceipt removeTaskParticipant(int taskId, String address) {
+    TransactionReceipt removeTaskParticipant(int taskId, String address) {
         try {
-            return smartContract.removeTaskUser(BigInteger.valueOf(taskId), address).send();
+            Log.e(LOG_TAG, "Succeeded removing task participant");
+            return proManSmartContract.removeTaskUser(BigInteger.valueOf(taskId), address).send();
         }
         catch (Exception e) {
             Log.e(LOG_TAG, "Failed removing task participant");
@@ -301,18 +339,14 @@ public class RemoteDataSource {
         }
     }
 
-    //Tuple3<String, List<BigInteger>, List<String>> res =
-
-
-
-    public List<BoardDBEntity> getBoards() {
+    List<BoardDBEntity> getBoards() {
         try {
-            List<BigInteger> boards = smartContract.getBoardsIndices().send();
+            List<BigInteger> boards = proManSmartContract.getBoardsIndices().send();
             List<BoardDBEntity> boardDBEntities = new ArrayList<>();
             Log.e(LOG_TAG, "boards size " + boards.size());
             for (BigInteger id: boards) {
                 Tuple3<String, BigInteger, BigInteger> tuple =
-                        smartContract.getBoardCard(id).send();
+                        proManSmartContract.getBoardCard(id).send();
                 BoardDBEntity boardDBEntity = new BoardDBEntity();
                 boardDBEntity.setBoardId(id.intValue());
                 boardDBEntity.setTitle(tuple.getValue1());
@@ -322,6 +356,7 @@ public class RemoteDataSource {
                 boardDBEntity.setFinish(finish);
                 boardDBEntities.add(boardDBEntity);
             }
+            Log.e(LOG_TAG, "Succeeded loading boards");
             return boardDBEntities;
         }
         catch (Exception e) {
@@ -330,27 +365,15 @@ public class RemoteDataSource {
         }
     }
 
-//    public Tuple4<String, BigInteger, BigInteger, List<BigInteger>> getBoard(int id) {
-//        try {
-//            return smartContract.getBoard(BigInteger.valueOf(id)).send();
-//        }
-//        catch (Exception e){
-//            Log.e(LOG_TAG, "Failed loading board " + e.getMessage());
-//            return null;
-//        }
-//    }
-
-    public RemoteCall<TransactionReceipt> leaveBoard(int id) {
-        return smartContract.leaveBoard(BigInteger.valueOf(id));
+    TransactionReceipt leaveBoard(int id) {
+        try {
+            TransactionReceipt tx = proManSmartContract.leaveBoard(BigInteger.valueOf(id)).send();
+            Log.e(LOG_TAG, "Succeeded leaving board");
+            return tx;
+        }
+        catch (Exception e) {
+            Log.e(LOG_TAG, "Failed leaving board " + e.getMessage());
+            return null;
+        }
     }
-
-//    public Task getTask(UUID id) {
-//        try {
-//            return smartContract.getTask(id.toString()).send();
-//        }
-//        catch (Exception e) {
-//            Log.e(LOG_TAG, e.getMessage());
-//            return null;
-//        }
-//    }
 }

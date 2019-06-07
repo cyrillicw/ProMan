@@ -2,7 +2,6 @@ package com.onudapps.proman.ui.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +57,6 @@ public class BoardGroupFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         groupId = getArguments().getInt("groupId");
         boardId = getArguments().getInt("boardId");
-        Log.e("ON CREATE", "ON");
         View view = inflater.inflate(R.layout.fragment_board_group, container, false);
         recyclerView = view.findViewById(R.id.recycler_board_group);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false);
@@ -107,19 +105,17 @@ public class BoardGroupFragment extends Fragment {
         addTask.setVisibility(View.GONE);
         editLayout.setVisibility(View.VISIBLE);
         addTaskEdit.requestFocus();
-        InputMethodManager imm = (InputMethodManager) addTaskEdit.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(addTaskEdit, InputMethodManager.SHOW_IMPLICIT);
     }
 
     private void onAddTaskClickListener(View v) {
         enableEditMode();
+        InputMethodManager imm = (InputMethodManager) addTaskEdit.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(addTaskEdit, InputMethodManager.SHOW_IMPLICIT);
         // recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
     }
 
     private void tickOnClickListener(View v) {
         String title = addTaskEdit.getText().toString();
-        Log.e("Fragment", "tick pressed");
-        Log.e("Fragment", "title " + title);
         if (title.length() > 0) {
             groupViewModel.createTask(title);
             enableStandardMode();

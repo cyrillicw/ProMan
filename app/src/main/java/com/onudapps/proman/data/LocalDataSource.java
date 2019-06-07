@@ -3,6 +3,7 @@ package com.onudapps.proman.data;
 import android.content.Context;
 import androidx.lifecycle.LiveData;
 import androidx.room.Room;
+import com.onudapps.proman.data.db.ProManDatabase;
 import com.onudapps.proman.data.db.entities.*;
 import com.onudapps.proman.data.pojo.*;
 
@@ -16,27 +17,27 @@ class LocalDataSource {
         database = Room.databaseBuilder(context, ProManDatabase.class, databaseTitle).fallbackToDestructiveMigration().build();
     }
 
-    public LiveData<TaskDBEntity> getTaskDBEntity(int taskId) {
+    LiveData<TaskDBEntity> getTaskDBEntity(int taskId) {
         return database.getProManDao().getTaskDBEntity(taskId);
     }
 
-    public void onSignOut() {
+    void onSignOut() {
         database.getProManDao().clearData();
     }
 
-    public void removeBoardParticipant(int boardId, String address) {
+    void removeBoardParticipant(int boardId, String address) {
         database.getProManDao().removeBoardParticipant(boardId, address);
     }
 
-    public LiveData<List<ParticipantDBEntity>> getBoardParticipants(int boardId) {
+    LiveData<List<ParticipantDBEntity>> getBoardParticipants(int boardId) {
         return database.getProManDao().getBoardParticipants(boardId);
     }
 
-    public LiveData<List<ParticipantDBEntity>> getTaskParticipants(int taskId) {
+    LiveData<List<ParticipantDBEntity>> getTaskParticipants(int taskId) {
         return database.getProManDao().getTaskParticipants(taskId);
     }
 
-    public LiveData<Task> getTask(int taskId) {
+    LiveData<Task> getTask(int taskId) {
         return database.getProManDao().getTask(taskId);
     }
 
@@ -44,43 +45,39 @@ class LocalDataSource {
         database.getProManDao().addTaskParticipant(taskId, participantDBEntity);
     }
 
-//    public void insertTask(Task task) {
-//        database.getProManDao().insertTask(task);
-//    }
-
-    public void insertTaskDBEntity(TaskDBEntity taskDBEntity) {
+    void insertTaskDBEntity(TaskDBEntity taskDBEntity) {
         database.getProManDao().insertTaskDBEntity(taskDBEntity);
     }
 
-    public void insertTaskWithParticipants(TaskDBEntityWithParticipants entity) {
+    void insertTaskWithParticipants(TaskDBEntityWithParticipants entity) {
         database.getProManDao().insertTaskWithParticipants(entity);
     }
 
-    public LiveData<List<TaskCalendarCard>> getTasksCalendarData(int boardId) {
+    LiveData<List<TaskCalendarCard>> getTasksCalendarData(int boardId) {
         return database.getProManDao().getTasksCalendarCard(boardId);
     }
 
-    public LiveData<List<GroupShortInfo>> getGroupsShortInfo(int boardId) {
+    LiveData<List<GroupShortInfo>> getGroupsShortInfo(int boardId) {
         return database.getProManDao().getGroupsShortInfo(boardId);
     }
 
-    public LiveData<StartFinishDates> getBoardStartFinishDates(int boardId) {
+    LiveData<StartFinishDates> getBoardStartFinishDates(int boardId) {
         return database.getProManDao().getBoardStartFinishDates(boardId);
     }
 
-    public void removeTaskParticipant(int taskId, String address) {
+    void removeTaskParticipant(int taskId, String address) {
         database.getProManDao().removeTaskParticipant(taskId, address);
     }
 
-    public LiveData<List<BoardWithUpdate>> getBoardCards() {
+    LiveData<List<BoardWithUpdate>> getBoardCards() {
         return database.getProManDao().getBoardCards();
     }
 
-    public void insertBoard(BoardDBEntity boardDBEntity) {
+    void insertBoard(BoardDBEntity boardDBEntity) {
         database.getProManDao().insertBoard(boardDBEntity);
     }
 
-    public LiveData<List<GroupWithUpdate>> getBoardGroups(int boardId) {
+    LiveData<List<GroupWithUpdate>> getBoardGroups(int boardId) {
         return database.getProManDao().getBoardGroups(boardId);
     }
 
@@ -88,71 +85,71 @@ class LocalDataSource {
         return database.getProManDao().getUserTaskCards(boardId, address);
     }
 
-    public void setTaskGroup(int taskId, int groupId) {
+    void setTaskGroup(int taskId, int groupId) {
         database.getProManDao().setTaskGroup(taskId, groupId);
     }
 
-    public void setTaskDescription(int taskId, String description) {
+    void setTaskDescription(int taskId, String description) {
         database.getProManDao().setTaskDescription(taskId, description);
     }
 
-    public void setTaskTitle(int taskId, String title) {
+    void setTaskTitle(int taskId, String title) {
         database.getProManDao().setTaskTitle(taskId, title);
     }
 
-    public void addBoardParticipant(int boardId, ParticipantDBEntity participantDBEntity) {
+    void addBoardParticipant(int boardId, ParticipantDBEntity participantDBEntity) {
         database.getProManDao().addBoardParticipant(boardId, participantDBEntity);
     }
 
-    public LiveData<List<TaskCard>> getTaskCards(int groupId) {
+    LiveData<List<TaskCard>> getTaskCards(int groupId) {
         return database.getProManDao().getTaskCards(groupId);
     }
 
-    public LiveData<String> getGroupTitle(int groupId) {
+    LiveData<String> getGroupTitle(int groupId) {
         return database.getProManDao().getGroupTitle(groupId);
     }
 
-    public void insertGroup(GroupDBEntity groupDBEntity) {
+    void insertGroup(GroupDBEntity groupDBEntity) {
         database.getProManDao().insertGroup(groupDBEntity);
     }
 
-    public void removeBoard(int id) {
+    void removeBoard(int id) {
         database.getProManDao().removeBoard(id);
     }
 
-    public void updateBoardCards(List<BoardDBEntity> boardDBEntities) {
+    void updateBoardCards(List<BoardDBEntity> boardDBEntities) {
         database.getProManDao().updateBoards(boardDBEntities);
     }
 
-    public LiveData<List<GroupStatistic>> getGroupsStatistics(int boardId) {
+    LiveData<List<GroupStatistic>> getGroupsStatistics(int boardId) {
         return database.getProManDao().getGroupsStatistics(boardId);
     }
 
-    public LiveData<String> getBoardTitle(int id) {
+    LiveData<String> getBoardTitle(int id) {
         return database.getProManDao().getBoardTitle(id);
     }
 
-    public void updateBoard(Board board) {
+    void updateBoard(Board board) {
         database.getProManDao().updateBoard(board);
     }
 
-    public LiveData<Calendar> getLastUpdate(LastUpdateEntity.Query queryType, int id) {
+    LiveData<Calendar> getLastUpdate(LastUpdateEntity.Query queryType, int id) {
         return database.getProManDao().getLastUpdate(queryType, id);
     }
 
-    public void setTaskStart(int taskId, Calendar calendar) {
+    void setTaskStart(int taskId, Calendar calendar) {
         database.getProManDao().setTaskStart(taskId, calendar);
     }
 
-    public void setTaskFinish(int taskId, Calendar calendar) {
+    void setTaskFinish(int taskId, Calendar calendar) {
         database.getProManDao().setTaskFinish(taskId, calendar);
     }
 
-    public void setBoardStart(int boardId, Calendar calendar) {
+    void setBoardStart(int boardId, Calendar calendar) {
         database.getProManDao().setBoardStart(boardId, calendar);
     }
 
-    public void setBoardFinish(int boardId, Calendar calendar) {
+    void setBoardFinish(int boardId, Calendar calendar) {
         database.getProManDao().setBoardFinish(boardId, calendar);
     }
 }

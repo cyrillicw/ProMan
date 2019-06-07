@@ -53,6 +53,7 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     private TextView dateFinishText;
     private RelativeLayout editToolbarLayout;
     private RelativeLayout defaultToolbarLayout;
+    private FrameLayout titleLayout;
 
     private TaskDBEntity task;
     private int taskId;
@@ -84,9 +85,10 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         editToolbarLayout = findViewById(R.id.edit_toolbar_layout);
         tick.setOnClickListener(this::tickOnClickListener);
         cross.setOnClickListener(this::crossOnClickListener);
+        titleLayout = findViewById(R.id.title_layout);
         titleEdit = findViewById(R.id.detailed_task_title_edit);
-        titleEdit.setOnClickListener(this::titleOnClickListener);
-        titleEdit.setInputType(InputType.TYPE_NULL);
+        titleEdit.setEnabled(false);
+        titleLayout.setOnClickListener(this::titleOnClickListener);
         group = findViewById(R.id.detailed_task_group);
         dateStartText = findViewById(R.id.detailed_task_start_text);
         dateFinishText = findViewById(R.id.detailed_task_finish_text);
@@ -225,12 +227,23 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         taskViewModel.setEditMode(DEFAULT);
     }
 
+    private void disableEditText(EditText editText) {
+        editText.setFocusable(false);
+        editText.setClickable(true);
+        editText.setLongClickable(false);
+    }
+
+    private void enableEditText(EditText editText) {
+        editText.setEnabled(true);
+    }
+
     private void enableTitleEditMode() {
         editToolbarLayout.setVisibility(View.VISIBLE);
         defaultToolbarLayout.setVisibility(View.INVISIBLE);
-        titleEdit.setInputType(InputType.TYPE_CLASS_TEXT);
-        DrawableCompat.setTint(titleEdit.getBackground(),
-                ContextCompat.getColor(this, R.color.toolbar_text));
+//        titleEdit.setInputType(InputType.TYPE_CLASS_TEXT);
+//        DrawableCompat.setTint(titleEdit.getBackground(),
+//                ContextCompat.getColor(this, R.color.toolbar_text));
+        enableEditText(titleEdit);
         titleEdit.setSelection(titleEdit.getText().length());
     }
 
@@ -361,14 +374,15 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
                 descriptionEdit.setText(task.getDescription());
             }
         }
+        descriptionEdit.setEnabled(false);
     }
 
     private void refreshTitle() {
         if (taskViewModel.getEditMode() != TITLE) {
             titleEdit.setText(task.getTitle());
-            titleEdit.setInputType(InputType.TYPE_NULL);
-            DrawableCompat.setTint(titleEdit.getBackground(),
-                    ContextCompat.getColor(this, R.color.toolbar));
+//            titleEdit.setInputType(InputType.TYPE_NULL);
+//            DrawableCompat.setTint(titleEdit.getBackground(),
+//                    ContextCompat.getColor(this, R.color.toolbar));
         }
     }
 

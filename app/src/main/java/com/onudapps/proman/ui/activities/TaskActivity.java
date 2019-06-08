@@ -25,6 +25,7 @@ import com.onudapps.proman.ui.dialog_fragments.DateDialogFragment;
 import com.onudapps.proman.ui.dialog_fragments.TaskChangeGroupDialogFragment;
 import com.onudapps.proman.ui.dialog_fragments.TaskParticipantsDialogFragment;
 import com.onudapps.proman.ui.listeners.DateDialogListener;
+import com.onudapps.proman.ui.listeners.SignOutOnClickListener;
 import com.onudapps.proman.viewmodels.TaskViewModel;
 
 import java.util.ArrayList;
@@ -76,6 +77,8 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         ImageView update = toolbar.findViewById(R.id.update);
         update.setOnClickListener(this::updateOnClickListener);
+        ImageView signOut = toolbar.findViewById(R.id.sign_out);
+        signOut.setOnClickListener(new SignOutOnClickListener());
         tick = findViewById(R.id.tick);
         cross = findViewById(R.id.cross);
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);

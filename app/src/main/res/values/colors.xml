@@ -13,4 +13,5 @@
     <color name="chart">#6D6DF7</color>
     <color name="blank">#FFFFFF</color>
     <color name="transparent">@android:color/transparent</color>
+    <color name="groups_distribution_background">#42F4CB</color>
 </resources>

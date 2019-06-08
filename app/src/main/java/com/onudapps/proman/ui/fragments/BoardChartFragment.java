@@ -194,6 +194,7 @@ public class BoardChartFragment extends Fragment {
             groupsDistribution.setData(pieData);
             groupsDistribution.setTouchEnabled(false);
             groupsDistribution.setDescription(null);
+            groupsDistribution.setHoleColor(getResources().getColor(R.color.groups_distribution_background, getActivity().getTheme()));
             availableGroupsDistribution.setVisibility(View.VISIBLE);
             unavailableGroupsDistribution.setVisibility(View.GONE);
             groupsDistribution.notifyDataSetChanged();

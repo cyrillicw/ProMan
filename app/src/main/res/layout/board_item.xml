@@ -16,7 +16,8 @@
             android:layout_height="wrap_content"
             android:maxWidth="150dp"
             android:layout_alignParentEnd="true"
-            android:textSize="30sp"
+            android:textAlignment="viewEnd"
+            android:textSize="20sp"
             android:paddingEnd="3dp"
             android:paddingStart="3dp"
             android:layout_centerVertical="true"/>

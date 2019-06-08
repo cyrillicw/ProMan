@@ -46,7 +46,9 @@
                     <com.github.mikephil.charting.charts.PieChart
                         android:id="@+id/groups_distribution"
                         android:layout_width="match_parent"
-                        android:layout_height="500dp" />
+                        android:background="@color/groups_distribution_background"
+                        android:minHeight="500dp"
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
         </androidx.cardview.widget.CardView>
 

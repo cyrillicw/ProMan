@@ -8,7 +8,8 @@
         tools:context=".ui.activities.TaskActivity"
         android:orientation="vertical"
         android:fitsSystemWindows="true"
-        android:configChanges="orientation|screenSize">
+        android:configChanges="orientation|screenSize"
+        android:background="@color/backround">
 
     <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"

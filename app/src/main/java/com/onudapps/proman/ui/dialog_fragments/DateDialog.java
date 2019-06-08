@@ -47,7 +47,6 @@ public class DateDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
         return new DatePickerDialog(getContext(), listener, year, month, day);
-        //return new DatePickerDialog(tContext(), this.listener, this.hourOfDay, this.minute, this.is24Hours);
     }
 
     public void setListener(final DatePickerDialog.OnDateSetListener listener) {

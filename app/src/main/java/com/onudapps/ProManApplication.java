@@ -13,7 +13,7 @@ public class ProManApplication extends Application {
         super.onCreate();
         SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         boolean signedIn = sharedPreferences.getBoolean(SIGNED_IN, false);
-        if (signedIn) {
+        if (signedIn && !Repository.REPOSITORY.isActive()) {
             Repository.initialize(this);
         }
     }

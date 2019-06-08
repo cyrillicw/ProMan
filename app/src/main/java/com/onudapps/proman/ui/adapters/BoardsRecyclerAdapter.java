@@ -1,7 +1,6 @@
 package com.onudapps.proman.ui.adapters;
 
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,7 +79,6 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
 
         private void bindData(int position) {
             final BoardDBEntity board = boards.get(position).getBoardDBEntity();
-            //title.setText("HELLLOOOOOOOOOOOO");
             title.setText(board.getTitle());
             drawChart(board);
             view.setOnClickListener(new View.OnClickListener() {
@@ -147,6 +145,9 @@ public class BoardsRecyclerAdapter extends RecyclerView.Adapter<BoardsRecyclerAd
             }
             else {
                 barChart.setVisibility(View.GONE);
+                String[] motivations = view.getResources().getStringArray(R.array.motivation_array);
+                String motivationText = motivations[(int)(Math.random() * motivations.length)];
+                motivation.setText(motivationText);
                 motivation.setVisibility(View.VISIBLE);
             }
         }

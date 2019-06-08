@@ -25,8 +25,10 @@
     <string name="create_board">Create new board</string>
     <string name="create_group">Create new group</string>
     <string name="add_participant">Add participant</string>
+    <string name="create_board_hint">Enter board\'s title</string>
+    <string name="create_group_hint">Enter group\'s title</string>
+    <string name="add_participant_hint">Enter participant\'s address</string>
     <string name="enter_board_name">Enter board name</string>
-    <string name="motivation">Don\'t waste time. Do it!</string>
     <string name="leave_board">Leave board</string>
     <string name="delete_board">Delete board</string>
     <string name="board_cards_headline">Boards</string>
@@ -53,4 +55,17 @@
     <string name="sign_up_nickname_hint">Enter nickname</string>
     <string name="move_to_group_title">Move to&#8230;</string>
     <string name="current_user_tasks_title">Your tasks</string>
+    <string-array name="motivation_array">
+        <item>Don\'t waste time. Do it!</item>
+        <item>The future belongs to those, who believe in beauty of their dreams</item>
+        <item>You think you have forever, but you don\'t</item>
+        <item>Success doesn\'t come to you. You go to it</item>
+        <item>Fall seven times and stand up eight</item>
+        <item>The worst bankrupt in the world is the man who has lost his enthusiasm</item>
+        <item>Do what you can, with what you have, where you are</item>
+        <item>You miss 100% of the shots you don\’t take</item>
+        <item>Every solution breeds new problems</item>
+        <item>The only thing in life achieved without effort is failure</item>
+        <item>Success is the child of audacity</item>
+    </string-array>
 </resources>

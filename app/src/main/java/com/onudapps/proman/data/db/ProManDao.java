@@ -24,19 +24,6 @@ public abstract class ProManDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract void insert(ParticipantDBEntity participantDBEntity);
 
-//    @Query("SELECT tasks.taskId as taskId, tasks.title as title, tasks.description as description, tasks.start as start, tasks.finish as finish, boards.title as boardTitle, groups.title as groupTitle, tasks.boardId as boardId, tasks.groupId as groupId " +
-//            "FROM tasks " +
-//            "INNER JOIN boards ON tasks.boardId = boards.boardId " +
-//            "INNER JOIN groups ON tasks.groupId = groups.groupId " +
-//            "WHERE tasks.taskId = :id")
-//    public abstract Task getTaskWithNoParticipants(UUID id);
-
-//    @Query("SELECT p.publicKey, p.nickName " +
-//            "FROM participants as p " +
-//            "INNER JOIN task_participant_join as tpj ON tpj.participantPublicKey = p.publicKey " +
-//            "WHERE tpj.taskId = :id")
-//    public abstract List<ParticipantDBEntity> getTaskParticipants(UUID id);
-
     @Query("SELECT * FROM tasks WHERE tasks.taskId = :taskId")
     public abstract LiveData<TaskDBEntity> getTaskDBEntity(int taskId);
 
@@ -101,7 +88,7 @@ public abstract class ProManDao {
     @Query("SELECT groupId, title as groupTitle FROM groups WHERE boardId = :boardId")
     public abstract LiveData<List<GroupShortInfo>> getGroupsShortInfo(int boardId);
 
-    @Query("DELETE FROM task_participant_join as tpj WHERE tpj.taskId = :taskId AND tpj.address = :address")
+    @Query("DELETE FROM task_participant_join WHERE taskId = :taskId AND address = :address")
     public abstract void removeTaskParticipant(int taskId, String address);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -200,7 +187,7 @@ public abstract class ProManDao {
     @Query("SELECT title FROM boards WHERE boardId = :id")
     public abstract LiveData<String> getBoardTitle(int id);
 
-    @Query("SELECT tasks.taskId, tasks.title " +
+    @Query("SELECT tasks.taskId, tasks.title, tasks.groupId " +
             "FROM tasks INNER JOIN task_participant_join as tpj ON tasks.taskId = tpj.taskId " +
             "WHERE tpj.address = :address AND tasks.boardId = :boardId")
     public abstract LiveData<List<TaskCard>> getUserTaskCards(int boardId, String address);
@@ -259,7 +246,7 @@ public abstract class ProManDao {
     @Query("SELECT groups.*, last_update.updated FROM last_update LEFT JOIN groups ON groups.boardId = last_update.id WHERE last_update.queryType = 'BOARD' and last_update.id = :boardId")
     public abstract LiveData<List<GroupWithUpdate>> getBoardGroups(int boardId);
 
-    @Query("SELECT taskId, title FROM tasks  WHERE groupId = :groupId")
+    @Query("SELECT taskId, title, groupId FROM tasks  WHERE groupId = :groupId")
     public abstract LiveData<List<TaskCard>> getTaskCards(int groupId);
 
     @Query("SELECT start, finish FROM boards WHERE boardId = :boardId")

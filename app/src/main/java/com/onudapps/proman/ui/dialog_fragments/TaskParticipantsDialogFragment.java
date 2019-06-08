@@ -48,7 +48,7 @@ public class TaskParticipantsDialogFragment extends DialogFragment implements Cr
                 .get(TaskParticipantsViewModel.class);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false);
         participantsRecycler.setLayoutManager(layoutManager);
-        ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(taskId, new ArrayList<>());
+        ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(new ArrayList<>(), ParticipantsAdapter.Mode.TASK, viewModel::removeParticipant);
         participantsRecycler.setAdapter(participantsAdapter);
         LiveData<List<ParticipantDBEntity>> participantsData = viewModel.getParticipantsData();
         participantsData.observe(this, this::onParticipantsDataChanged);
@@ -62,7 +62,7 @@ public class TaskParticipantsDialogFragment extends DialogFragment implements Cr
     }
 
     private void addParticipantsClickListener(View v) {
-        CreateDialogFragment createDialogFragment = CreateDialogFragment.newInstance(getResources().getString(R.string.add_participant));
+        CreateDialogFragment createDialogFragment = CreateDialogFragment.newInstance(getResources().getString(R.string.add_participant), getResources().getString(R.string.add_participant_hint));
         createDialogFragment.setTargetFragment(this, DIALOG_REQUEST_CODE);
         createDialogFragment.show(getActivity().getSupportFragmentManager(), "Create participant");
     }

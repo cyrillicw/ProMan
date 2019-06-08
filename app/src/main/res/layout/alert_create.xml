@@ -19,25 +19,4 @@
             android:textSize="20sp"
             android:imeOptions="flagNoExtractUi" />
 
-    <!--<TextView-->
-        <!--android:id="@+id/confirm_button"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/ok"-->
-        <!--android:layout_margin="4dp"-->
-        <!--android:layout_below="@id/created_title"-->
-        <!--android:layout_alignParentEnd="true"-->
-        <!--android:textColor="@color/manage"-->
-        <!--android:textSize="20sp"/>-->
-
-    <!--<TextView-->
-        <!--android:id="@+id/cancel_button"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/cancel"-->
-        <!--android:layout_margin="2dp"-->
-        <!--android:layout_toStartOf="@id/confirm_button"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:textColor="@color/manage"/>-->
-
 </RelativeLayout>

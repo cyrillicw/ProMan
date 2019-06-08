@@ -12,9 +12,9 @@ import com.onudapps.proman.R;
 import com.onudapps.proman.viewmodels.TaskChangeGroupViewModel;
 
 public class TaskChangeGroupDialogFragment extends DialogFragment {
-    public static final String GROUPS_TITLES_TAG = "groupsTitles";
-    public static final String GROUPS_IDS_TAG = "groupsIds";
-    public static final String TASK_ID_TAG = "taskID";
+    private static final String GROUPS_TITLES_TAG = "groupsTitles";
+    private static final String GROUPS_IDS_TAG = "groupsIds";
+    private static final String TASK_ID_TAG = "taskID";
     private TaskChangeGroupViewModel viewModel;
 
     public static TaskChangeGroupDialogFragment newInstance(String[] groupsTitles, int[] groupsIds, int taskId) {

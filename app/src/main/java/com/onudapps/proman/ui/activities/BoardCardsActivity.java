@@ -88,7 +88,7 @@ public class BoardCardsActivity extends AppCompatActivity implements CreateDialo
     }
 
     private void createBoardListener(View v) {
-        CreateDialogFragment createDialogFragment = CreateDialogFragment.newInstance(getResources().getString(R.string.create_board));
+        CreateDialogFragment createDialogFragment = CreateDialogFragment.newInstance(getResources().getString(R.string.create_board), getResources().getString(R.string.create_board_hint));
         createDialogFragment.show(getSupportFragmentManager(), "Create board");
 //        final AlertDialog alertDialog = new AlertDialog.Builder(this).setView(R.layout.alert_create).
 //                setPositiveButton(R.string.ok, null).create();

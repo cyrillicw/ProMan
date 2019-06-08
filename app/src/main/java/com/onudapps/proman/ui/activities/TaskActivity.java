@@ -27,6 +27,7 @@ import com.onudapps.proman.ui.dialog_fragments.TaskParticipantsDialogFragment;
 import com.onudapps.proman.ui.listeners.DateDialogListener;
 import com.onudapps.proman.viewmodels.TaskViewModel;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -35,18 +36,11 @@ import static com.onudapps.proman.ui.dialog_fragments.DateDialogFragment.START_D
 import static com.onudapps.proman.viewmodels.TaskViewModel.EditMode.*;
 
 public class TaskActivity extends AppCompatActivity implements DateDialogListener {
-
-    private static final String LOG_TAG = "TaskActivity";
     public static final String TASK_ID_TAG = "taskId";
     public static final String BOARD_ID_TAG = "boardId";
-    private enum CalendarMode {
-        START, FINISH;
-    }
 
-    //private Task task;
     private ImageView tick;
     private ImageView cross;
-    private ImageView upload;
     private EditText titleEdit;
     private EditText descriptionEdit;
     private TextView group;
@@ -59,12 +53,10 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     private int taskId;
     private int boardId;
     private TaskViewModel taskViewModel;
-    private String[] groupsTitles;
-    private int[] groupsIds;
+    private List<GroupShortInfo> groups;
     private InputMethodManager imm;
-    private boolean gotData;
-
-
+    private boolean gotTaskData;
+    private boolean gotGroupsData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +65,8 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         Intent intent = getIntent();
         boardId = intent.getIntExtra(BOARD_ID_TAG, -1);
         taskId = intent.getIntExtra(TASK_ID_TAG, -1);
-        gotData = false;
+        gotTaskData = false;
+        gotGroupsData = false;
         taskViewModel = ViewModelProviders
                 .of(this, new TaskViewModel.TaskModelFactory(taskId, boardId))
                 .get(TaskViewModel.class);
@@ -107,16 +100,12 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         LiveData<List<GroupShortInfo>> groupsData = taskViewModel.getGroupsData();
         taskData.observe(this, this::taskDataListener);
         groupsData.observe(this, this::groupsDataListener);
+        group.setOnClickListener(this::groupOnClickListener);
     }
 
     private void groupsDataListener(List<GroupShortInfo> groups) {
-        groupsTitles = new String[groups.size()];
-        groupsIds = new int[groups.size()];
-        for (int i = 0; i < groups.size(); i++) {
-            groupsTitles[i] = groups.get(i).getGroupTitle();
-            groupsIds[i] = groups.get(i).getGroupId();
-        }
-        group.setOnClickListener(this::groupOnClickListener);
+        this.groups = groups;
+        gotGroupsData = true;
     }
 
     private void updateOnClickListener(View v) {
@@ -124,15 +113,29 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     }
 
     private void groupOnClickListener(View v) {
-        TaskChangeGroupDialogFragment.newInstance(groupsTitles, groupsIds, taskId)
-                .show(getSupportFragmentManager(), null);
+        if (gotTaskData && gotGroupsData) {
+            List<String> groupsTitles = new ArrayList<>();
+            List<Integer> groupsIds = new ArrayList<>();
+            for (int i = 0; i < groups.size(); i++) {
+                if (groups.get(i).getGroupId() != task.getGroupId()) {
+                    groupsTitles.add(groups.get(i).getGroupTitle());
+                    groupsIds.add(groups.get(i).getGroupId());
+                }
+            }
+            int[] groupsIdsArray = new int[groupsIds.size()];
+            for (int i = 0; i < groupsIds.size(); i++) {
+                groupsIdsArray[i] = groupsIds.get(i);
+            }
+            TaskChangeGroupDialogFragment.newInstance(groupsTitles.toArray(new String[0]), groupsIdsArray, taskId)
+                    .show(getSupportFragmentManager(), null);
+        }
     }
 
     private void taskDataListener(Task t) {
         Calendar threshold = Calendar.getInstance();
         threshold.add(Calendar.HOUR_OF_DAY, -1);
         if (t != null) {
-            gotData = true;
+            gotTaskData = true;
             task = t.getTaskDBEntity();
             refreshTitle();
             refreshDescription();
@@ -144,14 +147,14 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     }
 
     private void startOnClickListener(View v) {
-        if (gotData) {
+        if (gotTaskData) {
             DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(START_DIALOG_REQUEST_CODE, task.getStart());
             dateDialogFragment.show(getSupportFragmentManager(), "DATE START");
         }
     }
 
     private void finishOnClickListener(View v) {
-        if (gotData) {
+        if (gotTaskData) {
             DateDialogFragment dateDialogFragment = DateDialogFragment.newInstance(FINISH_DIALOG_REQUEST_CODE, task.getFinish());
             dateDialogFragment.show(getSupportFragmentManager(), "DATE FINISH");
         }
@@ -246,13 +249,13 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     }
 
     private void participantsOnClickListener(View v) {
-        if (gotData) {
+        if (gotTaskData) {
             TaskParticipantsDialogFragment.newInstance(taskId).show(getSupportFragmentManager(), null);
         }
     }
 
     private boolean descriptionOnClickListener(View v, MotionEvent motionEvent) {
-        if (taskViewModel.getEditMode() == DEFAULT && gotData) {
+        if (taskViewModel.getEditMode() == DEFAULT && gotTaskData) {
             taskViewModel.setEditMode(DESCRIPTION);
             enableEditMode(descriptionEdit);
             descriptionEdit.requestFocus();
@@ -262,7 +265,7 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     }
 
     private boolean titleOnClickListener(View v, MotionEvent motionEvent) {
-        if (taskViewModel.getEditMode() == DEFAULT && gotData) {
+        if (taskViewModel.getEditMode() == DEFAULT && gotTaskData) {
             taskViewModel.setEditMode(TITLE);
             enableEditMode(titleEdit);
             titleEdit.requestFocus();
@@ -313,5 +316,4 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
             disableEditText(titleEdit);
         }
     }
-
 }

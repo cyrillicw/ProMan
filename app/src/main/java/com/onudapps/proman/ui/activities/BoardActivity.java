@@ -5,7 +5,6 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -149,7 +148,7 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
     }
 
     private void createGroupListener(View v) {
-        CreateDialogFragment createGroup = CreateDialogFragment.newInstance(getResources().getString(R.string.create_group));
+        CreateDialogFragment createGroup = CreateDialogFragment.newInstance(getResources().getString(R.string.create_group), getResources().getString(R.string.create_group_hint));
         createGroup.show(getSupportFragmentManager(), "Create group");
     }
 

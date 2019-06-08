@@ -28,6 +28,10 @@ public class BoardParticipantsViewModel extends ViewModel{
         Repository.REPOSITORY.addBoardParticipant(boardId, address);
     }
 
+    public void removeParticipant(String address) {
+        Repository.REPOSITORY.removeBoardParticipant(boardId, address);
+    }
+
     public static class BoardParticipantsModelFactory extends ViewModelProvider.NewInstanceFactory {
 
         private final int boardId;

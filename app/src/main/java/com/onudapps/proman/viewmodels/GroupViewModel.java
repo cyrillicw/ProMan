@@ -47,10 +47,6 @@ public class GroupViewModel extends ViewModel {
         this.editMode = editMode;
     }
 
-    public String taskTitle() {
-        return taskTitle;
-    }
-
     public void setText(String taskTitle) {
         this.taskTitle = taskTitle;
     }

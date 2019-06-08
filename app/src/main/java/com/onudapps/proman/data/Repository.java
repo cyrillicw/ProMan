@@ -26,6 +26,10 @@ public enum  Repository {
     private ExecutorService executorService;
     private boolean active;
 
+    Repository() {
+        active = false;
+    }
+
     public static void initialize(Context context) {
         REPOSITORY.localDataSource = new LocalDataSource(context);
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);

@@ -15,6 +15,7 @@ import com.onudapps.proman.ui.activities.BoardActivity;
 import com.onudapps.proman.ui.activities.TaskActivity;
 import com.onudapps.proman.ui.dialog_fragments.TaskChangeGroupDialogFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.onudapps.proman.ui.activities.TaskActivity.BOARD_ID_TAG;
@@ -42,7 +43,7 @@ public class TasksRecyclerAdapter extends RecyclerView.Adapter<TasksRecyclerAdap
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        holder.bindData(position);
+        holder.bindData(tasks.get(position));
     }
 
     @Override
@@ -59,26 +60,32 @@ public class TasksRecyclerAdapter extends RecyclerView.Adapter<TasksRecyclerAdap
             title = view.findViewById(R.id.task_title);
         }
 
-        private void bindData(int position) {
+        private void bindData(TaskCard task) {
             view.setOnClickListener(v -> {
                 Intent intent = new Intent(v.getContext(), TaskActivity.class);
-                intent.putExtra(TaskActivity.TASK_ID_TAG, tasks.get(position).getTaskId());
+                intent.putExtra(TaskActivity.TASK_ID_TAG, task.getTaskId());
                 intent.putExtra(BOARD_ID_TAG, boardId);
                 v.getContext().startActivity(intent);
             });
             view.setOnLongClickListener(v -> {
                 BoardActivity boardActivity = (BoardActivity) v.getContext();
                 List<GroupWithUpdate> groups = boardActivity.getGroups();
-                String[] groupsTitles = new String[groups.size()];
-                int[] groupsIds = new int[groups.size()];
+                List<String> groupsTitles = new ArrayList<>();
+                List<Integer> groupsIds = new ArrayList<>();
                 for (int i = 0; i < groups.size(); i++) {
-                    groupsTitles[i] = groups.get(i).getGroupDBEntity().getTitle();
-                    groupsIds[i] = groups.get(i).getGroupDBEntity().getGroupId();
+                    if (groups.get(i).getGroupDBEntity().getGroupId() != task.getGroupId()) {
+                        groupsTitles.add(groups.get(i).getGroupDBEntity().getTitle());
+                        groupsIds.add(groups.get(i).getGroupDBEntity().getGroupId());
+                    }
                 }
-                TaskChangeGroupDialogFragment.newInstance(groupsTitles, groupsIds, tasks.get(position).getTaskId()).show(((AppCompatActivity)v.getContext()).getSupportFragmentManager(), null);
+                int[] groupsIdsArray = new int[groupsIds.size()];
+                for (int i = 0; i < groupsIds.size(); i++) {
+                    groupsIdsArray[i] = groupsIds.get(i);
+                }
+                TaskChangeGroupDialogFragment.newInstance(groupsTitles.toArray(new String[0]), groupsIdsArray, task.getTaskId()).show(((AppCompatActivity)v.getContext()).getSupportFragmentManager(), null);
                 return true;
             });
-            title.setText(tasks.get(position).getTitle());
+            title.setText(task.getTitle());
         }
     }
 }

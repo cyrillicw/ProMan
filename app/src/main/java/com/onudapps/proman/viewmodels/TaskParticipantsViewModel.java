@@ -28,6 +28,10 @@ public class TaskParticipantsViewModel extends ViewModel{
         Repository.REPOSITORY.addTaskParticipant(taskId, address);
     }
 
+    public void removeParticipant(String address) {
+        Repository.REPOSITORY.removeTaskParticipant(taskId, address);
+    }
+
     public static class TaskParticipantsModelFactory extends ViewModelProvider.NewInstanceFactory {
 
         private final int taskId;

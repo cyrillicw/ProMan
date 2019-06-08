@@ -22,8 +22,6 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class DateDialogFragment extends DialogFragment {
-    private static final String LOG_TAG = "DateDialogFragment";
-    public static final String RETURN_TAG = "selectedCalendar";
     public static final int START_DIALOG_REQUEST_CODE = 1;
     public static final int FINISH_DIALOG_REQUEST_CODE = 2;
     private static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);

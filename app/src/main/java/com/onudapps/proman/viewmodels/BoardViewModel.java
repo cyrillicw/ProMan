@@ -14,13 +14,9 @@ public class BoardViewModel extends ViewModel {
     private int id;
     private LiveData<String> titleData;
     private LiveData<List<GroupWithUpdate>> groupsData;
-    private boolean createAlertOpened;
-    private String expectedGroupName;
 
     private BoardViewModel(int id) {
         this.id = id;
-        createAlertOpened = false;
-
     }
 
     public  LiveData<String> getTitleData() {
@@ -35,25 +31,6 @@ public class BoardViewModel extends ViewModel {
             groupsData = Repository.REPOSITORY.getBoardGroups(id);
         }
         return groupsData;
-    }
-
-    public boolean isCreateAlertOpened() {
-        return createAlertOpened;
-    }
-
-    public String getExpectedGroupName() {
-        return expectedGroupName;
-    }
-
-    public void setCreateAlertOpened(boolean createAlertOpened) {
-        this.createAlertOpened = createAlertOpened;
-        if (!createAlertOpened) {
-            expectedGroupName = "";
-        }
-    }
-
-    public void setExpectedGroupName(String expectedGroupName) {
-        this.expectedGroupName = expectedGroupName;
     }
 
     public void forceBoardUpdate() {

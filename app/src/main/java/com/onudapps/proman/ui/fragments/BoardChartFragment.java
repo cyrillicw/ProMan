@@ -136,12 +136,8 @@ public class BoardChartFragment extends Fragment {
             int chartColor = ContextCompat.getColor(getContext(), R.color.blank);
             barDataSet.setColors(chartColor, mainColor);
             BarData barData = new BarData(barDataSet);
-            //gantt.getAxisLeft().setDrawLabels(false);
-            //gantt.getAxisRight().setDrawLabels(false);
-            //gantt.getXAxis().setDrawLabels(false);
             gantt.setDrawGridBackground(false);
             gantt.getAxisRight().disableGridDashedLine();
-            //gantt.getAxisRight().setDrawTopYLabelEntry(false);
             gantt.getAxisRight().setDrawGridLines(false);
             gantt.getAxisRight().setDrawAxisLine(false);
             gantt.getAxisLeft().disableGridDashedLine();

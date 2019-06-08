@@ -16,7 +16,9 @@ public class StartActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         boolean signedIn = sharedPreferences.getBoolean(SIGNED_IN, false);
         if (signedIn) {
-            Repository.initialize(this);
+            if (!Repository.REPOSITORY.isActive()) {
+                Repository.initialize(this);
+            }
             Intent intent = new Intent(this, BoardCardsActivity.class);
             startActivity(intent);
         }

@@ -95,27 +95,4 @@ public class BoardPropertiesFragment extends Fragment implements DateDialogListe
         }
         Toast.makeText(getContext(), R.string.update_alert, Toast.LENGTH_LONG).show();
     }
-
-    //    @Override
-//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        if (resultCode == Activity.RESULT_OK) {
-//            if (requestCode == START_DIALOG_REQUEST_CODE || requestCode == FINISH_DIALOG_REQUEST_CODE) {
-//                long datetime = data.getLongExtra(DateDialogFragment.RETURN_TAG, -1);
-//                Calendar calendar;
-//                if (datetime == -1) {
-//                    calendar = null;
-//                } else {
-//                    calendar = Calendar.getInstance();
-//                    calendar.setTimeInMillis(datetime);
-//                }
-//                if (requestCode == START_DIALOG_REQUEST_CODE) {
-//                    viewModel.updateStart(calendar);
-//                }
-//                else {
-//                    viewModel.updateFinish(calendar);
-//                }
-//                Toast.makeText(getContext(), R.string.update_alert, Toast.LENGTH_LONG).show();
-//            }
-//        }
-//    }
 }

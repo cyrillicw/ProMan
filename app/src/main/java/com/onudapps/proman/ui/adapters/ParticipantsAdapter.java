@@ -1,6 +1,5 @@
 package com.onudapps.proman.ui.adapters;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +16,18 @@ import java.util.List;
 public class ParticipantsAdapter
         extends RecyclerView.Adapter<ParticipantsAdapter.ParticipantViewHolder> {
 
+    public enum Mode {
+        BOARD, TASK;
+    }
+
     private List<ParticipantDBEntity> participants;
-    private int boardId;
-    public ParticipantsAdapter(int boardId, List<ParticipantDBEntity> participants) {
-        this.boardId = boardId;
+    private ParticipantRemover participantRemover;
+    private Mode mode;
+
+    public ParticipantsAdapter(List<ParticipantDBEntity> participants, Mode mode, ParticipantRemover participantRemover) {
         this.participants = participants;
+        this.participantRemover = participantRemover;
+        this.mode = mode;
     }
 
     @Override
@@ -57,12 +63,12 @@ public class ParticipantsAdapter
         }
 
         private void participantOnClickListener(View v) {
-            Repository.REPOSITORY.removeBoardParticipant(boardId, address);
+            participantRemover.remove(address);
         }
 
         void bindData(ParticipantDBEntity participantDBEntity) {
             address = participantDBEntity.getAddress();
-            if (address.equals(Repository.REPOSITORY.getAddress())) {
+            if (mode == Mode.BOARD && address.equals(Repository.REPOSITORY.getAddress())) {
                 removeParticipant.setVisibility(View.INVISIBLE);
             }
             else {

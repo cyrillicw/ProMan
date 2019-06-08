@@ -1,6 +1,5 @@
 package com.onudapps.proman.ui.adapters;
 
-import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -16,25 +15,12 @@ public class BoardPagerAdapter extends FragmentStatePagerAdapter {
     }
     private List<GroupWithUpdate> groupDBEntities;
     private int boardId;
-    //private List<Fragment> fragments;
     public BoardPagerAdapter(FragmentManager fm, List<GroupWithUpdate> groupDBEntities, int boardId) {
         super(fm);
         this.groupDBEntities = groupDBEntities;
         this.boardId = boardId;
         //prepareFragments();
     }
-
-//    private void prepareFragments() {
-//        fragments = new ArrayList<>();
-//        for (int i = 0; i < groupDBEntities.size(); i++) {
-//            BoardGroupFragment fragment = BoardGroupFragment.newInstance(groupDBEntities.get(i)
-//                    .getGroupDBEntity().getGroupId(), groupDBEntities.get(i).getGroupDBEntity().getBoardId());
-//            fragments.add(fragment);
-//        }
-//        if (groupDBEntities.size() > 0) {
-//            fragments.add(BoardChartFragment.newInstance(groupDBEntities.get(0).getGroupDBEntity().getBoardId()));
-//        }
-//    }
 
     public int getStatisticModePosition() {
         return groupDBEntities.size();
@@ -50,7 +36,6 @@ public class BoardPagerAdapter extends FragmentStatePagerAdapter {
 
     public void updateData(List<GroupWithUpdate> groupDBEntities) {
         this.groupDBEntities = groupDBEntities;
-        //prepareFragments();
         notifyDataSetChanged();
     }
 
@@ -120,9 +105,4 @@ public class BoardPagerAdapter extends FragmentStatePagerAdapter {
     public int getItemPosition(@NonNull Object object) {
         return POSITION_NONE;
     }
-
-    //    @Override
-//    public long getItemId(int position) {
-//        return fragments.get(position).getId();
-//    }
 }

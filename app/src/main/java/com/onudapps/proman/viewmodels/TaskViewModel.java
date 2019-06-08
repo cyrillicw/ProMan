@@ -20,6 +20,8 @@ public class TaskViewModel extends ViewModel{
     private int taskId;
     private int boardId;
     private EditMode editMode;
+    private String[] groupsTitles;
+    private int[] groupsIds;
 
     public TaskViewModel(int taskId, int boardId) {
         this.taskId = taskId;

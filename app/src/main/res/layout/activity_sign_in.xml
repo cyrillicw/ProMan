@@ -15,6 +15,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:inputType="textPassword"
+        android:backgroundTint="@color/colorAccent"
         android:hint="@string/sign_in_hint"/>
 
     <Button

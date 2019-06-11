@@ -91,6 +91,7 @@ public class BoardGroupFragment extends Fragment {
     }
 
     private void enableStandardMode() {
+        addTaskEdit.clearFocus();
         InputMethodManager imm = (InputMethodManager) addTaskEdit.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(addTaskEdit.getWindowToken(), 0);
         groupViewModel.setEditMode(false);

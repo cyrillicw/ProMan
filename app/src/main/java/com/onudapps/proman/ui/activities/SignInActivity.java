@@ -35,7 +35,7 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void signInOnClickListener(View v) {
-        final String text = privateKeyEdit.getText().toString();
+        final String text = privateKeyEdit.getText().toString().trim();
         if (!text.equals("")) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(privateKeyEdit.getWindowToken(), 0);

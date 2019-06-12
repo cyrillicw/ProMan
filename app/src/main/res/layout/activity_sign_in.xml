@@ -16,7 +16,8 @@
         android:layout_centerHorizontal="true"
         android:inputType="textPassword"
         android:backgroundTint="@color/colorAccent"
-        android:hint="@string/sign_in_hint"/>
+        android:hint="@string/sign_in_hint"
+        android:imeOptions="flagNoExtractUi"/>
 
     <Button
         android:id="@+id/sign_in"

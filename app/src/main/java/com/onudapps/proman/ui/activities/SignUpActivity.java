@@ -37,8 +37,8 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void signUpOnClickListener(View v) {
-        final String privateKey = privateKeyEdit.getText().toString();
-        final String nickName = nickNameEdit.getText().toString();
+        final String privateKey = privateKeyEdit.getText().toString().trim();
+        final String nickName = nickNameEdit.getText().toString().trim();
         if (!nickName.equals("") && !privateKey.equals("")) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(privateKeyEdit.getWindowToken(), 0);

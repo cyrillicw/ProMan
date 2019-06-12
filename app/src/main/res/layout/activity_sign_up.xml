@@ -16,7 +16,8 @@
         android:layout_centerHorizontal="true"
         android:inputType="textPassword"
         android:backgroundTint="@color/colorAccent"
-        android:hint="@string/sign_up_private_hint"/>
+        android:hint="@string/sign_up_private_hint"
+        android:imeOptions="flagNoExtractUi"/>
 
     <EditText
         android:id="@+id/sign_up_nickname"
@@ -26,7 +27,8 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@id/sign_up_private"
         android:backgroundTint="@color/colorAccent"
-        android:hint="@string/sign_up_nickname_hint"/>
+        android:hint="@string/sign_up_nickname_hint"
+        android:imeOptions="flagNoExtractUi"/>
 
     <Button
         android:id="@+id/sign_up"

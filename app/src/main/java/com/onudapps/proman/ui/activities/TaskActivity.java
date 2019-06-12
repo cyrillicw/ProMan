@@ -6,7 +6,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
@@ -87,10 +86,10 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         tick.setOnClickListener(this::tickOnClickListener);
         cross.setOnClickListener(this::crossOnClickListener);
         titleEdit = findViewById(R.id.detailed_task_title_edit);
-        titleEdit.setOnTouchListener(this::titleOnClickListener);
+        titleEdit.setOnClickListener(this::titleOnClickListener);
         disableEditText(titleEdit);
         descriptionEdit = findViewById(R.id.detailed_task_description_edit);
-        descriptionEdit.setOnTouchListener(this::descriptionOnClickListener);
+        descriptionEdit.setOnClickListener(this::descriptionOnClickListener);
         disableEditText(descriptionEdit);
         group = findViewById(R.id.detailed_task_group);
         dateStartText = findViewById(R.id.detailed_task_start_text);
@@ -186,14 +185,14 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         String s;
         switch (editMode) {
             case DESCRIPTION:
-                s = descriptionEdit.getText().toString();
+                s = descriptionEdit.getText().toString().trim();
                 taskViewModel.setEditMode(DEFAULT);
                 refreshDescription();
                 imm.hideSoftInputFromWindow(descriptionEdit.getWindowToken(), 0);
                 taskViewModel.updateDescription(s);
                 break;
             case TITLE:
-                s = titleEdit.getText().toString();
+                s = titleEdit.getText().toString().trim();
                 if (s.length() == 0) {
                     return;
                 }
@@ -229,7 +228,8 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     }
 
     private void disableEditText(EditText editText) {
-        editText.setInputType(InputType.TYPE_NULL);
+        editText.setFocusableInTouchMode(false);
+        //editText.setInputType(InputType.TYPE_NULL);
         editText.setSingleLine(false);
         editText.setCursorVisible(false);
                 DrawableCompat.setTint(editText.getBackground(),
@@ -237,6 +237,7 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
     }
 
     private void enableEditText(EditText editText) {
+        editText.setFocusableInTouchMode(true);
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
         editText.setCursorVisible(true);
         editText.setSingleLine(false);
@@ -257,24 +258,22 @@ public class TaskActivity extends AppCompatActivity implements DateDialogListene
         }
     }
 
-    private boolean descriptionOnClickListener(View v, MotionEvent motionEvent) {
+    private void descriptionOnClickListener(View v) {
         if (taskViewModel.getEditMode() == DEFAULT && gotTaskData) {
             taskViewModel.setEditMode(DESCRIPTION);
             enableEditMode(descriptionEdit);
             descriptionEdit.requestFocus();
             imm.showSoftInput(descriptionEdit, InputMethodManager.SHOW_IMPLICIT);
         }
-        return true;
     }
 
-    private boolean titleOnClickListener(View v, MotionEvent motionEvent) {
+    private void titleOnClickListener(View v) {
         if (taskViewModel.getEditMode() == DEFAULT && gotTaskData) {
             taskViewModel.setEditMode(TITLE);
             enableEditMode(titleEdit);
             titleEdit.requestFocus();
             imm.showSoftInput(titleEdit, InputMethodManager.SHOW_IMPLICIT);
         }
-        return true;
     }
 
     @Override

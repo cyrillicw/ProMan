@@ -1,7 +1,6 @@
 package com.onudapps.proman.ui.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,9 +24,6 @@ import java.util.Calendar;
 import java.util.List;
 
 public class BoardCardsActivity extends AppCompatActivity implements CreateDialogListener {
-    private static final String LOG_TAG = "BOARDCARDS ACTIVITY";
-    private static final String APP_NAME = "PROMAN";
-
     private RecyclerView recyclerView;
     private BoardCardsViewModel viewModel;
     private LiveData<List<BoardWithUpdate>> boardsData;
@@ -36,12 +32,9 @@ public class BoardCardsActivity extends AppCompatActivity implements CreateDialo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_board_cards);
-        SharedPreferences sharedPreferences = getSharedPreferences(APP_NAME, MODE_PRIVATE);
         viewModel = ViewModelProviders.of(this).get(BoardCardsViewModel.class);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
         ImageView createBoard = toolbar.findViewById(R.id.create);
         createBoard.setOnClickListener(this::createBoardListener);
         ImageView update = toolbar.findViewById(R.id.update);

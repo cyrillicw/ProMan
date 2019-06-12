@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -35,6 +36,7 @@ public class CreateDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog dialog = new AlertDialog.Builder(getContext()).setView(R.layout.alert_create)
                 .setPositiveButton(R.string.ok, null).create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         dialog.show();
         TextView textView = dialog.findViewById(R.id.create_hint);
         textView.setText(getArguments().getString(TITLE_TEXT_TAG));
@@ -45,14 +47,13 @@ public class CreateDialogFragment extends DialogFragment {
         return dialog;
     }
 
-
     private void okOnClickListener(View v) {
-        String res = title.getText().toString();
+        String res = title.getText().toString().trim();
         if (!res.equals("")) {
             if (getTargetFragment() != null) {
-                ((CreateDialogListener)getTargetFragment()).onCreateCommit(title.getText().toString());
+                ((CreateDialogListener)getTargetFragment()).onCreateCommit(res);
             } else {
-                ((CreateDialogListener) getActivity()).onCreateCommit(title.getText().toString());
+                ((CreateDialogListener) getActivity()).onCreateCommit(res);
             }
             Toast.makeText(getContext(), R.string.update_alert, Toast.LENGTH_LONG).show();
             dismiss();

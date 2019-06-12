@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -45,7 +44,6 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
     private ImageView statisticsMode;
     private ImageView userTasksMode;
     private ImageView propertiesMode;
-    private LinearLayout viewSwitcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +52,11 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
         viewPager = findViewById(R.id.board_pager);
         Intent intent = getIntent();
         boardId = intent.getIntExtra(BOARD_KEY, -1);
-//        if (boardId == -1) {
-//             boardId = savedInstanceState.getInt(BOARD_KEY);
-//        }
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         title = findViewById(R.id.headline);
-        viewSwitcher = findViewById(R.id.modes_layout);
         viewModel = ViewModelProviders
                 .of(this, new BoardViewModel.BoardModelFactory(boardId))
                 .get(BoardViewModel.class);
@@ -84,9 +78,6 @@ public class BoardActivity extends AppCompatActivity implements CreateDialogList
         groupsData.observe(this, this::onGroupsChangedListener);
         titleData = viewModel.getTitleData();
         titleData.observe(this, s -> title.setText(s));
-//        title.setOnClickListener(v -> {
-//            new BoardEditDialogFragment().show(getSupportFragmentManager(), "CREATE BOARD");
-//        });
         groupsMode.setOnClickListener(v -> viewPager.setCurrentItem(0, false));
         statisticsMode.setOnClickListener(v -> viewPager.setCurrentItem(((BoardPagerAdapter)viewPager.getAdapter()).getStatisticModePosition(), false));
         propertiesMode.setOnClickListener(v -> viewPager.setCurrentItem(((BoardPagerAdapter)viewPager.getAdapter()).getPropertiesModePosition(), false));

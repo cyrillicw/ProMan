@@ -2,6 +2,7 @@ package com.onudapps.proman.ui.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BoardGroupFragment extends Fragment {
-    // private BoardGroup boardGroup;
     private int groupId;
     private int boardId;
     private GroupViewModel groupViewModel;
@@ -68,8 +68,6 @@ public class BoardGroupFragment extends Fragment {
         addTask = view.findViewById(R.id.add_task);
         addTaskEdit = view.findViewById(R.id.add_task_edit);
         title = view.findViewById(R.id.group_title);
-//        tick = toolbar.findViewById(R.id.tick);
-//        cross = toolbar.findViewById(R.id.cross);
         editLayout = view.findViewById(R.id.edit_layout);
         tick = view.findViewById(R.id.tick);
         cross = view.findViewById(R.id.cross);
@@ -116,6 +114,7 @@ public class BoardGroupFragment extends Fragment {
 
     private void tickOnClickListener(View v) {
         String title = addTaskEdit.getText().toString();
+        title = title.trim();
         if (title.length() > 0) {
             groupViewModel.createTask(title);
             enableStandardMode();

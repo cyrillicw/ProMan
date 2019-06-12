@@ -5,21 +5,22 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name="com.onudapps.ProManApplication"
+        android:name=".ProManApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher_proman"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_proman_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activities.MainActivity" />
         <activity android:name=".ui.activities.SignActivity" />
-        <activity android:name=".ui.activities.SignInActivity">
+        <activity android:name=".ui.activities.SignInActivity"
+            android:windowSoftInputMode="stateUnchanged">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activities.SignActivity" />
         </activity>
-        <activity android:name=".ui.activities.SignUpActivity">
+        <activity android:name=".ui.activities.SignUpActivity"
+            android:windowSoftInputMode="stateUnchanged">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activities.SignActivity" />
@@ -42,7 +43,6 @@
         <activity android:name=".ui.activities.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

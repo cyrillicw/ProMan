@@ -37,6 +37,7 @@
         android:padding="2dp"
         android:layout_below="@id/sign_up_nickname"
         android:layout_centerHorizontal="true"
+        android:maxLines="1"
         android:text="@string/sign_up" />
 
 

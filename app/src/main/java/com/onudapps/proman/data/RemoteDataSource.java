@@ -28,7 +28,7 @@ import java.util.List;
 public class RemoteDataSource {
     private static final String LOG_TAG = "RemoteDataSource";
     private static final String HOST_API = "http://192.168.1.102:7545";
-    private static final String CONTRACT_ADDRESS = "cbbfaA511ed9A2C06446F7937eb4aC97A8A6F72B";
+    private static final String CONTRACT_ADDRESS = "F9Fd292D274B33376BD534730588492655EDC5d2";
     private ProManSmartContract proManSmartContract;
     RemoteDataSource(Credentials credentials) {
         Web3j web3j = Web3j.build(new HttpService(HOST_API));

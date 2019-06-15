@@ -2,10 +2,14 @@ package com.onudapps.proman.ui.dialog_fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.hardware.input.InputManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -35,7 +39,9 @@ public class CreateDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog dialog = new AlertDialog.Builder(getContext()).setView(R.layout.alert_create)
-                .setPositiveButton(R.string.ok, null).create();
+                .setPositiveButton(R.string.ok, null)
+                .setNegativeButton(R.string.cancel, null).create();
+        dialog.setCanceledOnTouchOutside(false);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         dialog.show();
         TextView textView = dialog.findViewById(R.id.create_hint);
@@ -43,7 +49,9 @@ public class CreateDialogFragment extends DialogFragment {
         title = dialog.findViewById(R.id.created_title);
         title.setHint(getArguments().getString(HINT_TEXT_TAG));
         Button ok = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        Button cancel = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
         ok.setOnClickListener(this::okOnClickListener);
+        cancel.setOnClickListener(this::cancelOnClickListener);
         return dialog;
     }
 
@@ -56,8 +64,16 @@ public class CreateDialogFragment extends DialogFragment {
                 ((CreateDialogListener) getActivity()).onCreateCommit(res);
             }
             Toast.makeText(getContext(), R.string.update_alert, Toast.LENGTH_LONG).show();
+            InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
             dismiss();
         }
+    }
+
+    private void cancelOnClickListener(View v) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+        dismiss();
     }
 
     @Override
